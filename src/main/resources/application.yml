@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: everyhealth
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/everyhealth?serverTimezone=UTC&characterEncoding=UTF-8
+    username: "root"
+    password: "0000"
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
