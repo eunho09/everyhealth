@@ -21,6 +21,6 @@ public class Friend {
     @JoinColumn(name = "friend_id") //멤버 친구
     private Member friend;
 
-    @Enumerated(value = EnumType.STRING)
+//    @Enumerated(value = EnumType.STRING)
     private String status;
 }

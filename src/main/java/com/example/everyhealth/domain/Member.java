@@ -21,5 +21,21 @@ public class Member {
     private String password;
 
     @OneToMany(mappedBy = "member")
+    private List<Exercise> exerciseList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
     private List<Friend> friendList = new ArrayList<>();
+
+    public Member(String name, String loginId, String password) {
+        this.name = name;
+        this.loginId = loginId;
+        this.password = password;
+    }
+
+    protected Member() {
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
