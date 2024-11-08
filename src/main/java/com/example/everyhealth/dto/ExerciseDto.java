@@ -12,15 +12,16 @@ public class ExerciseDto {
 
     private String name;
     private String memo;
-    private List<Integer> repetitions;
-    private List<Integer> weight;
+    private List<ArrayList<Integer>> repWeight;
     private String classification;
 
     public ExerciseDto(Exercise exercise) {
         this.name = exercise.getName();
         this.memo = exercise.getMemo();
-        this.repetitions = exercise.getRepetitions();
-        this.weight = exercise.getWeights();
+        this.repWeight = exercise.getRepWeight();
         this.classification = exercise.getClassification();
+    }
+
+    public ExerciseDto() {
     }
 }

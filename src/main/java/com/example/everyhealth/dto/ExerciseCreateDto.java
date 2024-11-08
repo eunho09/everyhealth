@@ -9,9 +9,8 @@ import java.util.List;
 @Data
 public class ExerciseCreateDto {
     private String name;
-    private Member member;
+    private Long memberId; // 수정 필요
     private String memo;
-    private List<Integer> repetitions;
-    private List<Integer> weight;
+    private List<ArrayList<Integer>> repWeight;
     private String classification;
 }

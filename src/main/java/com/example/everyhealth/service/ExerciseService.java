@@ -30,9 +30,10 @@ public class ExerciseService {
         return exerciseRepository.findAll();
     }
 
+    @Transactional
     public void update(Long id, ExerciseDto dto) {
         Exercise exercise = findById(id);
-        exercise.update(dto);
+/*        exercise.update(dto);*/
     }
 
     //만약 다른 연관관계가 걸려있다면 에러를 발생해야하는데 어떤 에러인줄 모르겠어

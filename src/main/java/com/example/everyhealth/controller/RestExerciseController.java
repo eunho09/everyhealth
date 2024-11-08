@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RestExerciseController {
 
+    //멤버 전용도 만들어야 함
     private final ExerciseService exerciseService;
     private final MemberService memberService;
 
@@ -36,14 +37,12 @@ public class RestExerciseController {
 
     @PostMapping("/exercise")
     public String save(@RequestBody ExerciseCreateDto dto) {
-        Member member = dto.getMember();
-        Member findMember = memberService.findById(member.getId());
+        Member findMember = memberService.findById(dto.getMemberId());
 
         Exercise exercise = new Exercise(dto.getName(),
                 findMember,
                 dto.getMemo(),
-                dto.getRepetitions(),
-                dto.getWeight(),
+                dto.getRepWeight(),
                 dto.getClassification());
 
         exerciseService.save(exercise);

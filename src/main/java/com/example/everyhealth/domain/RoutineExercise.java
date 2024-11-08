@@ -28,19 +28,13 @@ public class RoutineExercise {
     public RoutineExercise() {
     }
 
-    public static RoutineExercise createRoutineExercise(Routine routine, Exercise exercise) {
-        RoutineExercise routineExercise = new RoutineExercise();
-        routineExercise.setRoutine(routine);
-        routineExercise.setExercise(exercise);
-
-        return routineExercise;
-    }
-
     public void setExercise(Exercise exercise) {
         this.exercise = exercise;
+        exercise.getRoutineExerciseList().add(this);
     }
 
     public void setRoutine(Routine routine) {
         this.routine = routine;
+        routine.getRoutineExerciseList().add(this);
     }
 }

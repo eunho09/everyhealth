@@ -23,11 +23,16 @@ public class Exercise {
 
     private String memo;
 
-    @ElementCollection
+/*    @ElementCollection
     private List<Integer> repetitions = new ArrayList<>();  // 각 세트의 반복 횟수 저장
 
     @ElementCollection
-    private List<Integer> weights = new ArrayList<>();  // 각 세트의 무게 저장
+    private List<Integer> weights = new ArrayList<>();  // 각 세트의 무게 저장*/
+
+
+    //[0][0] repetition [0][1] weight
+    @ElementCollection
+    private List<ArrayList<Integer>> repWeight = new ArrayList<>();
 
     @OneToMany(mappedBy = "exercise")
     private List<TodayExercise> todayExercises = new ArrayList<>();
@@ -37,26 +42,25 @@ public class Exercise {
     @OneToMany(mappedBy = "exercise")
     private List<RoutineExercise> routineExerciseList = new ArrayList<>();
 
-    public Exercise(String name, Member member, String memo, List<Integer> repetitions, List<Integer> weights, String classification) {
+    public Exercise(String name, Member member, String memo, List<ArrayList<Integer>> repWeight, String classification) {
         this.name = name;
         this.member = member;
         member.getExerciseList().add(this);
         this.memo = memo;
-        this.repetitions = repetitions;
-        this.weights = weights;
+        this.repWeight = repWeight;
         this.classification = classification;
     }
 
     protected Exercise() {
     }
 
-    public void update(ExerciseDto dto) {
+/*    public void update(ExerciseDto dto) {
         this.name = dto.getName();
         this.memo = dto.getMemo();
         this.repetitions = dto.getRepetitions();
         this.weights = dto.getWeight();
         this.classification = dto.getClassification();
-    }
+    }*/
 
     public void setName(String name) {
         this.name = name;
@@ -66,12 +70,8 @@ public class Exercise {
         this.memo = memo;
     }
 
-    public void setRepetitions(List<Integer> repetitions) {
-        this.repetitions = repetitions;
-    }
-
-    public void setWeights(List<Integer> weights) {
-        this.weights = weights;
+    public void setRepWeight(List<ArrayList<Integer>> repWeight) {
+        this.repWeight = repWeight;
     }
 
     public void setClassification(String classification) {

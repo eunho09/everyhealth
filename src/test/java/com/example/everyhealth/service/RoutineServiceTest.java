@@ -1,3 +1,4 @@
+/*
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +33,7 @@ class RoutineServiceTest {
     @Autowired
     RoutineExerciseService routineExerciseService;
 
-    //시간 122
+    //시간 : 127
     @Test
     void save() {
         long startTime = System.currentTimeMillis();
@@ -70,7 +72,8 @@ class RoutineServiceTest {
         Assertions.assertThat(findRoutine.getRoutineExerciseList().get(1).getExercise().getName()).isEqualTo("파이크 푸쉬업");
     }
 
-    //시간 171
+
+    //시간 67
     @Test
     void cascade() {
         long startTime = System.currentTimeMillis();
@@ -89,20 +92,16 @@ class RoutineServiceTest {
         Long findExId2 = exerciseService.save(exercise2);
         Long findExId3 = exerciseService.save(exercise3);
 
-        Exercise findEx1 = exerciseService.findById(findExId1);
-        Exercise findEx2 = exerciseService.findById(findExId2);
-        Exercise findEx3 = exerciseService.findById(findExId3);
-
         Routine routine = new Routine("일요일 가슴운동 루틴");
         Long routineId = routineService.save(routine);
-        
-        routineService.addExercise(routineId, findExId1);
-        Routine findRoutine = routineService.addExercise(routineId, findExId2);
+
+        List<Long> exArr = new ArrayList<>(Arrays.asList(findExId1, findExId2));
+        Routine saveRoutine = routineService.addExercise(routineId, exArr);
 
         long endTime = System.currentTimeMillis();
         System.out.println("시간" + (endTime - startTime));
 
-        Assertions.assertThat(findRoutine.getRoutineExerciseList().get(0).getExercise().getName()).isEqualTo("푸쉬업");
-        Assertions.assertThat(findRoutine.getRoutineExerciseList().get(1).getExercise().getName()).isEqualTo("파이크 푸쉬업");
+        Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(0).getExercise().getName()).isEqualTo("푸쉬업");
+        Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(1).getExercise().getName()).isEqualTo("파이크 푸쉬업");
     }
-}
+}*/

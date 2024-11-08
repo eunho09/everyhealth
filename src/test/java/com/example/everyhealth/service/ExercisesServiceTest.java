@@ -2,6 +2,7 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 
 @SpringBootTest
 @Transactional
+@Slf4j
 public class ExercisesServiceTest {
 
     @Autowired
@@ -28,16 +30,21 @@ public class ExercisesServiceTest {
 
         Member findMember = memberService.findById(memberId);
 
-        ArrayList<Integer> repetitions = new ArrayList(Arrays.asList(10,20,30));
-        ArrayList<Integer> weights = new ArrayList(Arrays.asList(10,15,20));
+        ArrayList<ArrayList<Integer>> set = new ArrayList();
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,25)));
+        set.add(new ArrayList<>(Arrays.asList(10,30)));
 
-        Exercise exercise = new Exercise("푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
+        Exercise exercise = new Exercise("푸쉬업", findMember, "무릎꿇고", set, "가슴");
         Long exerciseId = exerciseService.save(exercise);
 
         Exercise findExercise = exerciseService.findById(exerciseId);
 
-        Assertions.assertThat(findExercise.getRepetitions()).contains(10, 20, 30);
-        Assertions.assertThat(findExercise.getWeights()).contains(10, 15, 20);
+        Assertions.assertThat(findExercise.getRepWeight().get(0)).containsExactly(10,20);
+        Assertions.assertThat(findExercise.getRepWeight().get(1)).containsExactly(10,25);
+        Assertions.assertThat(findExercise.getRepWeight().get(2)).containsExactly(10,30);
+
+        log.info("set={}",findExercise.getRepWeight());
 
         exercise.setName("인클라인 푸쉬업");
 

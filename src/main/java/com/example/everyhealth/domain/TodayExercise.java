@@ -27,14 +27,14 @@ public class TodayExercise {
     @ElementCollection
     private List<Integer> weights = new ArrayList<>();  // 각 세트의 무게 저장
 
-    public TodayExercise(Exercise exercise, Today today) {
+/*    public TodayExercise(Exercise exercise, Today today) {
         this.exercise = exercise;
         exercise.getTodayExercises().add(this);
         this.today = today;
         today.getTodayExercises().add(this);
         this.repetitions = exercise.getRepetitions();
         this.weights = exercise.getWeights();
-    }
+    }*/
 
     public TodayExercise() {
     }

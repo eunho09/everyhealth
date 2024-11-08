@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -34,12 +35,18 @@ public class RoutineService {
     }
 
     @Transactional
-    public Routine addExercise(Long routineId, Long exerciseId) {
-        Exercise exercise = exerciseRepository.findById(exerciseId).get();
+    public Routine addExercise(Long routineId, List<Long> exerciseId) {
         Routine routine = findById(routineId);
-        RoutineExercise routineExercise = new RoutineExercise(exercise, routine);
-        routineRepository.save(routine);
+//        Exercise exercise = exerciseRepository.findById(exerciseId).get();
+//        new RoutineExercise(exercise, routine);
+        exerciseId.stream()
+                .forEach(id -> {
+                    Exercise exercise = exerciseRepository.findById(id).get();
+                    new RoutineExercise(exercise, routine);
+                });
 
+
+        routineRepository.save(routine);
         return routine;
     }
 }
