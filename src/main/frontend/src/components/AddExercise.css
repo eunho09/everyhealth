@@ -1,0 +1,121 @@
+/* ExerciseModal.css */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    max-height: 80vh;
+    overflow-y: auto; /* 세트가 많아지면 스크롤 가능하게 */
+    text-align: center;
+}
+
+.hover-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.hover-button:hover {
+    background-color: #45a049;
+}
+
+input {
+    width: 100%;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+textarea {
+    width: 100%;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    resize: none;
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.small-input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.number{
+    align-content: center;
+    font-weight: bold;
+}
+
+
+button{
+    background: none;
+    border: none;
+    align-content: center;
+    cursor: pointer;
+}
+
+button:hover{
+    color: gray;
+}
+
+.small-button{
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+.plus-button{
+    margin-top: 20px;
+}
+
+.text-button{
+    font-size: 1.25rem;
+}
+.back-button {
+    box-sizing: border-box;
+    margin-top: 0px;
+    font-size: 20px;
+    color: #333;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+}
+
+.button-position{
+    display: flex;
+    justify-content: flex-start;
+}
+.title{
+    margin-top: 0;
+}

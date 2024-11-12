@@ -1,0 +1,43 @@
+/* Sidebar.css */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.sidebar ul li:hover {
+    color: #ddd;
+}
+img {
+    width: 100px;
+}
+
+a:link{
+    text-decoration: none;
+}
+
+a:visited, a:active{
+    color: inherit;
+}
