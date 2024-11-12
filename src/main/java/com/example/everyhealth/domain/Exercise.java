@@ -54,13 +54,12 @@ public class Exercise {
     protected Exercise() {
     }
 
-/*    public void update(ExerciseDto dto) {
+    public void update(ExerciseDto dto) {
         this.name = dto.getName();
         this.memo = dto.getMemo();
-        this.repetitions = dto.getRepetitions();
-        this.weights = dto.getWeight();
+        this.repWeight = dto.getRepWeight();
         this.classification = dto.getClassification();
-    }*/
+    }
 
     public void setName(String name) {
         this.name = name;

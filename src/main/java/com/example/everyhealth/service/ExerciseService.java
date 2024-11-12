@@ -33,7 +33,18 @@ public class ExerciseService {
     @Transactional
     public void update(Long id, ExerciseDto dto) {
         Exercise exercise = findById(id);
-/*        exercise.update(dto);*/
+        if (dto.getName() != null) {
+            exercise.setName(dto.getName());
+        }
+        if (dto.getMemo() != null) {
+            exercise.setMemo(dto.getMemo());
+        }
+        if (dto.getClassification() != null) {
+            exercise.setClassification(dto.getClassification());
+        }
+        if (dto.getRepWeight() != null) {
+            exercise.setRepWeight(dto.getRepWeight());
+        }
     }
 
     //만약 다른 연관관계가 걸려있다면 에러를 발생해야하는데 어떤 에러인줄 모르겠어

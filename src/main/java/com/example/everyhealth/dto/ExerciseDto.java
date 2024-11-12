@@ -10,12 +10,14 @@ import java.util.List;
 @Data
 public class ExerciseDto {
 
+    private Long id;
     private String name;
     private String memo;
     private List<ArrayList<Integer>> repWeight;
     private String classification;
 
     public ExerciseDto(Exercise exercise) {
+        this.id = exercise.getId();
         this.name = exercise.getName();
         this.memo = exercise.getMemo();
         this.repWeight = exercise.getRepWeight();
