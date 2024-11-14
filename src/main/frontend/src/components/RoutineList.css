@@ -1,0 +1,94 @@
+/* ul, li 기본 스타일 제거 */
+ul {
+    list-style-type: none; /* 불렛 포인트 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+    margin: 0; /* 기본 마진 제거 */
+}
+
+li {
+    margin-bottom: 8px; /* 필요에 따라 각 항목 사이 여백 추가 */
+}
+
+/* 루틴 박스 스타일 */
+.routine-box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+.right-button {
+    font-size: 1.5rem;
+    margin-right: 3rem;
+}
+button{
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.routine-title{
+    display: flex;
+    justify-content: space-between;
+
+}
+
+/* 텍스트 버튼 스타일 */
+.text-button {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+/* 하위 운동 목록 스타일 */
+.exercise-list {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+/* 세트 리스트 스타일 */
+.set-list {
+    margin-top: 8px; /* 운동 이름과 세트 리스트 간격 */
+    padding-left: 0; /* 리스트 기본 패딩 제거 */
+}
+
+/* 세트 항목 스타일 */
+.set-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 0; /* 세트 항목 상하 간격 */
+    font-size: 14px; /* 텍스트 크기 조정 */
+    color: #333; /* 텍스트 색상 */
+    gap: 10px; /* 항목 간격 */
+}
+
+.set-item div:nth-child(1) {
+    width: 50px; /* 세트 번호를 좁게 설정 */
+    font-weight: bold;
+    color: #555;
+    text-align: center;
+}
+
+.set-item div:nth-child(2) {
+    width: 60px; /* 회수 영역 */
+    text-align: center;
+}
+
+.set-item div:nth-child(3) {
+    width: 60px; /* 무게 영역 */
+    text-align: center;
+}
+/* 각 운동 박스 스타일 */
+.exercise-box {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f4f4f4;
+}

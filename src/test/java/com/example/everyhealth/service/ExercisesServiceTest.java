@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @SpringBootTest
-@Transactional
 @Slf4j
 public class ExercisesServiceTest {
 
@@ -24,18 +23,17 @@ public class ExercisesServiceTest {
     MemberService memberService;
 
     @Test
+    @Transactional
     void save() {
         Member member = new Member("홍길동", "test", "test");
         Long memberId = memberService.save(member);
-
-        Member findMember = memberService.findById(memberId);
 
         ArrayList<ArrayList<Integer>> set = new ArrayList();
         set.add(new ArrayList<>(Arrays.asList(10,20)));
         set.add(new ArrayList<>(Arrays.asList(10,25)));
         set.add(new ArrayList<>(Arrays.asList(10,30)));
 
-        Exercise exercise = new Exercise("푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Exercise exercise = new Exercise("푸쉬업", member, "무릎꿇고", set, "가슴");
         Long exerciseId = exerciseService.save(exercise);
 
         Exercise findExercise = exerciseService.findById(exerciseId);

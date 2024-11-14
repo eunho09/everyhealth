@@ -16,7 +16,6 @@ class MemberServiceTest {
     MemberService memberService;
 
     @Test
-    @Transactional
     void save() {
         Member member = new Member("홍길동", "test", "test");
 

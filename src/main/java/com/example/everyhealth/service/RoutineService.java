@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -35,18 +36,18 @@ public class RoutineService {
     }
 
     @Transactional
-    public Routine addExercise(Long routineId, List<Long> exerciseId) {
+    public Routine addExercise(Long routineId, Map<Long, Integer> exerciseInfo) {
         Routine routine = findById(routineId);
-//        Exercise exercise = exerciseRepository.findById(exerciseId).get();
-//        new RoutineExercise(exercise, routine);
-        exerciseId.stream()
-                .forEach(id -> {
-                    Exercise exercise = exerciseRepository.findById(id).get();
-                    new RoutineExercise(exercise, routine);
-                });
-
+        exerciseInfo.forEach((key, value) -> {
+            Exercise exercise = exerciseRepository.findById(key).get();
+            new RoutineExercise(exercise, routine, value);
+        });
 
         routineRepository.save(routine);
         return routine;
+    }
+
+    public List<Routine> findRoutineWithExercises(Long memberId) {
+        return routineRepository.findRoutineWithExercises(memberId);
     }
 }

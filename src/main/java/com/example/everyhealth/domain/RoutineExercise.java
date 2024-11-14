@@ -18,11 +18,17 @@ public class RoutineExercise {
     @JoinColumn(name = "routine_id")
     private Routine routine;
 
-    public RoutineExercise(Exercise exercise, Routine routine) {
+    private Integer Sequence;
+/*
+    @ElementCollection
+    private List<ArrayList<Integer>> repWeight = new ArrayList<>();*/
+
+    public RoutineExercise(Exercise exercise, Routine routine, Integer Sequence) {
         this.exercise = exercise;
         exercise.getRoutineExerciseList().add(this);
         this.routine = routine;
         routine.getRoutineExerciseList().add(this);
+        this.Sequence = Sequence;
     }
 
     public RoutineExercise() {
@@ -36,5 +42,9 @@ public class RoutineExercise {
     public void setRoutine(Routine routine) {
         this.routine = routine;
         routine.getRoutineExerciseList().add(this);
+    }
+
+    public void setSequence(int sequence) {
+        this.Sequence = sequence;
     }
 }

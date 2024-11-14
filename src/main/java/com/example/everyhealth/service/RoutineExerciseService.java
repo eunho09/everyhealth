@@ -1,6 +1,7 @@
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.RoutineExercise;
+import com.example.everyhealth.dto.RoutineExerciseDto;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,14 @@ public class RoutineExerciseService {
 
     public List<RoutineExercise> findAll() {
         return routineExerciseRepository.findAll();
+    }
+
+    public List<RoutineExercise> findRoutineExerciseByRoutineId(Long routineId) {
+        return routineExerciseRepository.findRoutineExerciseByRoutineId(routineId);
+    }
+
+    public List<RoutineExercise> findRoutineExerciseByMemberId(Long memberId) {
+        return routineExerciseRepository.findRoutineExerciseByMemberId(memberId);
     }
 }
 

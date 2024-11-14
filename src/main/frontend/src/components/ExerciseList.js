@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './AddExercise.css';
+import './AddComponents.css';
 import { TiDeleteOutline } from "react-icons/ti";
 import { IoIosArrowBack } from "react-icons/io";
 
@@ -30,7 +30,6 @@ const ExerciseList = () => {
         axios.get('/api/exercises')
             .then((response) => {
                 setExercises(response.data);
-
                 console.log(exercises);
             })
             .catch((error) => {

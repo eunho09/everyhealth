@@ -19,10 +19,20 @@ public class Routine {
     @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL)
     private List<RoutineExercise> routineExerciseList = new ArrayList<>();
 
-    public Routine(String name) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public Routine(String name, Member member) {
         this.name = name;
+        setMember(member);
     }
 
     public Routine() {
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+        member.getRoutineList().add(this);
     }
 }

@@ -21,6 +21,9 @@ public class Member {
     private String password;
 
     @OneToMany(mappedBy = "member")
+    private List<Routine> routineList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
     private List<Exercise> exerciseList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")

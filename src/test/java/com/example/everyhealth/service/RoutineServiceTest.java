@@ -42,12 +42,15 @@ class RoutineServiceTest {
 
         Member findMember = memberService.findById(memberId);
 
-        ArrayList<Integer> repetitions = new ArrayList(Arrays.asList(10,20,30));
-        ArrayList<Integer> weights = new ArrayList(Arrays.asList(10,15,20));
 
-        Exercise exercise1 = new Exercise("푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
-        Exercise exercise2 = new Exercise("파이크 푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
-        Exercise exercise3 = new Exercise("인클라인 푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
+        List<ArrayList<Integer>> set = new ArrayList<>();
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+
+        Exercise exercise1 = new Exercise("푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Exercise exercise2 = new Exercise("파이크 푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Exercise exercise3 = new Exercise("인클라인 푸쉬업", findMember, "무릎꿇고", set, "가슴");
         Long findExId1 = exerciseService.save(exercise1);
         Long findExId2 = exerciseService.save(exercise2);
         Long findExId3 = exerciseService.save(exercise3);
@@ -82,12 +85,14 @@ class RoutineServiceTest {
 
         Member findMember = memberService.findById(memberId);
 
-        ArrayList<Integer> repetitions = new ArrayList(Arrays.asList(10,20,30));
-        ArrayList<Integer> weights = new ArrayList(Arrays.asList(10,15,20));
+        List<ArrayList<Integer>> set = new ArrayList<>();
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
 
-        Exercise exercise1 = new Exercise("푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
-        Exercise exercise2 = new Exercise("파이크 푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
-        Exercise exercise3 = new Exercise("인클라인 푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
+        Exercise exercise1 = new Exercise("푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Exercise exercise2 = new Exercise("파이크 푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Exercise exercise3 = new Exercise("인클라인 푸쉬업", findMember, "무릎꿇고", set, "가슴");
         Long findExId1 = exerciseService.save(exercise1);
         Long findExId2 = exerciseService.save(exercise2);
         Long findExId3 = exerciseService.save(exercise3);
@@ -104,4 +109,5 @@ class RoutineServiceTest {
         Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(0).getExercise().getName()).isEqualTo("푸쉬업");
         Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(1).getExercise().getName()).isEqualTo("파이크 푸쉬업");
     }
-}*/
+}
+*/

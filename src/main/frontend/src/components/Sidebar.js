@@ -12,7 +12,7 @@ const Sidebar = () => {
                 <li>운동일지</li>
                 <li>포스트</li>
                 <li><Link to="/exercise">운동</Link></li>
-                <li>루틴</li>
+                <li><Link to="/routine">루틴</Link></li>
             </ul>
         </div>
     )

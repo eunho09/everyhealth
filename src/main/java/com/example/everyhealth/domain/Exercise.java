@@ -23,13 +23,6 @@ public class Exercise {
 
     private String memo;
 
-/*    @ElementCollection
-    private List<Integer> repetitions = new ArrayList<>();  // 각 세트의 반복 횟수 저장
-
-    @ElementCollection
-    private List<Integer> weights = new ArrayList<>();  // 각 세트의 무게 저장*/
-
-
     //[0][0] repetition [0][1] weight
     @ElementCollection
     private List<ArrayList<Integer>> repWeight = new ArrayList<>();
@@ -44,8 +37,7 @@ public class Exercise {
 
     public Exercise(String name, Member member, String memo, List<ArrayList<Integer>> repWeight, String classification) {
         this.name = name;
-        this.member = member;
-        member.getExerciseList().add(this);
+        setMember(member);
         this.memo = memo;
         this.repWeight = repWeight;
         this.classification = classification;
@@ -75,5 +67,10 @@ public class Exercise {
 
     public void setClassification(String classification) {
         this.classification = classification;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+        member.getExerciseList().add(this);
     }
 }
