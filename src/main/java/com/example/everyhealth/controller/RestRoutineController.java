@@ -8,9 +8,12 @@ import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RoutineExerciseService;
 import com.example.everyhealth.service.RoutineService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,19 +26,19 @@ public class RestRoutineController {
     private final RoutineExerciseService routineExerciseService;
 
     @PostMapping("/routine")
-    public String save(@RequestBody RoutineSaveDto dto) {
+    public ResponseEntity<Long> save(@RequestBody RoutineSaveDto dto) {
         Member findMember = memberService.findById(dto.getMemberId());
         Routine routine = new Routine(dto.getName(), findMember);
         routineService.save(routine);
 
-        return "루틴 저장 완료";
+        return ResponseEntity.status(HttpStatus.CREATED).body(routine.getId());
     }
 
     @PostMapping("/routineExercise")
-    public String addExercise(@RequestBody RoutineDto dto) {
+    public ResponseEntity<String> addExercise(@RequestBody RoutineDto dto) {
         routineService.addExercise(dto.getRoutineId(), dto.getExerciseInfo());
 
-        return "루틴 운동 저장 완료";
+        return ResponseEntity.ok("RoutineExercise created");
     }
 
     @GetMapping("/routine/{memberId}")
@@ -67,5 +70,26 @@ public class RestRoutineController {
                 .stream()
                 .map(routineExercise -> new RoutineExerciseDto(routineExercise.getSequence(), routineExercise.getRoutine().getName(), routineExercise.getExercise().getRepWeight(), routineExercise.getExercise().getName()))
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("/routineExercise/updateSequence")
+    public ResponseEntity<String> changeSequence(Long routineId, Long memberId, Map<Long, Integer> routineExerciseInfo) {
+        routineService.changeSequence(memberId, routineId, routineExerciseInfo);
+
+        return ResponseEntity.ok("change routineExercise of sequence");
+    }
+
+    @DeleteMapping("/routine/{id}")
+    public ResponseEntity<String> deleteRoutine(@PathVariable Long id) {
+        Routine routine = routineService.findById(id);
+        routineService.delete(routine);
+        return ResponseEntity.ok("delete routine");
+    }
+
+    @DeleteMapping("/routineExercise/{id}")
+    public ResponseEntity<String> deleteRoutineExercise(@PathVariable Long id) {
+        RoutineExercise routineExercise = routineExerciseService.findById(id);
+        routineExerciseService.delete(routineExercise);
+        return ResponseEntity.ok("delete routineExercise");
     }
 }

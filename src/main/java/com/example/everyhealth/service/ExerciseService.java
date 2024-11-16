@@ -51,4 +51,8 @@ public class ExerciseService {
         Exercise exercise = findById(id);
         exerciseRepository.delete(exercise);
     }
+
+    public List<Exercise> findExercisesByMemberId(Long id) {
+        return exerciseRepository.findExercisesByMemberId(id);
+    }
 }

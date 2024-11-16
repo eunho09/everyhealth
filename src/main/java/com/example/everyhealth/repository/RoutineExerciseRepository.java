@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface RoutineExerciseRepository extends JpaRepository<RoutineExercise, Long> {
 
-    @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where re.routine.id =:routineId")
+    @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where re.routine.id =:routineId order by re.Sequence asc")
     List<RoutineExercise> findRoutineExerciseByRoutineId(@Param("routineId") Long routineId);
 
     @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where e.member.id =:memberId")

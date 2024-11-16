@@ -4,29 +4,9 @@ import Plus from "./Plus";
 import { IoIosArrowBack } from "react-icons/io";
 
 const AddRoutine = () => {
-    const [exercises, setExercises] = useState([]);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState('');
-    const [checkedList, setCheckedList] = useState([]); // 초기값을 빈 배열로 설정
-    const [index, setIndex] = useState(1);
-
-    const checkedExerciseHandler = (exerciseId, isChecked) => {
-        if (isChecked) {
-            // 체크된 경우, 새로운 항목을 추가
-            setCheckedList((prev) => [...prev, { id: exerciseId, index: index }]);
-            setIndex((prevIndex) => prevIndex + 1);
-        } else {
-            // 체크 해제된 경우, 해당 항목을 제거
-            console.log("체크 해제");
-            setCheckedList((prev) => prev.filter((exercise) => exercise.id !== exerciseId));
-            setIndex((prevIndex) => prevIndex - 1);
-        }
-    };
-
-    const checkHandler = (e, exerciseId) => {
-        const isChecked = e.target.checked;
-        checkedExerciseHandler(exerciseId, isChecked);
-    };
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -34,15 +14,7 @@ const AddRoutine = () => {
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setCheckedList([]);
-        setIndex(1);
     };
-
-    useEffect(() => {
-        axios.get("/api/exercises")
-            .then((response) => setExercises(response.data))
-            .catch((error) => console.log(error));
-    }, []);
 
 
     const save = () => {
@@ -81,18 +53,6 @@ const AddRoutine = () => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                       {/* <h3>운동</h3>
-                        {exercises.map((exercise, idx) => (
-                            <div className="row-routine" key={idx}>
-                                <input
-                                    className="small-checkbox"
-                                    type="checkbox"
-                                    id={exercise.name}
-                                    onChange={(e) => checkHandler(e, exercise.id)}
-                                />
-                                <label htmlFor={exercise.name}>{exercise.name}</label>
-                            </div>
-                        ))}*/}
                         <button onClick={() => save()}>저장</button>
                     </div>
                 </div>

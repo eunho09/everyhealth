@@ -6,7 +6,10 @@ import com.example.everyhealth.dto.ExerciseCreateDto;
 import com.example.everyhealth.dto.ExerciseDto;
 import com.example.everyhealth.service.ExerciseService;
 import com.example.everyhealth.service.MemberService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +30,15 @@ public class RestExerciseController {
         return new ExerciseDto(findExercise);
     }
 
+
+    @GetMapping("/member/{memberId}/exercises")
+    public List<ExerciseDto> findExerciseByMemberId(@PathVariable Long memberId) {
+        List<Exercise> exercises = exerciseService.findExercisesByMemberId(memberId);
+        return exercises.stream()
+                .map(e -> new ExerciseDto(e))
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/exercises")
     public List<ExerciseDto> findAll() {
         List<Exercise> exercises = exerciseService.findAll();
@@ -36,7 +48,7 @@ public class RestExerciseController {
     }
 
     @PostMapping("/exercise")
-    public String save(@RequestBody ExerciseCreateDto dto) {
+    public ResponseEntity<Long> save(@RequestBody ExerciseCreateDto dto) {
         Member findMember = memberService.findById(dto.getMemberId());
 
         Exercise exercise = new Exercise(dto.getName(),
@@ -47,7 +59,7 @@ public class RestExerciseController {
 
         exerciseService.save(exercise);
 
-        return "운동 저장 완료";
+        return ResponseEntity.status(HttpStatus.CREATED).body(exercise.getId());
     }
 
     //실험 필요
@@ -58,8 +70,13 @@ public class RestExerciseController {
     }
 
     @DeleteMapping("/exercise/{id}")
-    public String delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         exerciseService.delete(id);
-        return "운동 삭제 완료";
+        return ResponseEntity.ok("delete exercise");
+    }
+
+    @Data
+    public static class Info{
+        private Long id;
     }
 }

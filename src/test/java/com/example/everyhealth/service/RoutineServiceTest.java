@@ -1,4 +1,3 @@
-/*
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
@@ -11,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,12 +56,12 @@ class RoutineServiceTest {
         Exercise findEx2 = exerciseService.findById(findExId2);
         Exercise findEx3 = exerciseService.findById(findExId3);
 
-        Routine routine = new Routine("일요일 가슴운동 루틴");
+        Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
         Long routineId = routineService.save(routine);
         Routine findRoutine = routineService.findById(routineId);
 
-        RoutineExercise routineExercise1 = new RoutineExercise(findEx1, findRoutine);
-        RoutineExercise routineExercise2 = new RoutineExercise(findEx2, findRoutine);
+        RoutineExercise routineExercise1 = new RoutineExercise(findEx1, findRoutine,1);
+        RoutineExercise routineExercise2 = new RoutineExercise(findEx2, findRoutine,2);
 
         routineExerciseService.save(routineExercise1);
         routineExerciseService.save(routineExercise2);
@@ -97,17 +94,65 @@ class RoutineServiceTest {
         Long findExId2 = exerciseService.save(exercise2);
         Long findExId3 = exerciseService.save(exercise3);
 
-        Routine routine = new Routine("일요일 가슴운동 루틴");
+        Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
         Long routineId = routineService.save(routine);
 
-        List<Long> exArr = new ArrayList<>(Arrays.asList(findExId1, findExId2));
-        Routine saveRoutine = routineService.addExercise(routineId, exArr);
+        Map<Long, Integer> exerciseInfo = new HashMap<>();
+        exerciseInfo.put(findExId1, 1);
+        exerciseInfo.put(findExId2, 2);
+        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfo);
 
         long endTime = System.currentTimeMillis();
         System.out.println("시간" + (endTime - startTime));
 
         Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(0).getExercise().getName()).isEqualTo("푸쉬업");
+        Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(0).getSequence()).isEqualTo(1);
         Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(1).getExercise().getName()).isEqualTo("파이크 푸쉬업");
+        Assertions.assertThat(saveRoutine.getRoutineExerciseList().get(1).getSequence()).isEqualTo(2);
+    }
+
+    @Test
+    void changeSequence() {
+        long startTime = System.currentTimeMillis();
+        Member member = new Member("홍길동", "test", "test");
+        Long memberId = memberService.save(member);
+
+        Member findMember = memberService.findById(memberId);
+
+        List<ArrayList<Integer>> set = new ArrayList<>();
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+
+        Exercise exercise1 = new Exercise("푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Exercise exercise2 = new Exercise("파이크 푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Exercise exercise3 = new Exercise("인클라인 푸쉬업", findMember, "무릎꿇고", set, "가슴");
+        Long findExId1 = exerciseService.save(exercise1);
+        Long findExId2 = exerciseService.save(exercise2);
+        Long findExId3 = exerciseService.save(exercise3);
+
+        Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
+        Long routineId = routineService.save(routine);
+
+        Map<Long, Integer> exerciseInfo = new HashMap<>();
+        exerciseInfo.put(findExId1, 1);
+        exerciseInfo.put(findExId2, 2);
+        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfo);
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("시간" + (endTime - startTime));
+
+        Map<Long, Integer> routineExerciseInfo = new HashMap<>();
+        routineExerciseInfo.put(1L, 2);
+        routineExerciseInfo.put(2L, 1);
+
+        Routine updateRoutine = routineService.changeSequence(findMember.getId(), saveRoutine.getId(), routineExerciseInfo);
+        routineService.save(updateRoutine);
+
+
+        Assertions.assertThat(updateRoutine.getRoutineExerciseList().get(0).getExercise().getName()).isEqualTo("푸쉬업");
+        Assertions.assertThat(updateRoutine.getRoutineExerciseList().get(0).getSequence()).isEqualTo(2);
+        Assertions.assertThat(updateRoutine.getRoutineExerciseList().get(1).getExercise().getName()).isEqualTo("파이크 푸쉬업");
+        Assertions.assertThat(updateRoutine.getRoutineExerciseList().get(1).getSequence()).isEqualTo(1);
     }
 }
-*/

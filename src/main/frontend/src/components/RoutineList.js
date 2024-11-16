@@ -44,7 +44,6 @@ const RoutineList = () => {
                                 {routine.routineExerciseDtoList.map((exercise, exerciseIndex) => (
                                     <li key={`exercise-${routine.routineId}-${exerciseIndex}`} className="exercise-box">
                                         <strong>{exercise.exerciseName}</strong>
-
                                         <ul className="set-list">
                                             {exercise.repWeight.map((set, setIndex) => (
                                                 <li key={`set-${routine.routineId}-${exerciseIndex}-${setIndex}`} className="set-item">

@@ -30,6 +30,11 @@ public class RoutineExerciseService {
         return routineExerciseRepository.findAll();
     }
 
+    @Transactional
+    public void delete(RoutineExercise routineExercise) {
+        routineExerciseRepository.delete(routineExercise);
+    }
+
     public List<RoutineExercise> findRoutineExerciseByRoutineId(Long routineId) {
         return routineExerciseRepository.findRoutineExerciseByRoutineId(routineId);
     }

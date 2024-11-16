@@ -36,6 +36,11 @@ public class RoutineService {
     }
 
     @Transactional
+    public void delete(Routine routine) {
+        routineRepository.delete(routine);
+    }
+
+    @Transactional
     public Routine addExercise(Long routineId, Map<Long, Integer> exerciseInfo) {
         Routine routine = findById(routineId);
         exerciseInfo.forEach((key, value) -> {
@@ -49,5 +54,20 @@ public class RoutineService {
 
     public List<Routine> findRoutineWithExercises(Long memberId) {
         return routineRepository.findRoutineWithExercises(memberId);
+    }
+
+    @Transactional
+    public Routine changeSequence(Long memberId, Long routineId, Map<Long, Integer> routineExerciseInfo) {
+        Routine routineWithRoutineExercises = routineRepository.findRoutineWithRoutineExercises(memberId, routineId);
+        List<RoutineExercise> routineExerciseList = routineWithRoutineExercises.getRoutineExerciseList();
+
+        routineExerciseList.forEach(rx -> {
+            if (routineExerciseInfo.containsKey(rx.getId())){
+                Integer newSequence = routineExerciseInfo.get(rx.getId());
+                rx.setSequence(newSequence);
+            }
+        });
+
+        return routineWithRoutineExercises;
     }
 }
