@@ -1,7 +1,7 @@
 import React from 'react';
 import "./Page.css";
 import AddRoutine from "../components/AddRoutine";
-import RoutineList from "../components/RoutineList";
+import RoutineManager from "../components/feature/RoutineManager";
 
 const Routine = () => {
     return (
@@ -11,7 +11,7 @@ const Routine = () => {
                     <h1>루틴</h1>
                     <AddRoutine/>
                 </div>
-                <RoutineList/>
+                <RoutineManager/>
             </div>
         </>
     );

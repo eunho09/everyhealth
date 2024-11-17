@@ -1,79 +1,52 @@
-import React, {useEffect, useState} from 'react';
-import axios from "axios";
-import {IoIosArrowBack} from "react-icons/io";
+import React from 'react';
+import { IoIosArrowBack } from "react-icons/io";
+import "./Modal.css";
 
-const AddRoutineExercise = () => {
-
-    const [exercises, setExercises] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [checkedList, setCheckedList] = useState([]); // 초기값을 빈 배열로 설정
-    const [index, setIndex] = useState(1);
-
-    const checkedExerciseHandler = (exerciseId, isChecked) => {
+const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList, onClose, onSave, sequence, setSequence, lastSequence }) => {
+    const checkHandler = async (exerciseId, isChecked) => {
         if (isChecked) {
-            // 체크된 경우, 새로운 항목을 추가
-            setCheckedList((prev) => [...prev, { id: exerciseId, index: index }]);
-            setIndex((prevIndex) => prevIndex + 1);
+            setCheckedList((prev) => [
+                ...prev,
+                { exerciseId: exerciseId, sequence: sequence },
+            ]);
+            setSequence((prev) => prev + 1);
         } else {
-            // 체크 해제된 경우, 해당 항목을 제거
-            console.log("체크 해제");
-            setCheckedList((prev) => prev.filter((exercise) => exercise.id !== exerciseId));
-            setIndex((prevIndex) => prevIndex - 1);
+            const newSequence = lastSequence(routineId);
+            setCheckedList((prev) =>
+                prev
+                    .filter((item) => item.exerciseId !== exerciseId)
+                    .map((item, index) => ({
+                        ...item,
+                        sequence: newSequence + index,
+                    }))
+            );
+            setSequence((prev) => prev - 1);
         }
     };
-
-    const checkHandler = (e, exerciseId) => {
-        const isChecked = e.target.checked;
-        checkedExerciseHandler(exerciseId, isChecked);
-    };
-
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setCheckedList([]);
-        setIndex(1);
-    };
-
-    useEffect(async () => {
-        try {
-            const response = await axios.get("/api/member/1/exercises");
-            setExercises(response.data);
-        } catch (error){
-            console.error(error);
-        }
-    }, [])
-
-    useEffect(() => {
-        axios.get("/api/exercises")
-            .then((response) => setExercises(response.data))
-            .catch((error) => console.log(error));
-    }, []);
 
     return (
-        <>{isModalOpen && (
-            <div>
-                <h3>운동</h3>
+        <div className="modal-overlay">
+            <div className="modal-content">
                 <div className="button-position">
-                    <button className="back-button rotate-right" onClick={closeModal}><IoIosArrowBack/></button>
+                    <button onClick={() => onClose(routineId)} className="back-button rotate-right"><IoIosArrowBack /></button>
                 </div>
-                {exercises.map((exercise, idx) => (
-                    <div className="row-routine" key={idx}>
-                        <input
-                            className="small-checkbox"
-                            type="checkbox"
-                            id={exercise.name}
-                            onChange={(e) => checkHandler(e, exercise.id)}
-                        />
-                        <label htmlFor={exercise.name}>{exercise.name}</label>
-                    </div>
-                ))}
-                <button onClick={() => save()}>저장</button>
+                <h3>운동 추가</h3>
+                <div className="row-column">
+                    {exercises.map((exercise) => (
+                        <div key={exercise.id}>
+                            <input
+                                className="input-routine"
+                                type="checkbox"
+                                id={`exercise-${exercise.id}`}
+                                onChange={(e) => checkHandler(exercise.id, e.target.checked)}
+                            />
+                            <label htmlFor={`exercise-${exercise.id}`}>{exercise.name}</label>
+                        </div>
+                    ))}
+                </div>
+                <button onClick={() => onSave(routineId)}>저장</button>
             </div>
-        )}
-        </>
+        </div>
     );
 };
 

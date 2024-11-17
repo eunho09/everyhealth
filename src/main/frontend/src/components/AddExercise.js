@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import Plus from "./Plus";
-import "./AddComponents.css";
+import "./Modal.css"
 import axios from "axios";
 import { TiDeleteOutline } from "react-icons/ti";
 import {IoIosArrowBack} from "react-icons/io";
