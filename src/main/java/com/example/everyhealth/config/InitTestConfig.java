@@ -3,6 +3,7 @@ package com.example.everyhealth.config;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Routine;
+import com.example.everyhealth.dto.ExerciseInfo;
 import com.example.everyhealth.service.ExerciseService;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RoutineService;
@@ -12,14 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-/*
 @Component
-*/
 @RequiredArgsConstructor
 @Slf4j
 public class InitTestConfig {
@@ -75,12 +71,12 @@ public class InitTestConfig {
         Routine routine = new Routine("일요일 가슴 루틴", member);
         routineService.save(routine);
 
-        Map<Long, Integer> exerciseInfo = new HashMap<>();
-        exerciseInfo.put(exercise.getId(), 1);
-        exerciseInfo.put(exercise2.getId(), 2);
-        exerciseInfo.put(exercise4.getId(), 3);
+        List<ExerciseInfo> exerciseInfoList = new ArrayList<>();
+        exerciseInfoList.add(new ExerciseInfo(exercise.getId(), 1));
+        exerciseInfoList.add(new ExerciseInfo(exercise2.getId(), 2));
+        exerciseInfoList.add(new ExerciseInfo(exercise4.getId(), 3));
 
-        routineService.addExercise(routine.getId(), exerciseInfo);
+        routineService.addExercise(routine.getId(), exerciseInfoList);
 
         Routine routine1 = new Routine("토요일 가슴 루틴", member);
         routineService.save(routine1);

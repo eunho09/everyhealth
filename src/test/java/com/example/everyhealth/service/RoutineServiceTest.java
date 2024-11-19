@@ -4,6 +4,7 @@ import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
+import com.example.everyhealth.dto.ExerciseInfo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,10 +98,11 @@ class RoutineServiceTest {
         Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
         Long routineId = routineService.save(routine);
 
-        Map<Long, Integer> exerciseInfo = new HashMap<>();
-        exerciseInfo.put(findExId1, 1);
-        exerciseInfo.put(findExId2, 2);
-        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfo);
+        List<ExerciseInfo> exerciseInfoList = new ArrayList<>();
+        exerciseInfoList.add(new ExerciseInfo(findExId1, 1));
+        exerciseInfoList.add(new ExerciseInfo(findExId2, 2));
+
+        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfoList);
 
         long endTime = System.currentTimeMillis();
         System.out.println("시간" + (endTime - startTime));
@@ -134,10 +136,11 @@ class RoutineServiceTest {
         Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
         Long routineId = routineService.save(routine);
 
-        Map<Long, Integer> exerciseInfo = new HashMap<>();
-        exerciseInfo.put(findExId1, 1);
-        exerciseInfo.put(findExId2, 2);
-        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfo);
+        List<ExerciseInfo> exerciseInfoList = new ArrayList<>();
+        exerciseInfoList.add(new ExerciseInfo(findExId1, 1));
+        exerciseInfoList.add(new ExerciseInfo(findExId2, 2));
+
+        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfoList);
 
         long endTime = System.currentTimeMillis();
         System.out.println("시간" + (endTime - startTime));

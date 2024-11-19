@@ -73,4 +73,5 @@ public class Exercise {
         this.member = member;
         member.getExerciseList().add(this);
     }
+
 }

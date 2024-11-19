@@ -16,4 +16,7 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
 
     @Query("select r from Routine r left join fetch r.routineExerciseList re where r.member.id =:memberId and r.id =:routineId")
     Routine findRoutineWithRoutineExercises(@Param("memberId") Long memberId, @Param("routineId") Long routineId);
+
+    @Query("select r from Routine r join fetch r.routineExerciseList re where r.id=:routineId order by re.Sequence asc")
+    Routine findByIdOrOrderBySequence(@Param("routineId") Long routineId);
 }

@@ -7,7 +7,9 @@ import com.example.everyhealth.dto.*;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RoutineExerciseService;
 import com.example.everyhealth.service.RoutineService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/api")
 public class RestRoutineController {
 
@@ -36,12 +39,12 @@ public class RestRoutineController {
 
     @PostMapping("/routineExercise")
     public ResponseEntity<String> addExercise(@RequestBody RoutineDto dto) {
-        routineService.addExercise(dto.getRoutineId(), dto.getExerciseInfo());
+        routineService.addExercise(dto.getRoutineId(), dto.getExerciseInfoList());
 
         return ResponseEntity.ok("RoutineExercise created");
     }
 
-    @GetMapping("/routine/{memberId}")
+    @GetMapping("/member/{memberId}/routines")
     public List<RoutineResponseDto> findRoutineWithExercises(@PathVariable Long memberId) {
         List<Routine> routineList = routineService.findRoutineWithExercises(memberId);
         return routineList.stream()
@@ -49,11 +52,29 @@ public class RestRoutineController {
                         routine.getId(),
                         routine.getName(),
                         routine.getRoutineExerciseList().stream()
-                                .map(re -> new REResponseDto(re.getSequence(),
-                                        re.getExercise().getRepWeight(),
+                                .map(re -> new REResponseDto(
+                                        re.getId(),
+                                        re.getSequence(),
+                                        re.getRepWeight(),
                                         re.getExercise().getName()))
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/routine/{routineId}")
+    public RoutineResponseDto findOne(@PathVariable Long routineId) {
+        log.info("findOne");
+        Routine routine = routineService.findByIdOrderBySequence(routineId);
+        return new RoutineResponseDto(
+                routine.getId(),
+                routine.getName(),
+                routine.getRoutineExerciseList().stream()
+                        .map(re -> new REResponseDto(
+                                re.getId(),
+                                re.getSequence(),
+                                re.getRepWeight(),
+                                re.getExercise().getName()))
+                        .collect(Collectors.toList()));
     }
 
     @GetMapping("/routineExercise/{routineId}")
@@ -64,20 +85,20 @@ public class RestRoutineController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/routineExercise")
+/*    @GetMapping("/routineExercise")
     public List<RoutineExerciseDto> findRoutineExerciseByMemberId(@RequestBody Long memberId) {
         return routineExerciseService.findRoutineExerciseByMemberId(memberId)
                 .stream()
                 .map(routineExercise -> new RoutineExerciseDto(routineExercise.getSequence(), routineExercise.getRoutine().getName(), routineExercise.getExercise().getRepWeight(), routineExercise.getExercise().getName()))
                 .collect(Collectors.toList());
-    }
+    }*/
 
-    @PostMapping("/routineExercise/updateSequence")
+    /*@PostMapping("/routineExercise/updateSequence")
     public ResponseEntity<String> changeSequence(Long routineId, Long memberId, Map<Long, Integer> routineExerciseInfo) {
         routineService.changeSequence(memberId, routineId, routineExerciseInfo);
 
         return ResponseEntity.ok("change routineExercise of sequence");
-    }
+    }*/
 
     @DeleteMapping("/routine/{id}")
     public ResponseEntity<String> deleteRoutine(@PathVariable Long id) {
@@ -91,5 +112,17 @@ public class RestRoutineController {
         RoutineExercise routineExercise = routineExerciseService.findById(id);
         routineExerciseService.delete(routineExercise);
         return ResponseEntity.ok("delete routineExercise");
+    }
+
+    @PutMapping("/routineExercise/updateSequence")
+    public ResponseEntity<String> updateSequence(@RequestBody List<RoutineExerciseSequence> routineExerciseSequence, Long routineId) {
+        routineExerciseService.updateSequence(routineExerciseSequence, routineId);
+        return ResponseEntity.ok("update sequence");
+    }
+
+    @PatchMapping("/routineExercise/update")
+    public ResponseEntity<String> updateRepWeight(@RequestBody List<REResponseDto> responseDtoList, Long routineId) {
+        routineExerciseService.updateRepWeight(responseDtoList, routineId);
+        return ResponseEntity.ok("update RepWeight");
     }
 }

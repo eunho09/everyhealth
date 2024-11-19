@@ -3,6 +3,9 @@ package com.example.everyhealth.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 public class RoutineExercise {
@@ -19,16 +22,17 @@ public class RoutineExercise {
     private Routine routine;
 
     private Integer Sequence;
-/*
-    @ElementCollection
-    private List<ArrayList<Integer>> repWeight = new ArrayList<>();*/
 
-    public RoutineExercise(Exercise exercise, Routine routine, Integer Sequence) {
+    @ElementCollection
+    private List<ArrayList<Integer>> repWeight = new ArrayList<>();
+
+    public RoutineExercise(Exercise exercise, Routine routine, Integer sequence, List<ArrayList<Integer>> repWeight) {
         this.exercise = exercise;
         exercise.getRoutineExerciseList().add(this);
         this.routine = routine;
         routine.getRoutineExerciseList().add(this);
-        this.Sequence = Sequence;
+        this.Sequence = sequence;
+        this.repWeight = repWeight;
     }
 
     public RoutineExercise() {
@@ -46,5 +50,9 @@ public class RoutineExercise {
 
     public void setSequence(int sequence) {
         this.Sequence = sequence;
+    }
+
+    public void setRepWeight(List<ArrayList<Integer>> repWeight) {
+        this.repWeight = repWeight;
     }
 }

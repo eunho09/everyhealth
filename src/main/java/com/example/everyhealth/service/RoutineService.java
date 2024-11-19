@@ -3,9 +3,12 @@ package com.example.everyhealth.service;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
+import com.example.everyhealth.dto.ExerciseInfo;
+import com.example.everyhealth.dto.RoutineDto;
 import com.example.everyhealth.repository.ExerciseRepository;
 import com.example.everyhealth.repository.RoutineRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +19,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class RoutineService {
 
     private final RoutineRepository routineRepository;
@@ -41,12 +45,14 @@ public class RoutineService {
     }
 
     @Transactional
-    public Routine addExercise(Long routineId, Map<Long, Integer> exerciseInfo) {
+    public Routine addExercise(Long routineId, List<ExerciseInfo> exerciseInfoList) {
         Routine routine = findById(routineId);
-        exerciseInfo.forEach((key, value) -> {
-            Exercise exercise = exerciseRepository.findById(key).get();
-            new RoutineExercise(exercise, routine, value);
-        });
+        exerciseInfoList.stream()
+                .forEach(exercise -> {
+                    Exercise findExercise = exerciseRepository.findById(exercise.getExerciseId()).get();
+                    new RoutineExercise(findExercise, routine, exercise.getSequence(), findExercise.getRepWeight());
+                    log.info("repWeight : " + findExercise.getRepWeight());
+                });
 
         routineRepository.save(routine);
         return routine;
@@ -70,4 +76,9 @@ public class RoutineService {
 
         return routineWithRoutineExercises;
     }
+
+    public Routine findByIdOrderBySequence(Long routineId) {
+        return routineRepository.findByIdOrOrderBySequence(routineId);
+    }
+
 }

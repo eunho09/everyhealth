@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import RoutineList from '../RoutineList';
 import AddRoutineExercise from '../AddRoutineExercise';
+import UpdateRoutine from "../UpdateRoutine";
 
 const RoutineManager = () => {
     const [routines, setRoutines] = useState([]);
@@ -11,13 +12,14 @@ const RoutineManager = () => {
     const [checkedList, setCheckedList] = useState([]);
     const [sequence, setSequence] = useState(1);
     const [toggleState, setToggleState] = useState({}); // 토글 상태 관리
+    const [isEditing, setIsEditing] = useState(false);
 
     // 루틴 데이터 로드
     useEffect(() => {
         // 비동기 함수 정의
         const fetchRoutineData = async () => {
             try {
-                const response = await axios.get("/api/routine/1");
+                const response = await axios.get("/api/member/1/routines");
                 setRoutines(response.data); // 상태 업데이트
                 console.log(response.data); // 응답 데이터 출력
             } catch (error) {
@@ -106,11 +108,23 @@ const RoutineManager = () => {
                 closeModal(routineId);
             })
             .catch((error) => console.error(error));
+
+        window.location.reload();
     };
 
     useEffect(() => {
         console.log(checkedList);
     },[checkedList])
+
+    const editingOpen = (routineId) => {
+        setSelectedRoutineId(routineId);
+        setIsEditing(true);
+        console.log(routineId);
+    }
+
+    const editingClose = () => {
+        setIsEditing(false);
+    }
 
     return (
         <div>
@@ -120,6 +134,7 @@ const RoutineManager = () => {
                 toggleState={toggleState}
                 onToggle={toggleExercises}
                 open={openModal}
+                edit={editingOpen}
             />
             {isModalOpen && (
                 <AddRoutineExercise
@@ -132,6 +147,12 @@ const RoutineManager = () => {
                     lastSequence={lastSequence}
                     onClose={closeModal}
                     onSave={saveExercises}
+                />
+            )}
+            {isEditing && (
+                <UpdateRoutine
+                    routineId={selectedRoutineId}
+                    close={editingClose}
                 />
             )}
         </div>

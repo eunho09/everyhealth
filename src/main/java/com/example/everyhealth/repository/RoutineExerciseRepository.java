@@ -17,4 +17,7 @@ public interface RoutineExerciseRepository extends JpaRepository<RoutineExercise
 
     @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where e.member.id =:memberId")
     List<RoutineExercise> findRoutineExerciseByMemberId(@Param("memberId") Long memberId);
+
+    @Query("select re from RoutineExercise re where re.routine.id=:routineId")
+    List<RoutineExercise> findByRoutineId(@Param("routineId") Long routineId);
 }

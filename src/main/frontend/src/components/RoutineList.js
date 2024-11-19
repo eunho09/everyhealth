@@ -1,8 +1,9 @@
 import React from 'react';
 import { FiPlusCircle } from "react-icons/fi";
+import { CgArrowsExchange } from "react-icons/cg";
 import './RoutineList.css';
 
-const RoutineList = ({ routines, toggleState, onToggle, open}) => {
+const RoutineList = ({ routines, toggleState, onToggle, open, edit}) => {
     return (
         <ul>
             {routines.map((routine) => (
@@ -14,9 +15,14 @@ const RoutineList = ({ routines, toggleState, onToggle, open}) => {
                         >
                             {routine.routineName}
                         </button>
-                        <button className="right-button" onClick={() => open(routine.routineId)}>
-                            <FiPlusCircle />
-                        </button>
+                        <div>
+                            <button className="right-button" onClick={() => open(routine.routineId)}>
+                                <FiPlusCircle />
+                            </button>
+                            <button className="right-button" onClick={() => edit(routine.routineId)}>
+                                <CgArrowsExchange />
+                            </button>
+                        </div>
                     </div>
                     {/* 토글 상태에 따라 운동 목록 표시 */}
                     {toggleState[routine.routineId] && (

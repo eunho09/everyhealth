@@ -115,6 +115,11 @@ button:hover{
 .text-button{
     font-size: 1.25rem;
 }
+
+.small-text-button{
+    font-size: 0.75rem;
+}
+
 .back-button {
     box-sizing: border-box;
     margin-top: 0px;
