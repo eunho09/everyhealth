@@ -7,3 +7,11 @@
     display: flex;
     justify-content: space-between;
 }
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* 세로 정렬 */
+    gap: 20px; /* 캘린더와 운동 일지 사이 간격 */
+    padding: 20px;
+}
+

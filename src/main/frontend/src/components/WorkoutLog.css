@@ -1,0 +1,35 @@
+.workout-log {
+    width: 500px;
+    max-width: 300px;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.workout-log h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.workout-log ul {
+    list-style: none;
+    padding: 0;
+}
+
+.workout-log li {
+    padding: 10px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.workout-log li:last-child {
+    border-bottom: none;
+}
+
+.workout-log .no-log {
+    text-align: center;
+    color: #888;
+}

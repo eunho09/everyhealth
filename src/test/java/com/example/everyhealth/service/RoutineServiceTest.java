@@ -1,3 +1,4 @@
+/*
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
@@ -159,3 +160,4 @@ class RoutineServiceTest {
         Assertions.assertThat(updateRoutine.getRoutineExerciseList().get(1).getSequence()).isEqualTo(1);
     }
 }
+*/

@@ -1,22 +1,24 @@
-/*
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Today;
 import com.example.everyhealth.domain.TodayExercise;
-import org.assertj.core.api.Assertions;
+import com.example.everyhealth.dto.TodayExerciseAsExerciseRequest;
+import com.example.everyhealth.dto.ExerciseInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 @SpringBootTest
+@Slf4j
 @Transactional
 class TodayServiceTest {
 
@@ -37,39 +39,55 @@ class TodayServiceTest {
         Member member = new Member("홍길동", "test", "test");
         Long memberId = memberService.save(member);
 
-        Member findMember = memberService.findById(memberId);
+        ArrayList<ArrayList<Integer>> set = new ArrayList();
+        set.add(new ArrayList<>(Arrays.asList(10,20)));
+        set.add(new ArrayList<>(Arrays.asList(10,25)));
+        set.add(new ArrayList<>(Arrays.asList(10,30)));
 
-        ArrayList<Integer> repetitions = new ArrayList(Arrays.asList(10,20,30));
-        ArrayList<Integer> weights = new ArrayList(Arrays.asList(10,15,20));
+        Exercise exercise = new Exercise("푸쉬업", member, "무릎꿇고", set, "가슴");
+        Long exerciseId1 = exerciseService.save(exercise);
 
-        Exercise exercise1 = new Exercise("푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
-        Exercise exercise2 = new Exercise("파이크 푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
-        Exercise exercise3 = new Exercise("인클라인 푸쉬업", findMember, "무릎꿇고", repetitions, weights, "가슴");
-        Long findExId1 = exerciseService.save(exercise1);
-        Long findExId2 = exerciseService.save(exercise2);
-        Long findExId3 = exerciseService.save(exercise3);
+        ArrayList<ArrayList<Integer>> set2 = new ArrayList<>();
+        set2.add(new ArrayList<>(Arrays.asList(10,0)));
+        set2.add(new ArrayList<>(Arrays.asList(10,0)));
+        set2.add(new ArrayList<>(Arrays.asList(10,0)));
 
-        Exercise findEx1 = exerciseService.findById(findExId1);
-        Exercise findEx2 = exerciseService.findById(findExId2);
+        Exercise exercise2 = new Exercise("디클라인 푸쉬업", member, "무릎꿇고", set2, "가슴");
+        Long exerciseId2 = exerciseService.save(exercise2);
 
-        Today today = new Today();
-        Long findTodayId = todayService.save(today);
-        Today findToday = todayService.findById(findTodayId);
+        ArrayList<ArrayList<Integer>> set3 = new ArrayList<>();
+        set3.add(new ArrayList<>(Arrays.asList(30,0)));
+        set3.add(new ArrayList<>(Arrays.asList(20,0)));
+        set3.add(new ArrayList<>(Arrays.asList(10,0)));
 
-        TodayExercise todayExercise = new TodayExercise(findEx1, findToday);
-        Long todayExerciseId = todayExerciseService.save(todayExercise);
-        TodayExercise findTodayExercise = todayExerciseService.findById(todayExerciseId);
+        Exercise exercise3 = new Exercise("인클라인 푸쉬업", member, "화이팅", set3, "가슴");
+        Long exerciseId3 = exerciseService.save(exercise3);
 
-        TodayExercise todayExercise2 = new TodayExercise(findEx2, findToday);
-        Long todayExerciseId2 = todayExerciseService.save(todayExercise2);
-        TodayExercise findTodayExercise2 = todayExerciseService.findById(todayExerciseId2);
+        ArrayList<ArrayList<Integer>> set4 = new ArrayList<>();
+        set4.add(new ArrayList<>(Arrays.asList(10,60)));
+        set4.add(new ArrayList<>(Arrays.asList(8,65)));
+        set4.add(new ArrayList<>(Arrays.asList(6,70)));
 
-        Assertions.assertThat(findTodayExercise.getExercise().getName()).isEqualTo("푸쉬업");
-        Assertions.assertThat(findTodayExercise2.getRepetitions()).containsExactly(10, 20, 30);
+        Exercise exercise4 = new Exercise("벤치프레스", member, "최대한 많이", set4, "가슴");
+        Long exerciseId4 = exerciseService.save(exercise4);
 
-        ArrayList<Integer> changeRepetitions = new ArrayList<>(Arrays.asList(50, 60, 60));
-        findTodayExercise2.setRepetitions(changeRepetitions);
-        Assertions.assertThat(findTodayExercise2.getRepetitions()).containsExactly(50, 60, 60);
-        Assertions.assertThat(findTodayExercise2.getExercise().getRepetitions()).containsExactly(10, 20, 30);
+
+        Today today = new Today(LocalDate.now());
+        Long todayId = todayService.save(today);
+
+        List<ExerciseInfo> exerciseInfoList = new ArrayList<>();
+        exerciseInfoList.add(new ExerciseInfo(exerciseId4,3));
+        exerciseInfoList.add(new ExerciseInfo(exerciseId3,3));
+        exerciseInfoList.add(new ExerciseInfo(exerciseId2,3));
+
+        TodayExerciseAsExerciseRequest dto = new TodayExerciseAsExerciseRequest(today.getId(), exerciseInfoList);
+        todayService.addTodayExerciseAsExercise(dto);
+
+        Today findToday = todayService.findById(todayId);
+
+
+        for (TodayExercise todayExercise : findToday.getTodayExercises()) {
+            log.info("todayExercise : {}", todayExercise.getExercise().getName());
+        }
     }
-}*/
+}

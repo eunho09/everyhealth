@@ -3,6 +3,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styled from 'styled-components';
 import moment from "moment";
+import WorkoutLog from "./WorkoutLog";
 
 const CalendarStyled = styled.div`
   display: flex;
@@ -129,21 +130,15 @@ const CalendarStyled = styled.div`
 
 `
 
-const MyCalendar = () => {
-    const [date, setDate] = useState(new Date());
+const WorkoutCalendar = ({date, handleDateChange, workoutDates}) => {
 
-    const handleDateChange = (newDate) => {
-        setDate(newDate);
-    };
-
-    // 예시 데이터: 운동한 날짜 목록
-    const workoutDates = ['2024-11-08', '2024-11-09'];
 
     // 날짜에 동그라미 표시를 추가하는 함수
     const tileContent = ({ date, view }) => {
         if (view === 'month') {
-            const dateString = date.toISOString().split('T')[0];
-            if (workoutDates.includes(dateString)) {
+            const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }); //한국 시간으로 포멧팅
+            const dateString = formatter.format(date); // YYYY-MM-DD 형식 반환
+            if (Array.isArray(workoutDates) && workoutDates.includes(dateString)) {
                 // return <div style={{ borderRadius: '50%', width: '10px', height: '10px', background: 'blue', margin: '0 auto' }}></div>;
                 return <div className="react-calendar__tile-content"></div>
             }
@@ -152,19 +147,22 @@ const MyCalendar = () => {
     };
 
     return (
-        <CalendarStyled>
-            <Calendar
-                onChange={handleDateChange}
-                value={date}
-                formatDay={(locale, date) => moment(date).format("D")}
-                formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
-                calendarType="gregory" // 일요일 부터 시작
-                next2Label={null} // +1년 & +10년 이동 버튼 숨기기
-                prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
-                tileContent={tileContent}
-             />
-        </CalendarStyled>
+        <>
+            <CalendarStyled>
+                <Calendar
+                    onChange={handleDateChange}
+                    locale="ko"
+                    value={date}
+                    formatDay={(locale, date) => moment(date).format("D")}
+                    formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
+                    calendarType="gregory" // 일요일 부터 시작
+                    next2Label={null} // +1년 & +10년 이동 버튼 숨기기
+                    prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
+                    tileContent={tileContent}
+                 />
+            </CalendarStyled>
+        </>
     );
 };
 
-export default MyCalendar;
+export default WorkoutCalendar;

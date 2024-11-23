@@ -4,7 +4,6 @@ import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.ExerciseInfo;
-import com.example.everyhealth.dto.RoutineDto;
 import com.example.everyhealth.repository.ExerciseRepository;
 import com.example.everyhealth.repository.RoutineRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -49,9 +47,8 @@ public class RoutineService {
         Routine routine = findById(routineId);
         exerciseInfoList.stream()
                 .forEach(exercise -> {
-                    Exercise findExercise = exerciseRepository.findById(exercise.getExerciseId()).get();
+                    Exercise findExercise = exerciseRepository.fetchById(exercise.getExerciseId());
                     new RoutineExercise(findExercise, routine, exercise.getSequence(), findExercise.getRepWeight());
-                    log.info("repWeight : " + findExercise.getRepWeight());
                 });
 
         routineRepository.save(routine);

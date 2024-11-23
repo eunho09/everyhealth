@@ -3,16 +3,19 @@ package com.example.everyhealth.config;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Routine;
+import com.example.everyhealth.domain.Today;
+import com.example.everyhealth.dto.TodayExerciseAsExerciseRequest;
 import com.example.everyhealth.dto.ExerciseInfo;
 import com.example.everyhealth.service.ExerciseService;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RoutineService;
+import com.example.everyhealth.service.TodayService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -23,6 +26,7 @@ public class InitTestConfig {
     private final MemberService memberService;
     private final ExerciseService exerciseService;
     private final RoutineService routineService;
+    private final TodayService todayService;
 
     @PostConstruct
     public void init() {
@@ -80,6 +84,26 @@ public class InitTestConfig {
 
         Routine routine1 = new Routine("토요일 가슴 루틴", member);
         routineService.save(routine1);
+
+//        Today today1 = new Today(LocalDate.now());
+//        todayService.save(today1);
+
+        Today today2 = new Today(LocalDate.of(2024, 11, 18));
+        Today today3 = new Today(LocalDate.of(2024, 11, 17));
+        Today today4 = new Today(LocalDate.of(2024, 10, 21));
+
+        todayService.save(today2);
+//        todayService.save(today3);
+//        todayService.save(today4);
+
+        List<ExerciseInfo> exerciseInfoList1 = new ArrayList<>();
+        exerciseInfoList1.add(new ExerciseInfo(exercise4.getId(), 1));
+        exerciseInfoList1.add(new ExerciseInfo(exercise2.getId(), 2));
+
+        TodayExerciseAsExerciseRequest dto = new TodayExerciseAsExerciseRequest(today2.getId(), exerciseInfoList1);
+
+        todayService.addTodayExerciseAsExercise(dto);
+
     }
 
 }

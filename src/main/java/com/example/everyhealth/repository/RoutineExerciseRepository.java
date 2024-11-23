@@ -12,12 +12,16 @@ import java.util.List;
 @Repository
 public interface RoutineExerciseRepository extends JpaRepository<RoutineExercise, Long> {
 
-    @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where re.routine.id =:routineId order by re.Sequence asc")
+    @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where re.routine.id =:routineId order by re.sequence asc")
     List<RoutineExercise> findRoutineExerciseByRoutineId(@Param("routineId") Long routineId);
 
     @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where e.member.id =:memberId")
     List<RoutineExercise> findRoutineExerciseByMemberId(@Param("memberId") Long memberId);
 
-    @Query("select re from RoutineExercise re where re.routine.id=:routineId")
+    @Query("select re from RoutineExercise re join fetch re.exercise join fetch re.repWeight where re.routine.id=:routineId order by re.sequence asc")
     List<RoutineExercise> findByRoutineId(@Param("routineId") Long routineId);
+
+    @Query("select re from RoutineExercise re join fetch re.exercise join fetch re.repWeight where re.id=:routineExerciseId order by re.sequence asc")
+    RoutineExercise fetchById(@Param("routineExerciseId") Long routineExerciseId);
+
 }

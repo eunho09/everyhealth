@@ -22,28 +22,31 @@ public class TodayExercise {
     private Exercise exercise;
 
     @ElementCollection
-    private List<Integer> repetitions = new ArrayList<>();  // 각 세트의 반복 횟수 저장
+    @CollectionTable(
+            name = "today_exercise_rep_weight",
+            joinColumns = @JoinColumn(name = "today_exercise_id") // RoutineExercise와 연결
+    )
+    private List<ArrayList<Integer>> repWeight = new ArrayList<>();
 
-    @ElementCollection
-    private List<Integer> weights = new ArrayList<>();  // 각 세트의 무게 저장
+    private Integer sequence;
 
-/*    public TodayExercise(Exercise exercise, Today today) {
+    public TodayExercise(Exercise exercise, Today today, List<ArrayList<Integer>> repWeight, Integer sequence) {
         this.exercise = exercise;
         exercise.getTodayExercises().add(this);
         this.today = today;
         today.getTodayExercises().add(this);
-        this.repetitions = exercise.getRepetitions();
-        this.weights = exercise.getWeights();
-    }*/
+        this.repWeight = new ArrayList<>(repWeight);
+        this.sequence = sequence;
+    }
 
     public TodayExercise() {
     }
 
-    public void setRepetitions(List<Integer> repetitions) {
-        this.repetitions = repetitions;
+    public void setRepWeight(List<ArrayList<Integer>> repWeight) {
+        this.repWeight = repWeight;
     }
 
-    public void setWeights(List<Integer> weights) {
-        this.weights = weights;
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 }

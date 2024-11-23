@@ -21,9 +21,13 @@ public class RoutineExercise {
     @JoinColumn(name = "routine_id")
     private Routine routine;
 
-    private Integer Sequence;
+    private Integer sequence;
 
     @ElementCollection
+    @CollectionTable(
+            name = "routine_exercise_rep_weight",
+            joinColumns = @JoinColumn(name = "routine_exercise_id") // RoutineExercise와 연결
+    )
     private List<ArrayList<Integer>> repWeight = new ArrayList<>();
 
     public RoutineExercise(Exercise exercise, Routine routine, Integer sequence, List<ArrayList<Integer>> repWeight) {
@@ -31,8 +35,8 @@ public class RoutineExercise {
         exercise.getRoutineExerciseList().add(this);
         this.routine = routine;
         routine.getRoutineExerciseList().add(this);
-        this.Sequence = sequence;
-        this.repWeight = repWeight;
+        this.sequence = sequence;
+        this.repWeight = new ArrayList<>(repWeight);
     }
 
     public RoutineExercise() {
@@ -49,7 +53,7 @@ public class RoutineExercise {
     }
 
     public void setSequence(int sequence) {
-        this.Sequence = sequence;
+        this.sequence = sequence;
     }
 
     public void setRepWeight(List<ArrayList<Integer>> repWeight) {

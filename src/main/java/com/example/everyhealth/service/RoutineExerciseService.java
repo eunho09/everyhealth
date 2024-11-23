@@ -1,9 +1,7 @@
 package com.example.everyhealth.service;
 
-import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.REResponseDto;
-import com.example.everyhealth.dto.RoutineExerciseDto;
 import com.example.everyhealth.dto.RoutineExerciseSequence;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
 import com.example.everyhealth.repository.RoutineRepository;

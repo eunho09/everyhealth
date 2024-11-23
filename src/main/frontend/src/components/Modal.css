@@ -149,3 +149,34 @@ button:hover{
     margin-top: 10px;
     width: 100%;
 }
+
+.tab-navigation {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+.tab-navigation button {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #555;
+    text-align: center;
+    border-bottom: 2px solid transparent; /* 기본 투명 */
+    transition: all 0.3s ease;
+}
+
+.tab-navigation button:hover {
+    color: #000;
+    border-bottom: 2px solid #aaa; /* 호버 시 하단 라인 표시 */
+}
+
+.tab-navigation .active-tab {
+    color: #000;
+    border-bottom: 2px solid #007bff; /* 활성화된 탭 하단 라인 강조 */
+}

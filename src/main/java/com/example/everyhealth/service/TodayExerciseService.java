@@ -29,4 +29,13 @@ public class TodayExerciseService {
     public List<TodayExercise> findAll() {
         return todayExerciseRepository.findAll();
     }
+
+    @Transactional
+    public void delete(TodayExercise todayExercise){
+        todayExerciseRepository.delete(todayExercise);
+    }
+
+    public List<TodayExercise> findByTodayId(Long todayId) {
+        return todayExerciseRepository.findByTodayId(todayId);
+    }
 }
