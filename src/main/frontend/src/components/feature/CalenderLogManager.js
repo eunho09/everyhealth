@@ -3,12 +3,15 @@ import WorkoutCalendar from "../WorkoutCalendar";
 import WorkoutLog from "../WorkoutLog";
 import axios from "axios";
 import moment from "moment";
+import UpdateToday from "../UpdateToday";
 
 const CalenderLogManager = () => {
 
     const [date, setDate] = useState(new Date());
     const [monthData, setMonthData] = useState([]);
     const [todayData, setTodayData] = useState();
+    const [isEditing, setIsEditing] = useState(false);
+    const [selectTodayId, setSelectTodayId] = useState();
 
 
     useEffect(() => {
@@ -39,6 +42,7 @@ const CalenderLogManager = () => {
                     const response = await axios.get(`/api/today/date/${dateFormat}`);
                     console.log(response.data);
                     setTodayData(response.data)
+                    setSelectTodayId(response.data.id);
                 } catch (e) {
                     console.error(e);
                 }
@@ -69,13 +73,19 @@ const CalenderLogManager = () => {
         return monthData.includes(dateFormat);
     }
 
+    const handleIsEditing = (boolean) => {
+        setIsEditing(boolean);
+    }
 
 
 
     return (
         <div className="container">
             <WorkoutCalendar date={date} handleDateChange={handleDateChange} workoutDates={monthData}/>
-            <WorkoutLog date={date} todayData={todayData} handleSaveToday={handleSaveToday} fetchMonthData={fetchMonthData}/>
+            <WorkoutLog date={date} todayData={todayData} handleSaveToday={handleSaveToday} fetchMonthData={fetchMonthData} handleIsEditing={handleIsEditing}/>
+            {isEditing && (
+                <UpdateToday todayId={selectTodayId} handleIsEditing={handleIsEditing}/>
+            )}
         </div>
     );
 };

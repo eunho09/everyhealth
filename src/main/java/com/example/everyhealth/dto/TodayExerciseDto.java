@@ -9,11 +9,13 @@ import java.util.List;
 @Data
 public class TodayExerciseDto {
 
+    private Long id;
     private String exerciseName;
     private List<ArrayList<Integer>> repWeight;
     private Integer sequence;
 
-    public TodayExerciseDto(String exerciseName, List<ArrayList<Integer>> repWeight, Integer sequence) {
+    public TodayExerciseDto(Long id, String exerciseName, List<ArrayList<Integer>> repWeight, Integer sequence) {
+        this.id = id;
         this.exerciseName = exerciseName;
         this.repWeight = repWeight;
         this.sequence = sequence;

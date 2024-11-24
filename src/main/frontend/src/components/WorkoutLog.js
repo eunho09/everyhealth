@@ -5,7 +5,7 @@ import {IoIosArrowBack} from "react-icons/io";
 import axios from "axios";
 import {CgArrowsExchange} from "react-icons/cg";
 
-const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData}) => {
+const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIsEditing}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [activeTab, setActiveTab] = useState("exercises"); // "exercises" 또는 "routines"
@@ -92,7 +92,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData}) => {
             }}>
                 <TiPlus />
             </button>
-            <button>
+            <button onClick={() => handleIsEditing(true)}>
                 <CgArrowsExchange />
             </button>
             {todayData ? (
@@ -187,6 +187,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData}) => {
                         }}>저장</button>
                     </div>
                 </div>
+
             )}
         </div>
     );

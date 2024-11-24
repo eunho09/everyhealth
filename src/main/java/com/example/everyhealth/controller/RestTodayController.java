@@ -51,6 +51,7 @@ public class RestTodayController {
 
         List<TodayExerciseDto> todayExerciseDtoList = todayExerciseList.stream()
                 .map(todayExercise -> new TodayExerciseDto(
+                        todayExercise.getId(),
                         todayExercise.getExercise().getName(),
                         todayExercise.getRepWeight(),
                         todayExercise.getSequence()
@@ -58,6 +59,7 @@ public class RestTodayController {
                 .collect(Collectors.toList());
 
         TodayDto dto = new TodayDto(
+                today.getId(),
                 todayExerciseDtoList,
                 today.getLocalDate(),
                 today.getCheckBox()
@@ -76,5 +78,25 @@ public class RestTodayController {
     public ResponseEntity<TodayDto> fetchByLocalDate(@PathVariable LocalDate date) {
         TodayDto todayDto = todayService.fetchByLocalDate(date);
         return ResponseEntity.ok(todayDto);
+    }
+
+    @PatchMapping("/update/todayExercise/{todayId}")
+    public ResponseEntity<String> updateTodayExercise(@RequestBody List<UpdateTodayExerciseDto> dto, @PathVariable Long todayId) {
+        todayService.updateTodayExercise(dto, todayId);
+        return ResponseEntity.ok("update TodayExercise");
+    }
+
+    @DeleteMapping("/delete/todayExercise/{id}")
+    public ResponseEntity<String> deleteTodayExercise(@PathVariable Long id) {
+        TodayExercise todayExercise = todayExerciseService.findById(id);
+        todayExerciseService.delete(todayExercise);
+        return ResponseEntity.ok("delete todayExercise");
+    }
+
+    @PatchMapping("/todayExercise/updateSequence/{todayId}")
+    public ResponseEntity<String> updateSequence(@RequestBody List<UpdateSeqTodayExercise> todayExerciseList, @PathVariable Long todayId) {
+        todayService.updateSequence(todayExerciseList, todayId);
+
+        return ResponseEntity.ok("update sequence todayExercise");
     }
 }

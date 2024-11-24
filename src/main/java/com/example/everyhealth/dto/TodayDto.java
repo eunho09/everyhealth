@@ -15,7 +15,8 @@ public class TodayDto {
     private LocalDate localDate;
     private CheckBox checkBox;
 
-    public TodayDto(List<TodayExerciseDto> todayExercises, LocalDate localDate, CheckBox checkBox) {
+    public TodayDto(Long id, List<TodayExerciseDto> todayExercises, LocalDate localDate, CheckBox checkBox) {
+        this.id = id;
         this.todayExercises = todayExercises;
         this.localDate = localDate;
         this.checkBox = checkBox;

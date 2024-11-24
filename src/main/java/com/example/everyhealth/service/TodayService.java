@@ -10,6 +10,7 @@ import com.example.everyhealth.repository.RoutineExerciseRepository;
 import com.example.everyhealth.repository.TodayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpRange;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,11 +96,43 @@ public class TodayService {
         Today today = todayRepository.fetchByLocalDate(date);
         List<TodayExercise> todayExercises = today.getTodayExercises();
         List<TodayExerciseDto> todayExerciseDtoList = todayExercises.stream()
-                .map(todayExercise -> new TodayExerciseDto(todayExercise.getExercise().getName(),
+                .map(todayExercise -> new TodayExerciseDto(
+                        todayExercise.getId(),
+                        todayExercise.getExercise().getName(),
                         todayExercise.getRepWeight(),
                         todayExercise.getSequence()))
                 .collect(Collectors.toList());
 
-        return new TodayDto(todayExerciseDtoList, today.getLocalDate(), today.getCheckBox());
+        return new TodayDto(today.getId(), todayExerciseDtoList, today.getLocalDate(), today.getCheckBox());
+    }
+
+    @Transactional
+    public void updateTodayExercise(List<UpdateTodayExerciseDto> dto, Long todayId) {
+        Today today = todayRepository.fetchById(todayId);
+
+        List<TodayExercise> todayExerciseList = today.getTodayExercises();
+
+        for (UpdateTodayExerciseDto updateTodayExerciseDto : dto) {
+            for (TodayExercise todayExercise : todayExerciseList) {
+                if (updateTodayExerciseDto.getId().equals(todayExercise.getId())) {
+                    todayExercise.setRepWeight(updateTodayExerciseDto.getRepWeight());
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void updateSequence(List<UpdateSeqTodayExercise> updateSeqTodayExerciseList, Long todayId) {
+        Today today = todayRepository.fetchById(todayId);
+
+        List<TodayExercise> todayExercises = today.getTodayExercises();
+
+        for (UpdateSeqTodayExercise request : updateSeqTodayExerciseList) {
+            for (TodayExercise todayExercise : todayExercises) {
+                if (request.getId().equals(todayExercise.getId())) {
+                    todayExercise.setSequence(request.getSequence());
+                }
+            }
+        }
     }
 }
