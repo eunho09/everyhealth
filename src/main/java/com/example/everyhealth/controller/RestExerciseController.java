@@ -26,7 +26,7 @@ public class RestExerciseController {
 
     @GetMapping("/exercise/{id}")
     public ExerciseDto findById(@PathVariable Long id) {
-        Exercise findExercise = exerciseService.findById(id);
+        Exercise findExercise = exerciseService.fetchById(id);
         return new ExerciseDto(findExercise);
     }
 
@@ -73,10 +73,5 @@ public class RestExerciseController {
     public ResponseEntity<String> delete(@PathVariable Long id) {
         exerciseService.delete(id);
         return ResponseEntity.ok("delete exercise");
-    }
-
-    @Data
-    public static class Info{
-        private Long id;
     }
 }

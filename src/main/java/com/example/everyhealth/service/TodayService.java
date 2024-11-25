@@ -7,6 +7,7 @@ import com.example.everyhealth.domain.TodayExercise;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.repository.ExerciseRepository;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
+import com.example.everyhealth.repository.TodayExerciseRepository;
 import com.example.everyhealth.repository.TodayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class TodayService {
 
     private final TodayRepository todayRepository;
+    private final TodayExerciseRepository todayExerciseRepository;
     private final RoutineExerciseRepository routineExerciseRepository;
     private final ExerciseRepository exerciseRepository;
 
@@ -94,13 +96,15 @@ public class TodayService {
 
     public TodayDto fetchByLocalDate(LocalDate date) {
         Today today = todayRepository.fetchByLocalDate(date);
-        List<TodayExercise> todayExercises = today.getTodayExercises();
-        List<TodayExerciseDto> todayExerciseDtoList = todayExercises.stream()
+        List<TodayExercise> todayExerciseList = todayExerciseRepository.findByTodayId(today.getId());
+
+        List<TodayExerciseDto> todayExerciseDtoList = todayExerciseList.stream()
                 .map(todayExercise -> new TodayExerciseDto(
                         todayExercise.getId(),
                         todayExercise.getExercise().getName(),
                         todayExercise.getRepWeight(),
-                        todayExercise.getSequence()))
+                        todayExercise.getSequence()
+                ))
                 .collect(Collectors.toList());
 
         return new TodayDto(today.getId(), todayExerciseDtoList, today.getLocalDate(), today.getCheckBox());

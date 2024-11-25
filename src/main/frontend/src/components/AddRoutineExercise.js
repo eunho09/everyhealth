@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { IoIosArrowBack } from "react-icons/io";
 import "./Modal.css";
 
-const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList, onClose, onSave, sequence, setSequence, lastSequence }) => {
+const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList, onClose, onSave, sequence, setSequence, lastSequence, fetchExercises }) => {
     const checkHandler = async (exerciseId, isChecked) => {
         if (isChecked) {
             setCheckedList((prev) => [
@@ -23,6 +23,10 @@ const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList,
             setSequence((prev) => prev - 1);
         }
     };
+
+    useEffect(() => {
+        fetchExercises();
+    }, [])
 
     return (
         <div className="modal-overlay">

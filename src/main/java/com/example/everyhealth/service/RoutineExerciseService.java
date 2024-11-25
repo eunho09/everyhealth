@@ -19,7 +19,6 @@ import java.util.List;
 public class RoutineExerciseService {
 
     private final RoutineExerciseRepository routineExerciseRepository;
-    private final RoutineRepository routineRepository;
 
     @Transactional
     public Long save(RoutineExercise routineExercise) {
@@ -62,21 +61,6 @@ public class RoutineExerciseService {
         return "수정완료";
     }
 
-/*    @Transactional
-    public void updateRepWeight(List<REResponseDto> responseDtoList, Long routineId) {
-        Routine routine = routineRepository.findById(routineId).get();
-        List<RoutineExercise> findRoutineExercise = routineExerciseRepository.findByRoutineId(routineId);
-        for (RoutineExercise routineExercise : findRoutineExercise) {
-            for (REResponseDto response : responseDtoList) {
-                if (routineExercise.getId().equals(response.getRoutineExerciseId())) {
-                    routineExercise.setRepWeight(response.getRepWeight());
-                }
-            }
-        }
-
-        routineRepository.save(routine);
-    }*/
-
     @Transactional
     public void updateRepWeight(List<REResponseDto> responseDtoList, Long routineId) {
         List<RoutineExercise> findRoutineExercise = routineExerciseRepository.findByRoutineId(routineId);
@@ -90,5 +74,8 @@ public class RoutineExerciseService {
         }
     }
 
+    public List<RoutineExercise> findAllByRoutineIdWithExerciseAndRepWeight(Long routineId) {
+        return routineExerciseRepository.findAllByRoutineIdWithExerciseAndRepWeight(routineId);
+    }
 }
 

@@ -14,8 +14,10 @@ public interface TodayExerciseRepository extends JpaRepository<TodayExercise, Lo
 
     @Query("select te " +
             "from TodayExercise te " +
-            "join te.exercise e " +
+            "join fetch te.exercise e " +
+            "join fetch te.repWeight " +
             "where te.today.id=:todayId " +
             "order by te.sequence asc ")
     List<TodayExercise> findByTodayId(@Param("todayId") Long todayId);
+
 }

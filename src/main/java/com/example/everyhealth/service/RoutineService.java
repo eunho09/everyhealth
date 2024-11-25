@@ -59,23 +59,4 @@ public class RoutineService {
         return routineRepository.findRoutineWithExercises(memberId);
     }
 
-    @Transactional
-    public Routine changeSequence(Long memberId, Long routineId, Map<Long, Integer> routineExerciseInfo) {
-        Routine routineWithRoutineExercises = routineRepository.findRoutineWithRoutineExercises(memberId, routineId);
-        List<RoutineExercise> routineExerciseList = routineWithRoutineExercises.getRoutineExerciseList();
-
-        routineExerciseList.forEach(rx -> {
-            if (routineExerciseInfo.containsKey(rx.getId())){
-                Integer newSequence = routineExerciseInfo.get(rx.getId());
-                rx.setSequence(newSequence);
-            }
-        });
-
-        return routineWithRoutineExercises;
-    }
-
-    public Routine findByIdOrderBySequence(Long routineId) {
-        return routineRepository.findByIdOrOrderBySequence(routineId);
-    }
-
 }

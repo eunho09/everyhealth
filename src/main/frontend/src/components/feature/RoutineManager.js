@@ -31,19 +31,15 @@ const RoutineManager = () => {
         fetchRoutineData();
     }, []);
 
-    // 운동 데이터 로드
-    useEffect(() => {
+        // 추가할 운동 데이터 로드
         const fetchExercises = async () => {
             try {
-                const response = await axios.get("/api/exercises");
+                const response = await axios.get("/api/member/1/exercises");
                 setExercises(response.data);
             } catch (error) {
                 console.error("운동 데이터 로드 중 오류 발생:", error);
             }
         };
-
-        fetchExercises();
-    }, []);
 
 
     const openModal = (routineId) => {
@@ -147,6 +143,7 @@ const RoutineManager = () => {
                     lastSequence={lastSequence}
                     onClose={closeModal}
                     onSave={saveExercises}
+                    fetchExercises={fetchExercises}
                 />
             )}
             {isEditing && (

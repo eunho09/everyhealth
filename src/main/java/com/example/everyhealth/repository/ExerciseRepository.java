@@ -13,7 +13,7 @@ import java.util.Set;
 @Repository
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
-    @Query("select e from Exercise e where e.member.id =:memberId")
+    @Query("select e from Exercise e join fetch e.repWeight where e.member.id =:memberId")
     List<Exercise> findExercisesByMemberId(@Param("memberId") Long memberId);
 
     @Query("select e from Exercise e join fetch e.repWeight where e.id=:exerciseId")

@@ -5,7 +5,6 @@ import { TiDeleteOutline } from "react-icons/ti";
 import axios from "axios";
 
 const UpdateRoutine = ({ routineId, close }) => {
-    const [routine, setRoutine] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
     const [routineExerciseList, setRoutineExerciseList] = useState([]);
     const [repWeight, setRepWeight] = useState([[]]);
@@ -112,10 +111,9 @@ const UpdateRoutine = ({ routineId, close }) => {
         const fetchRoutine = async () => {
             try {
                 const response = await axios.get(`/api/routine/${routineId}`);
-                setRoutine(response.data); // 루틴 데이터 설정
-                setRoutineExerciseList(response.data.routineExerciseDtoList);
+                setRoutineExerciseList(response.data);
                 setRepWeight(
-                    response.data.routineExerciseDtoList.map((exercise) => exercise.repWeight)
+                    response.data.map((exercise) => exercise.repWeight)
                 );
                 console.log("검색 결과:", response.data);
             } catch (error) {
@@ -132,7 +130,7 @@ const UpdateRoutine = ({ routineId, close }) => {
         return <div>로딩 중...</div>; // 로딩 메시지 표시
     }
 
-    if (!routine || !routine.routineExerciseDtoList) {
+    if (!routineExerciseList) {
         return <div>루틴 데이터를 찾을 수 없습니다.</div>; // 데이터 없음 처리
     }
 

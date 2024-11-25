@@ -46,7 +46,6 @@ public class ExerciseService {
         }
     }
 
-    //만약 다른 연관관계가 걸려있다면 에러를 발생해야하는데 어떤 에러인줄 모르겠어
     public void delete(Long id) {
         Exercise exercise = findById(id);
         exerciseRepository.delete(exercise);
@@ -54,5 +53,9 @@ public class ExerciseService {
 
     public List<Exercise> findExercisesByMemberId(Long id) {
         return exerciseRepository.findExercisesByMemberId(id);
+    }
+
+    public Exercise fetchById(Long id) {
+        return exerciseRepository.fetchById(id);
     }
 }

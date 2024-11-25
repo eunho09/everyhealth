@@ -27,7 +27,7 @@ const ExerciseList = () => {
     };
 
     useEffect(() => {
-        axios.get('/api/exercises')
+        axios.get('/api/member/1/exercises')
             .then((response) => {
                 setExercises(response.data);
                 console.log(exercises);
