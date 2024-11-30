@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { FiPlusCircle } from "react-icons/fi";
-import "./Plus.css";
+import "../styles/Plus.css";
 
 
 

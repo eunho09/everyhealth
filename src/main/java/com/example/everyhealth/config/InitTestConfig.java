@@ -1,9 +1,6 @@
 package com.example.everyhealth.config;
 
-import com.example.everyhealth.domain.Exercise;
-import com.example.everyhealth.domain.Member;
-import com.example.everyhealth.domain.Routine;
-import com.example.everyhealth.domain.Today;
+import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.TodayExerciseAsExerciseRequest;
 import com.example.everyhealth.dto.ExerciseInfo;
 import com.example.everyhealth.service.ExerciseService;
@@ -18,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.*;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Slf4j
 public class InitTestConfig {
@@ -45,7 +42,7 @@ public class InitTestConfig {
         set1.add(new ArrayList<>(Arrays.asList(10,0)));
         set1.add(new ArrayList<>(Arrays.asList(10,0)));
 
-        Exercise exercise = new Exercise("푸쉬업", member, "무릎꿇고", set1, "가슴");
+        Exercise exercise = new Exercise("푸쉬업", member, "무릎꿇고", set1, Classification.CHEST);
         exerciseService.save(exercise);
 
         ArrayList<ArrayList<Integer>> set2 = new ArrayList<>();
@@ -53,7 +50,7 @@ public class InitTestConfig {
         set2.add(new ArrayList<>(Arrays.asList(10,0)));
         set2.add(new ArrayList<>(Arrays.asList(10,0)));
 
-        Exercise exercise2 = new Exercise("디클라인 푸쉬업", member, "무릎꿇고", set2, "가슴");
+        Exercise exercise2 = new Exercise("디클라인 푸쉬업", member, "무릎꿇고", set2, Classification.CHEST);
         exerciseService.save(exercise2);
 
         ArrayList<ArrayList<Integer>> set3 = new ArrayList<>();
@@ -61,7 +58,7 @@ public class InitTestConfig {
         set3.add(new ArrayList<>(Arrays.asList(20,0)));
         set3.add(new ArrayList<>(Arrays.asList(10,0)));
 
-        Exercise exercise3 = new Exercise("인클라인 푸쉬업", member, "화이팅", set3, "가슴");
+        Exercise exercise3 = new Exercise("인클라인 푸쉬업", member, "화이팅", set3, Classification.CHEST);
         exerciseService.save(exercise3);
 
         ArrayList<ArrayList<Integer>> set4 = new ArrayList<>();
@@ -69,7 +66,7 @@ public class InitTestConfig {
         set4.add(new ArrayList<>(Arrays.asList(8,65)));
         set4.add(new ArrayList<>(Arrays.asList(6,70)));
 
-        Exercise exercise4 = new Exercise("벤치프레스", member, "최대한 많이", set4, "가슴");
+        Exercise exercise4 = new Exercise("벤치프레스", member, "최대한 많이", set4, Classification.CHEST);
         exerciseService.save(exercise4);
 
         Routine routine = new Routine("일요일 가슴 루틴", member);

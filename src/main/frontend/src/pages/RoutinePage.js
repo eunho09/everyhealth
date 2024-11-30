@@ -1,9 +1,9 @@
 import React from 'react';
-import "./Page.css";
+import "../styles/Page.css";
 import AddRoutine from "../components/AddRoutine";
 import RoutineManager from "../components/feature/RoutineManager";
 
-const Routine = () => {
+const RoutinePage = () => {
     return (
         <>
             <div className="page">
@@ -17,4 +17,4 @@ const Routine = () => {
     );
 };
 
-export default Routine;
+export default RoutinePage;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import Plus from "./Plus";
 import { IoIosArrowBack } from "react-icons/io";
-import "./Modal.css";
+import "../styles/Modal.css";
 
 const AddRoutine = () => {
 

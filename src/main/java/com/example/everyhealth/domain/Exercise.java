@@ -30,12 +30,13 @@ public class Exercise {
     @OneToMany(mappedBy = "exercise")
     private List<TodayExercise> todayExercises = new ArrayList<>();
 
-    private String classification; //분류
+    @Enumerated(EnumType.STRING)
+    private Classification classification; //분류
 
     @OneToMany(mappedBy = "exercise")
     private List<RoutineExercise> routineExerciseList = new ArrayList<>();
 
-    public Exercise(String name, Member member, String memo, List<ArrayList<Integer>> repWeight, String classification) {
+    public Exercise(String name, Member member, String memo, List<ArrayList<Integer>> repWeight, Classification classification) {
         this.name = name;
         setMember(member);
         this.memo = memo;
@@ -65,7 +66,7 @@ public class Exercise {
         this.repWeight = repWeight;
     }
 
-    public void setClassification(String classification) {
+    public void setClassification(Classification classification) {
         this.classification = classification;
     }
 

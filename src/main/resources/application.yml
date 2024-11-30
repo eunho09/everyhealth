@@ -11,7 +11,16 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB # 파일당 최대 크기
+      max-request-size: 10MB # 요청당 최대 크기
+
+
+file:
+  dir: "C:/image/"

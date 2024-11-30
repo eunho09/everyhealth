@@ -1,5 +1,6 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.Classification;
 import com.example.everyhealth.domain.Exercise;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,7 @@ public class ExerciseDto {
     private String name;
     private String memo;
     private List<ArrayList<Integer>> repWeight;
-    private String classification;
+    private Classification classification;
 
     public ExerciseDto(Exercise exercise) {
         this.id = exercise.getId();

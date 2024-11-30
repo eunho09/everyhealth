@@ -3,7 +3,7 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
-import com.example.everyhealth.domain.Routine;
+import com.example.everyhealth.domain.RoutinePage;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.ExerciseInfo;
 import org.assertj.core.api.Assertions;
@@ -58,9 +58,9 @@ class RoutineServiceTest {
         Exercise findEx2 = exerciseService.findById(findExId2);
         Exercise findEx3 = exerciseService.findById(findExId3);
 
-        Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
+        RoutinePage routine = new RoutinePage("일요일 가슴운동 루틴", findMember);
         Long routineId = routineService.save(routine);
-        Routine findRoutine = routineService.findById(routineId);
+        RoutinePage findRoutine = routineService.findById(routineId);
 
         RoutineExercise routineExercise1 = new RoutineExercise(findEx1, findRoutine,1);
         RoutineExercise routineExercise2 = new RoutineExercise(findEx2, findRoutine,2);
@@ -96,14 +96,14 @@ class RoutineServiceTest {
         Long findExId2 = exerciseService.save(exercise2);
         Long findExId3 = exerciseService.save(exercise3);
 
-        Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
+        RoutinePage routine = new RoutinePage("일요일 가슴운동 루틴", findMember);
         Long routineId = routineService.save(routine);
 
         List<ExerciseInfo> exerciseInfoList = new ArrayList<>();
         exerciseInfoList.add(new ExerciseInfo(findExId1, 1));
         exerciseInfoList.add(new ExerciseInfo(findExId2, 2));
 
-        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfoList);
+        RoutinePage saveRoutine = routineService.addExercise(routineId, exerciseInfoList);
 
         long endTime = System.currentTimeMillis();
         System.out.println("시간" + (endTime - startTime));
@@ -134,14 +134,14 @@ class RoutineServiceTest {
         Long findExId2 = exerciseService.save(exercise2);
         Long findExId3 = exerciseService.save(exercise3);
 
-        Routine routine = new Routine("일요일 가슴운동 루틴", findMember);
+        RoutinePage routine = new RoutinePage("일요일 가슴운동 루틴", findMember);
         Long routineId = routineService.save(routine);
 
         List<ExerciseInfo> exerciseInfoList = new ArrayList<>();
         exerciseInfoList.add(new ExerciseInfo(findExId1, 1));
         exerciseInfoList.add(new ExerciseInfo(findExId2, 2));
 
-        Routine saveRoutine = routineService.addExercise(routineId, exerciseInfoList);
+        RoutinePage saveRoutine = routineService.addExercise(routineId, exerciseInfoList);
 
         long endTime = System.currentTimeMillis();
         System.out.println("시간" + (endTime - startTime));
@@ -150,7 +150,7 @@ class RoutineServiceTest {
         routineExerciseInfo.put(1L, 2);
         routineExerciseInfo.put(2L, 1);
 
-        Routine updateRoutine = routineService.changeSequence(findMember.getId(), saveRoutine.getId(), routineExerciseInfo);
+        RoutinePage updateRoutine = routineService.changeSequence(findMember.getId(), saveRoutine.getId(), routineExerciseInfo);
         routineService.save(updateRoutine);
 
 

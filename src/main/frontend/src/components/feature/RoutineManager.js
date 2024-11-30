@@ -3,6 +3,8 @@ import axios from 'axios';
 import RoutineList from '../RoutineList';
 import AddRoutineExercise from '../AddRoutineExercise';
 import UpdateRoutine from "../UpdateRoutine";
+import {addRoutineExercise, findRoutineById, findRoutineByMemberId} from "../../api/routineApi";
+import {findExerciseByMemberId} from "../../api/exerciseApi";
 
 const RoutineManager = () => {
     const [routines, setRoutines] = useState([]);
@@ -19,11 +21,11 @@ const RoutineManager = () => {
         // 비동기 함수 정의
         const fetchRoutineData = async () => {
             try {
-                const response = await axios.get("/api/member/1/routines");
-                setRoutines(response.data); // 상태 업데이트
-                console.log(response.data); // 응답 데이터 출력
+                const data = await findRoutineByMemberId();
+                setRoutines(data);
+                console.log(data);
             } catch (error) {
-                console.error(error); // 에러 처리
+                console.error(error);
             }
         };
 
@@ -34,8 +36,8 @@ const RoutineManager = () => {
         // 추가할 운동 데이터 로드
         const fetchExercises = async () => {
             try {
-                const response = await axios.get("/api/member/1/exercises");
-                setExercises(response.data);
+                const data = await findExerciseByMemberId();
+                setExercises(data);
             } catch (error) {
                 console.error("운동 데이터 로드 중 오류 발생:", error);
             }
@@ -88,22 +90,22 @@ const RoutineManager = () => {
     };
 
 
-    const saveExercises = (routineId) => {
+    const saveExercises = async (routineId) => {
         console.log("routine Id" + routineId);
         checkedList.map((id, value) => {
             console.log("id : " + id, " / value : " + value);
         })
 
-        axios.post(`/api/routineExercise`, {
-            routineId: routineId,
-            exerciseInfoList: checkedList,
-        })
-            .then(() => axios.get("/api/routine/1"))
-            .then((response) => {
-                setRoutines(response.data);
-                closeModal(routineId);
-            })
-            .catch((error) => console.error(error));
+        try {
+            await addRoutineExercise(routineId, checkedList);
+
+            const data = await findRoutineById();
+            setRoutines(data);
+
+            closeModal(routineId);
+        } catch (error) {
+            console.error(error);
+        }
 
         window.location.reload();
     };
@@ -124,7 +126,7 @@ const RoutineManager = () => {
 
     return (
         <div>
-            <h2>운동 목록</h2>
+            <h2>루틴 목록</h2>
             <RoutineList
                 routines={routines}
                 toggleState={toggleState}

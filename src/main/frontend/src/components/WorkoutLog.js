@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import './WorkoutLog.css';
+import '../styles/WorkoutLog.css';
 import { TiPlus } from "react-icons/ti";
 import {IoIosArrowBack} from "react-icons/io";
 import axios from "axios";
 import {CgArrowsExchange} from "react-icons/cg";
+import {addTodayExercise} from "../api/todayApi";
+import {findExerciseByMemberId} from "../api/exerciseApi";
+import {findRoutineByMemberId} from "../api/routineApi";
+import AddTodayExercise from "./AddTodayExercise";
 
 const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIsEditing}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
-    const [activeTab, setActiveTab] = useState("exercises"); // "exercises" 또는 "routines"
     const [routines, setRoutines] = useState([]);
-
     const [checkList, setCheckList] = useState([]);
 
     const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }); // 한국 시간으로 포멧팅
@@ -20,9 +22,9 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
 
     const fetchExercises = async () => {
         try {
-            const response = await axios.get("/api/member/1/exercises");
-            console.log(response.data)
-            setExercises(response.data);
+            const data = await findExerciseByMemberId();
+            console.log(data)
+            setExercises(data);
         } catch (error) {
             console.error(error);
         }
@@ -30,9 +32,9 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
 
     const fetchRoutines = async () => {
         try {
-            const response = await axios.get("/api/member/1/routines");
-            console.log(response.data)
-            setRoutines(response.data);
+            const data = await findRoutineByMemberId();
+            console.log(data)
+            setRoutines(data);
         } catch (error) {
             console.error(error);
         }
@@ -45,10 +47,6 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
     useEffect(() => {
         console.log(isModalOpen);
     }, [isModalOpen]);
-
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-    };
 
     const checkHandler = (value, isChecked, field) => {
 
@@ -69,8 +67,8 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
 
     const handleSaveTodayExercise = async (formattedDate) => {
         try {
-            const response = await axios.post(`/api/today/addTodayExercise/${formattedDate}`, checkList);
-            console.log(response.data);
+            const data = addTodayExercise(formattedDate, checkList);
+            console.log(data);
         } catch (error){
             console.error(error);
         }
@@ -116,78 +114,17 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
                 <p className="no-log">운동 기록이 없습니다.</p>
             )}
             {isModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="button-position">
-                            <button
-                                className="back-button rotate-right"
-                                onClick={() => handleModel(false)}
-                            >
-                                <IoIosArrowBack />
-                            </button>
-                        </div>
-                        <h2>추가</h2>
-
-                        {/* Tab Navigation */}
-                        <div className="tab-navigation">
-                            <button
-                                className={activeTab === "exercises" ? "active-tab" : ""}
-                                onClick={() => handleTabChange("exercises")}
-                            >
-                                운동
-                            </button>
-                            <button
-                                className={activeTab === "routines" ? "active-tab" : ""}
-                                onClick={() => handleTabChange("routines")}
-                            >
-                                루틴
-                            </button>
-                        </div>
-
-                        {/* Tab Content */}
-                        <div className="tab-content">
-                            {activeTab === "exercises" && (
-                                <div className="row-column">
-                                    {exercises.map((exercise) => (
-                                        <div key={exercise.id}>
-                                            <input
-                                                className="input-routine"
-                                                type="checkbox"
-                                                id={`exercise-${exercise.id}`}
-                                                checked={checkList.some((item) => item.type === "exercise" && item.id === exercise.id)}
-                                                onChange={(e) => checkHandler(exercise.id, e.target.checked, "exercise")}
-                                            />
-                                            <label htmlFor={`exercise-${exercise.id}`}>{exercise.name}</label>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {activeTab === "routines" && Array.isArray(routines) && (
-                                <div className="row-column">
-                                    {routines.map((routine) => (
-                                        <div key={routine.routineId}>
-                                            <input
-                                                className="input-routine"
-                                                type="checkbox"
-                                                id={`routine-${routine.routineId}`}
-                                                checked={checkList.some((item) => item.type === "routine" && item.id === routine.routineId)}
-                                                onChange={(e) => checkHandler(routine.routineId, e.target.checked,"routine")}
-                                            />
-                                            <label htmlFor={`routine-${routine.routineId}`}>{routine.routineName}</label>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <button onClick={() => {
-                            handleSaveTodayExercise(formattedDate);
-                            fetchMonthData(month)
-                        }}>저장</button>
-                    </div>
-                </div>
-
+                <AddTodayExercise
+                    handleModel={handleModel}
+                    exercises={exercises}
+                    checkList={checkList}
+                    checkHandler={checkHandler}
+                    routines={routines}
+                    handleSaveTodayExercise={handleSaveTodayExercise}
+                    formattedDate={formattedDate}
+                    month={month}
+                    fetchMonthData={fetchMonthData}
+                />
             )}
         </div>
     );

@@ -6,6 +6,7 @@ import com.example.everyhealth.dto.*;
 import com.example.everyhealth.service.TodayExerciseService;
 import com.example.everyhealth.service.TodayService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +23,11 @@ public class RestTodayController {
     private final TodayExerciseService todayExerciseService;
 
     @PostMapping("/today")
-    public ResponseEntity<String> save(@RequestBody TodaySaveDto dto) {
+    public ResponseEntity<Void> save(@RequestBody TodaySaveDto dto) {
         Today today = new Today(dto.getLocalDate());
         todayService.save(today);
 
-        return ResponseEntity.ok("save today");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/today/addTodayExercise/exercise")

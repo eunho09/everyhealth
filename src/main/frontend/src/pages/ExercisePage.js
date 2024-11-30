@@ -1,7 +1,7 @@
 // ExercisePage.js
 import React from 'react';
 import ExerciseList from '../components/ExerciseList';
-import './Page.css'
+import '../styles/Page.css'
 import AddExercise from "../components/AddExercise";
 
 const ExercisePage = () => {

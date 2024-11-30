@@ -62,7 +62,6 @@ public class RestExerciseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(exercise.getId());
     }
 
-    //실험 필요
     @PatchMapping("/exercise/{id}")
     public String update(@PathVariable Long id, @RequestBody ExerciseDto dto) {
         exerciseService.update(id, dto);

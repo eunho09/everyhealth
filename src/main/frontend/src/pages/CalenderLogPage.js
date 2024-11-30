@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import './Page.css';
+import '../styles/Page.css';
 import CalenderLogManager from "../components/feature/CalenderLogManager";
 
-const CalenderLog = () => {
+const CalenderLogPage = () => {
 
 
     return (
@@ -13,4 +13,4 @@ const CalenderLog = () => {
 };
 
 
-export default CalenderLog;
+export default CalenderLogPage;

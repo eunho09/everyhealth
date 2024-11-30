@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { IoIosArrowBack } from "react-icons/io";
-import "./Modal.css";
+import "../styles/Modal.css";
 
 const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList, onClose, onSave, sequence, setSequence, lastSequence, fetchExercises }) => {
     const checkHandler = async (exerciseId, isChecked) => {

@@ -92,27 +92,27 @@ public class RestRoutineController {
     }
 
     @DeleteMapping("/routine/{id}")
-    public ResponseEntity<String> deleteRoutine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteRoutine(@PathVariable Long id) {
         Routine routine = routineService.findById(id);
         routineService.delete(routine);
-        return ResponseEntity.ok("delete routine");
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/routineExercise/{id}")
-    public ResponseEntity<String> deleteRoutineExercise(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteRoutineExercise(@PathVariable Long id) {
         RoutineExercise routineExercise = routineExerciseService.findById(id);
         routineExerciseService.delete(routineExercise);
-        return ResponseEntity.ok("delete routineExercise");
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/routineExercise/updateSequence")
-    public ResponseEntity<String> updateSequence(@RequestBody List<RoutineExerciseSequence> routineExerciseSequence, Long routineId) {
+    @PutMapping("/routineExercise/updateSequence/{routineId}")
+    public ResponseEntity<String> updateSequence(@PathVariable Long routineId, @RequestBody List<RoutineExerciseSequence> routineExerciseSequence) {
         routineExerciseService.updateSequence(routineExerciseSequence, routineId);
         return ResponseEntity.ok("update sequence");
     }
 
-    @PatchMapping("/routineExercise/update")
-    public ResponseEntity<String> updateRepWeight(@RequestBody List<REResponseDto> responseDtoList, Long routineId) {
+    @PatchMapping("/routineExercise/update/{routineId}")
+    public ResponseEntity<String> updateRepWeight(@PathVariable Long routineId, @RequestBody List<REResponseDto> responseDtoList) {
         routineExerciseService.updateRepWeight(responseDtoList, routineId);
         return ResponseEntity.ok("update RepWeight");
     }

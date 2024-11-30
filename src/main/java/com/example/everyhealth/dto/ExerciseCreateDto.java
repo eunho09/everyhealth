@@ -1,5 +1,6 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.Classification;
 import com.example.everyhealth.domain.Member;
 import lombok.Data;
 
@@ -12,5 +13,5 @@ public class ExerciseCreateDto {
     private Long memberId; // 수정 필요
     private String memo;
     private List<ArrayList<Integer>> repWeight;
-    private String classification;
+    private Classification classification;
 }

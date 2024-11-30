@@ -1,7 +1,7 @@
 import React from 'react';
 import { FiPlusCircle } from "react-icons/fi";
 import { CgArrowsExchange } from "react-icons/cg";
-import './RoutineList.css';
+import '../styles/RoutineList.css';
 
 const RoutineList = ({ routines, toggleState, onToggle, open, edit}) => {
     return (
@@ -32,8 +32,16 @@ const RoutineList = ({ routines, toggleState, onToggle, open, edit}) => {
                                     <strong>{exercise.exerciseName}</strong>
                                     <ul className="set-list">
                                         {exercise.repWeight.map((set, setIndex) => (
-                                            <li key={setIndex}>
-                                                {setIndex + 1}세트: {set[0]}회 {set[1] !== 0 && `${set[1]}kg`}
+                                            <li key={setIndex} className="set-item">
+                                                <div>
+                                                {setIndex + 1}세트
+                                                </div>
+                                                <div>
+                                                {set[0]}회
+                                                </div>
+                                                <div>
+                                                {set[1] !== 0 && `${set[1]}kg`}
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>

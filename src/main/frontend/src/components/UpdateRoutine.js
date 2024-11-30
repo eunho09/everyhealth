@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import axios from "axios";
+import {deleteRoutineExercise, findRoutineById, updateRoutineExercise, updateSequence} from "../api/routineApi";
 
 const UpdateRoutine = ({ routineId, close }) => {
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
@@ -39,8 +40,8 @@ const UpdateRoutine = ({ routineId, close }) => {
 
     const handleDeleteRoutineExercise = async (routineExerciseId) => {
         try {
-            const response = await axios.delete(`/api/routineExercise/${routineExerciseId}`);
-            console.log(response.data);
+            const data = await deleteRoutineExercise(routineExerciseId);
+            console.log(data);
         } catch (error) {
             console.error(error);
         }
@@ -71,7 +72,8 @@ const UpdateRoutine = ({ routineId, close }) => {
                 routineExerciseId: exercise.routineExerciseId,
                 sequence: index + 1,
             }));
-            await axios.put("/api/routineExercise/updateSequence?routineId=1", updatedOrder);
+            console.log("routineId : " + routineId);
+            await updateSequence(routineId, updatedOrder);
             console.log("updatedOrder : " + updatedOrder);
             console.log("순서 업데이트 성공");
         } catch (error) {
@@ -99,23 +101,23 @@ const UpdateRoutine = ({ routineId, close }) => {
             console.log("저장할 데이터:", payload);
 
             // 서버로 POST 요청
-            const response = await axios.patch(`/api/routineExercise/update?routineId=1`, payload);
+            const data = await updateRoutineExercise(routineId, payload);
 
-            console.log("저장 성공:", response.data);
+            console.log("저장 성공:", data);
         } catch (error) {
-            console.error("저장 실패:", error.response?.data || error.message);
+            console.error(error);
         }
     };
 
     useEffect(() => {
         const fetchRoutine = async () => {
             try {
-                const response = await axios.get(`/api/routine/${routineId}`);
-                setRoutineExerciseList(response.data);
+                const data = await findRoutineById(routineId);
+                setRoutineExerciseList(data);
                 setRepWeight(
-                    response.data.map((exercise) => exercise.repWeight)
+                    data.map((exercise) => exercise.repWeight)
                 );
-                console.log("검색 결과:", response.data);
+                console.log("검색 결과:", data);
             } catch (error) {
                 console.error("루틴 로드 중 오류 발생:", error);
             } finally {

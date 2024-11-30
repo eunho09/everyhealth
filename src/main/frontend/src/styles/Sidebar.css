@@ -9,6 +9,7 @@
     color: white;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0; /* 사이드바는 줄어들지 않음 */
 }
 
 .sidebar h2 {

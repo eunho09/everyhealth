@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class Comments {
+public class Comment {
 
     @Id @GeneratedValue
     private Long id;
@@ -15,4 +15,17 @@ public class Comments {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public Comment(String text, Post post) {
+        this.text = text;
+        this.post = post;
+    }
+
+    protected Comment() {
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+        post.getCommentList().add(this);
+    }
 }

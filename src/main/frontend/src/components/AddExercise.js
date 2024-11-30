@@ -1,15 +1,18 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import Plus from "./Plus";
-import "./Modal.css"
+import "../styles/Modal.css"
 import axios from "axios";
 import { TiDeleteOutline } from "react-icons/ti";
 import {IoIosArrowBack} from "react-icons/io";
+import {getClassification, saveExercise} from "../api/exerciseApi";
 
 const AddExercise = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exerciseName, setExerciseName] = useState('');
     const [note, setNote] = useState('');
     const [sets, setSets] = useState([{reps:'', weight:''}]);
+    const [selectBox, setSelectBox] = useState({});
+    const [selectClassification, setSelectClassification] = useState();
 
 
     const openModal = () => setIsModalOpen(true);
@@ -27,17 +30,10 @@ const AddExercise = () => {
         const repWeight = sets.map(set => [set.reps, set.weight])
 
         try {
-            const response = await axios.post("/api/exercise", {
-                name: exerciseName,
-                memberId: 1,
-                memo: note,
-                repWeight: repWeight,
-                classification: "가슴운동",
-            });
-            console.log(response.data);
+            const data = await saveExercise(exerciseName, note, repWeight, selectClassification);
+            console.log(data);
         } catch (error){
             console.error(error);
-            alert("error");
         }
     }
 
@@ -55,6 +51,20 @@ const AddExercise = () => {
     const removeSet = (index) => {
         const updatedSets = sets.filter((_, i) => i !== index);
         setSets(updatedSets);
+    }
+
+    useEffect(() => {
+        const fetchSelectBox = async () => {
+            const data = await getClassification();
+            console.log(data);
+            setSelectBox(data);
+        }
+
+        fetchSelectBox();
+    }, [])
+
+    const handleSelect = (e) => {
+        setSelectClassification(e.target.value);
     }
 
     return (
@@ -81,6 +91,13 @@ const AddExercise = () => {
                             rows="3"
                             onChange={(e) => setNote(e.target.value)}
                         />
+                        <select onChange={handleSelect} value={selectClassification}>
+                            {Object.entries(selectBox).map(([key, value]) => (
+                                <option key={key} value={value}>
+                                    {key}
+                                </option>
+                            ))}
+                        </select>
                         <h3>세트</h3>
                         {sets.map((set, index) => (
                             <div className="row" key={index}>
@@ -104,7 +121,7 @@ const AddExercise = () => {
                                     }
                                 />
                                 <button className="small-button" onClick={() => removeSet(index)}>
-                                    <TiDeleteOutline />
+                                    <TiDeleteOutline/>
                                 </button>
                             </div>
                         ))}
@@ -114,6 +131,6 @@ const AddExercise = () => {
                 </div>
             )}
         </>
-    )
+    );
 }
 export default AddExercise;

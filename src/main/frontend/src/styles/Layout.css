@@ -1,0 +1,88 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* 상단 바 */
+.header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 20px;
+}
+
+/* 메인 영역 */
+.main {
+    display: flex;
+    flex: 1;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* 사이드바 */
+.sidebar {
+    width: 250px;
+    background-color: #f4f4f4;
+    height: 100vh;
+    padding: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+}
+
+/* 하단 바 */
+.footer {
+    display: none;
+}
+
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #007bff;
+    padding: 10px 0;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none; /* 사이드바 숨기기 */
+    }
+
+    .header {
+        display: block; /* 상단 바 표시 */
+    }
+
+    .footer {
+        display: block; /* 하단 바 표시 */
+    }
+}

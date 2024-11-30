@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import axios from "axios";
+import {deleteTodayExercise, findOneTodayById, updateSequence, updateTodayExercise} from "../api/todayApi";
 
 const UpdateToday = ({ todayId, handleIsEditing }) => {
     const [today, setToday] = useState(null);
@@ -40,8 +41,8 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
 
     const handleDeleteRoutineExercise = async (todayExerciseId) => {
         try {
-            const response = await axios.delete(`/api/todayExercise/${todayExerciseId}`);
-            console.log(response.data);
+            const data = await deleteTodayExercise(todayExerciseId);
+            console.log(data);
         } catch (error) {
             console.error(error);
         }
@@ -72,11 +73,10 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
                 id: exercise.id,
                 sequence: index + 1,
             }));
-            await axios.patch(`/api/todayExercise/updateSequence/${todayId}`, updatedOrder);
-            console.log("updatedOrder : " + updatedOrder);
-            console.log("순서 업데이트 성공");
+            const data = await updateSequence(todayId, updatedOrder);
+            console.log(data);
         } catch (error) {
-            console.error("순서 업데이트 실패:", error);
+            console.error(error);
         }
     };
 
@@ -100,24 +100,24 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
             console.log("저장할 데이터:", payload);
 
             // 서버로 POST 요청
-            const response = await axios.patch(`/api/update/todayExercise/${todayId}`, payload);
+            const data = await updateTodayExercise(todayId, payload);
 
-            console.log("저장 성공:", response.data);
+            console.log("저장 성공:", data);
         } catch (error) {
-            console.error("저장 실패:", error.response?.data || error.message);
+            console.error(error);
         }
     };
 
     useEffect(() => {
         const fetchToday = async () => {
             try {
-                const response = await axios.get(`/api/today/${todayId}`);
-                setToday(response.data);
-                setTodayExerciseList(response.data.todayExercises);
+                const data = await findOneTodayById(todayId);
+                setToday(data);
+                setTodayExerciseList(data.todayExercises);
                 setRepWeight(
-                    response.data.todayExercises.map((exercise) => exercise.repWeight)
+                    data.todayExercises.map((exercise) => exercise.repWeight)
                 );
-                console.log("검색 결과:", response.data);
+                console.log("검색 결과:", data);
             } catch (error) {
                 console.error("루틴 로드 중 오류 발생:", error);
             } finally {

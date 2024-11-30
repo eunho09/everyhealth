@@ -17,8 +17,18 @@ public class Post {
     private Long id;
 
     private String text;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "post")
-    private List<Comments> commentsList = new ArrayList<>();
+    private List<Comment> commentList = new ArrayList<>();
 
+
+    public Post(String text, String imageUrl) {
+        this.text = text;
+        this.imageUrl = imageUrl;
+    }
+
+    protected Post() {
+
+    }
 }

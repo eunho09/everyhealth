@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import "./Modal.css";
+import "../styles/Modal.css";
 import { TiDeleteOutline } from "react-icons/ti";
 import { IoIosArrowBack } from "react-icons/io";
+import {findExerciseByMemberId, getClassification, updateExercise} from "../api/exerciseApi";
 
 
 const ExerciseList = () => {
     const [exercises, setExercises] = useState([]);
     const [selectedExercise, setSelectedExercise] = useState(null);
     const [isModalOpen, setModelOpen] = useState(false);
+    const [selectBox, setSelectBox] = useState({});
+    const [selectClassification, setSelectClassification] = useState();
 
     const openModal = (exercise) => {
         setSelectedExercise(exercise);
@@ -27,14 +30,18 @@ const ExerciseList = () => {
     };
 
     useEffect(() => {
-        axios.get('/api/member/1/exercises')
-            .then((response) => {
-                setExercises(response.data);
-                console.log(exercises);
-            })
-            .catch((error) => {
+        const fetchExercise = async () => {
+            try {
+                const data = await findExerciseByMemberId();
+                console.log(data);
+                setExercises(data);
+                setSelectClassification(data.classification);
+            } catch (error){
                 console.error(error);
-            });
+            }
+        }
+
+        fetchExercise();
     }, []);
 
     const handleExerciseChange = (field, value) => {
@@ -55,12 +62,9 @@ const ExerciseList = () => {
 
     const handleUpdateExercise = async (id) => {
         try {
-            const response = await axios.patch(`/api/exercise/${id}`, {
-                repWeight: selectedExercise.repWeight
-            })
-
+            const data = await updateExercise(id, selectedExercise);
             window.location.reload();
-            console.log(response)
+            console.log(data)
         } catch (error) {
             console.error(error);
         }
@@ -79,6 +83,20 @@ const ExerciseList = () => {
             repWeight: prev.repWeight.filter((_, i) => i !== index)
         }));
     };
+
+    useEffect(() => {
+        const fetchSelectBox = async () => {
+            const data = await getClassification();
+            console.log(data);
+            setSelectBox(data);
+        }
+
+        fetchSelectBox();
+    }, [])
+
+    const handleSelect = (e) => {
+        setSelectClassification(e.target.value);
+    }
 
     return (
         <div className="exercise-list">
@@ -113,6 +131,13 @@ const ExerciseList = () => {
                                 rows="3"
                                 onChange={(e) => handleExerciseChange('memo', e.target.value)}
                             />
+                            <select onChange={(e) => handleExerciseChange("classification", e.target.value)} value={selectedExercise.classification || ''}>
+                                {Object.entries(selectBox).map(([key, value]) => (
+                                    <option key={key} value={value}>
+                                        {key}
+                                    </option>
+                                ))}
+                            </select>
                             <h3>세트</h3>
                             {selectedExercise.repWeight && selectedExercise.repWeight.map((set, index) => (
                                 <div className="row" key={index}>

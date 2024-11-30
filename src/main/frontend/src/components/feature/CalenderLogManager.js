@@ -4,6 +4,7 @@ import WorkoutLog from "../WorkoutLog";
 import axios from "axios";
 import moment from "moment";
 import UpdateToday from "../UpdateToday";
+import {getTodayByMonth, getTodayDate, saveToday} from "../../api/todayApi";
 
 const CalenderLogManager = () => {
 
@@ -23,9 +24,8 @@ const CalenderLogManager = () => {
 
     const fetchMonthData = async (month) => {
         try {
-            const response = await axios.get(`/api/today/month/${month}`);
-            console.log(response.data);
-            const getLocalDate = response.data.map(value => value.localDate);
+            const data = await getTodayByMonth(month);
+            const getLocalDate = data.map(value => value.localDate);
 
             setMonthData(getLocalDate);
         } catch (e) {
@@ -33,16 +33,16 @@ const CalenderLogManager = () => {
         }
     }
 
+
     useEffect(() => {
         const dateFormat = moment(date).format("YYYY-MM-DD");
 
         if (hasToday(dateFormat)){
             const fetchDateData = async () => {
                 try {
-                    const response = await axios.get(`/api/today/date/${dateFormat}`);
-                    console.log(response.data);
-                    setTodayData(response.data)
-                    setSelectTodayId(response.data.id);
+                    const data = await getTodayDate(dateFormat);
+                    setTodayData(data)
+                    setSelectTodayId(data.id);
                 } catch (e) {
                     console.error(e);
                 }
@@ -61,9 +61,7 @@ const CalenderLogManager = () => {
 
     const handleSaveToday = async (dateFormat) => {
         if (!hasToday(dateFormat)){
-            await axios.post("/api/today", {
-                localDate: dateFormat
-            }).then(response => console.log(response.data));
+            await saveToday(dateFormat);
         }
         const month = date.getMonth() + 1;
         fetchMonthData(month);
@@ -80,7 +78,7 @@ const CalenderLogManager = () => {
 
 
     return (
-        <div className="container">
+        <div className="flex">
             <WorkoutCalendar date={date} handleDateChange={handleDateChange} workoutDates={monthData}/>
             <WorkoutLog date={date} todayData={todayData} handleSaveToday={handleSaveToday} fetchMonthData={fetchMonthData} handleIsEditing={handleIsEditing}/>
             {isEditing && (

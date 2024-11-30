@@ -1,0 +1,58 @@
+package com.example.everyhealth.controller;
+
+import com.example.everyhealth.domain.Post;
+import com.example.everyhealth.domain.UploadFile;
+import com.example.everyhealth.dto.PostDto;
+import com.example.everyhealth.dto.UploadPostDto;
+import com.example.everyhealth.service.FileStore;
+import com.example.everyhealth.service.PostService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api")
+@Slf4j
+public class RestPostController {
+
+    private final PostService postService;
+    private final FileStore fileStore;
+
+    @PostMapping("/post")
+    public ResponseEntity<Void> save(@RequestPart MultipartFile file, @RequestPart String text ) throws IOException {
+        UploadFile uploadFile = fileStore.storeFile(file);
+        String storeFileName = uploadFile.getStoreFileName();
+        Post post = new Post(text, storeFileName);
+
+        postService.save(post);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> findAll() {
+        List<Post> postList = postService.findAll();
+
+        List<PostDto> postDtoList = postList.stream()
+                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(postDtoList);
+    }
+
+    @GetMapping("/images/{fileName}")
+    public Resource downloadImage(@PathVariable String fileName) throws MalformedURLException {
+        return new UrlResource("file:" + fileStore.getFullName(fileName));
+    }
+
+}
