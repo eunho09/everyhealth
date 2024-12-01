@@ -1,10 +1,8 @@
 package com.example.everyhealth.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +14,14 @@ public class Member {
     @Id @GeneratedValue
     private Long id;
 
+    @Setter
     private String name;
     private String loginId;
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private MemberRole role;
+    private String providerId;
 
     @OneToMany(mappedBy = "member")
     private List<Routine> routineList = new ArrayList<>();
@@ -29,16 +32,14 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Friend> friendList = new ArrayList<>();
 
-    public Member(String name, String loginId, String password) {
+    public Member(String name, String loginId, MemberRole role, String providerId) {
         this.name = name;
         this.loginId = loginId;
-        this.password = password;
+        this.role = role;
+        this.providerId = providerId;
     }
 
     protected Member() {
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 }

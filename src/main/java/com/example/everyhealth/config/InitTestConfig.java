@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.*;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class InitTestConfig {
@@ -34,7 +34,7 @@ public class InitTestConfig {
     public void initData() {
         log.info("기본 테스트 데이터 실행");
 
-        Member member = new Member("홍길동", "test", "test");
+        Member member = new Member("홍길동", "test", MemberRole.USER, "test");
         Long memberId = memberService.save(member);
 
         ArrayList<ArrayList<Integer>> set1 = new ArrayList<>();
