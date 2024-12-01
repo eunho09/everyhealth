@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 export const findOneTodayById = async (todayId) => {
+    axios.defaults.withCredentials = true;
     const response = await axios.get(`/api/today/${todayId}`);
     return response.data;
 }
 
 export const getTodayByMonth = async (month) => {
+    axios.defaults.withCredentials = true;
     const response = await axios.get(`/api/today/month/${month}`);
     return response.data;
 }
