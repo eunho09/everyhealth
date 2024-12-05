@@ -30,6 +30,7 @@ public class RestCommentController {
         Comment comment = new Comment(dto.getText(), post);
         commentService.save(comment);
 
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

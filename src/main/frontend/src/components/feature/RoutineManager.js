@@ -104,6 +104,7 @@ const RoutineManager = () => {
 
             closeModal(routineId);
         } catch (error) {
+            setRoutines([]); // 실패 시 빈 배열로 초기화
             console.error(error);
         }
 

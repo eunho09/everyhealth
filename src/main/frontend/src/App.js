@@ -8,6 +8,7 @@ import RoutinePage from "./pages/RoutinePage";
 import ExercisePage from "./pages/ExercisePage";
 import PostPage from "./pages/PostPage";
 import PostUpload from "./components/PostUpload";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
 
@@ -21,7 +22,8 @@ function App() {
         {path: '/exercise', element: <ExercisePage/>},
         {path: '/routine', element: <RoutinePage/>},
         {path: '/post', element: <PostPage/>},
-        {path: '/post/upload', element: <PostUpload/>}
+        {path: '/post/upload', element: <PostUpload/>},
+        {path: '/login', element: <LoginPage/>}
       ]
     }
   ]);
