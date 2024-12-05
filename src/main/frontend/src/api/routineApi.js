@@ -1,17 +1,18 @@
 import axios from "axios";
+import api from "./api";
 
 export const findRoutineById = async (routineId) => {
-    const response = await axios.get(`/api/routine/${routineId}`);
+    const response = await api.get(`/api/routine/${routineId}`);
     return response.data;
 }
 
 export const findRoutineByMemberId = async () => {
-    const response = await axios.get("/api/member/1/routines");
+    const response = await api.get("/api/member/1/routines");
     return response.data;
 }
 
 export const addRoutineExercise = async (routineId, exerciseInfoList) => {
-    const response = await axios.post(`/api/routineExercise`, {
+    const response = await api.post(`/api/routineExercise`, {
         routineId: routineId,
         exerciseInfoList: exerciseInfoList,
     });
@@ -20,16 +21,16 @@ export const addRoutineExercise = async (routineId, exerciseInfoList) => {
 };
 
 export const deleteRoutineExercise = async (routineExerciseId) => {
-    const response = await axios.delete(`/api/routineExercise/${routineExerciseId}`);
+    const response = await api.delete(`/api/routineExercise/${routineExerciseId}`);
     return response.data;
 }
 
 export const updateSequence = async (routineId, updateList) => {
-    const response = await axios.put(`/api/routineExercise/updateSequence/${routineId}`, updateList);
+    const response = await api.put(`/api/routineExercise/updateSequence/${routineId}`, updateList);
     return response.data;
 }
 
 export const updateRoutineExercise = async (routineId, updateList) => {
-    const response = await axios.patch(`/api/routineExercise/update/${routineId}`, updateList);
+    const response = await api.patch(`/api/routineExercise/update/${routineId}`, updateList);
     return response.data;
 }

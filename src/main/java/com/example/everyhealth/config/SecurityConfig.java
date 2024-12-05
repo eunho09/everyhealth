@@ -1,6 +1,7 @@
 package com.example.everyhealth.config;
 
-import com.example.everyhealth.security.OAuth2SuccessHandler;
+import com.example.everyhealth.security.*;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,23 +25,30 @@ import java.util.List;
 public class SecurityConfig {
 
     private final OAuth2SuccessHandler successHandler;
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-                        .requestMatchers("/**", "/login/**", "/api/**").permitAll())
+                        .requestMatchers("/login/**", "/", "/oauth2/**", "/unauthorized").permitAll()
+                        .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-//                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                .oauth2Login((auth) -> auth
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login(auth -> auth
                         .successHandler(successHandler)
                 )
-
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required");
+                        })
+                )
                 .logout((auth) -> auth
-                        .logoutUrl("/oauth-login/logout"));
+                        .logoutUrl("/oauth-login/logout"))
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenGenerator, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
 
         ;
 
@@ -49,7 +58,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용할 출처
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://accounts.google.com","127.0.0.1:3000")); // 허용할 출처
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(List.of("*")); // 허용할 헤더
         configuration.setAllowCredentials(true); // 자격 증명 전송 허용

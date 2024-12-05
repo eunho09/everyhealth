@@ -1,8 +1,10 @@
 package com.example.everyhealth.security;
 
+import com.example.everyhealth.domain.Member;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -13,21 +15,23 @@ import java.io.IOException;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private final JwtTokenGenerator jwtTokenGenerator;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, IOException {
-        //authentication에 OAuth 토큰 발급 후 전달 받은 사용자 정보가 들어있다.
-        //토큰 발급 요청 부터 사용자 정보 요청까지 Spring Security가 내부적으로 진행한다.
 
         //사용자 정보 추출
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+        CustomOAuth2UserDetails customOAuth2UserDetails = (CustomOAuth2UserDetails) authentication.getPrincipal();
 
-        String targetUrl = "http://localhost:3000"; //redirect 시킬 react 경로
-        String redirectUrl = UriComponentsBuilder.fromUriString(targetUrl)
-                .build().toUriString();
+        Member member = customOAuth2UserDetails.getMember();
 
-        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+        String jwt = jwtTokenGenerator.generateToken(member);
+
+        response.addHeader("Authorization", "Bearer " + jwt);
+        response.sendRedirect("http://localhost:3000");
     }
 }

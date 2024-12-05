@@ -14,7 +14,6 @@ const Sidebar = () => {
                 <li><Link to="/exercise">운동</Link></li>
                 <li><Link to="/routine">루틴</Link></li>
             </ul>
-            <a href="http://localhost:8080/oauth2/authorization/google">로그인</a>
         </div>
     )
 }
