@@ -15,7 +15,7 @@ api.interceptors.response.use(
         // 백엔드 응답의 상태 코드가 401일 때 처리
         if (error.response && error.response.status === 401) {
             console.log('Unauthorized error detected. Redirecting to login.');
-            window.location.href = '/login'; // 로그인 페이지로 리다이렉트
+            window.location.href = '/login';
 
             return;
         }
