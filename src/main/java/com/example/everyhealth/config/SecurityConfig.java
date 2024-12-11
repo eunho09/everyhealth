@@ -27,6 +27,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler successHandler;
     private final JwtTokenGenerator jwtTokenGenerator;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,9 +37,12 @@ public class SecurityConfig {
                         .requestMatchers("/login/**", "/", "/oauth2/**", "/unauthorized").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(auth -> auth
+                        .userInfoEndpoint((userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService)))
                         .successHandler(successHandler)
                 )
                 .exceptionHandling(exceptions -> exceptions
