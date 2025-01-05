@@ -17,6 +17,10 @@ public class Today {
     @OneToMany(mappedBy = "today", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TodayExercise> todayExercises = new ArrayList<>(); //운동기록 n개
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     private LocalDate localDate;
 
     @Enumerated(EnumType.STRING)
@@ -24,9 +28,11 @@ public class Today {
 
     private int recodeTime;
 
-    public Today(LocalDate localDate) {
+    public Today(LocalDate localDate, Member member) {
         this.localDate = localDate;
         this.checkBox = CheckBox.False;
+        this.member = member;
+        member.getTodayList().add(this);
     }
 
     public Today() {

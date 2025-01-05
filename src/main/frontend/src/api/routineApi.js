@@ -7,7 +7,7 @@ export const findRoutineById = async (routineId) => {
 }
 
 export const findRoutineByMemberId = async () => {
-    const response = await api.get("/api/member/1/routines");
+    const response = await api.get("/api/member/routines");
     return response.data;
 }
 

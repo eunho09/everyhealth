@@ -68,6 +68,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
     const handleSaveTodayExercise = async (formattedDate) => {
         try {
             const data = addTodayExercise(formattedDate, checkList);
+
             console.log(data);
         } catch (error){
             console.error(error);
@@ -118,8 +119,10 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
                     handleModel={handleModel}
                     exercises={exercises}
                     checkList={checkList}
+                    setCheckList={setCheckList}
                     checkHandler={checkHandler}
                     routines={routines}
+                    handleSaveToday={handleSaveToday}
                     handleSaveTodayExercise={handleSaveTodayExercise}
                     formattedDate={formattedDate}
                     month={month}

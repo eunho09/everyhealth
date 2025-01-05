@@ -1,13 +1,21 @@
 import React, {useState} from 'react';
+import "../styles/AddTodayExercise.css"
 import {IoIosArrowBack} from "react-icons/io";
 
-const AddTodayExercise = ({handleModel, exercises, checkList, checkHandler, routines, handleSaveTodayExercise, formattedDate, month, fetchMonthData}) => {
+const AddTodayExercise = ({handleModel, exercises, checkList, setCheckList, checkHandler, routines, handleSaveTodayExercise, formattedDate, month, fetchMonthData}) => {
 
     const [activeTab, setActiveTab] = useState("exercises"); // "exercises" 또는 "routines"
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
+
+    const save = () => {
+        handleSaveTodayExercise(formattedDate);
+        fetchMonthData(month)
+        handleModel(false);
+        setCheckList([]);
+    }
 
     return (
         <div className="modal-overlay">
@@ -44,6 +52,7 @@ const AddTodayExercise = ({handleModel, exercises, checkList, checkHandler, rout
                         <div className="row-column">
                             {exercises.map((exercise) => (
                                 <div key={exercise.id}>
+                                    <label htmlFor={`exercise-${exercise.id}`}>{exercise.name}</label>
                                     <input
                                         className="input-routine"
                                         type="checkbox"
@@ -51,7 +60,6 @@ const AddTodayExercise = ({handleModel, exercises, checkList, checkHandler, rout
                                         checked={checkList.some((item) => item.type === "exercise" && item.id === exercise.id)}
                                         onChange={(e) => checkHandler(exercise.id, e.target.checked, "exercise")}
                                     />
-                                    <label htmlFor={`exercise-${exercise.id}`}>{exercise.name}</label>
                                 </div>
                             ))}
                         </div>
@@ -61,6 +69,7 @@ const AddTodayExercise = ({handleModel, exercises, checkList, checkHandler, rout
                         <div className="row-column">
                             {routines.map((routine) => (
                                 <div key={routine.routineId}>
+                                    <label htmlFor={`routine-${routine.routineId}`}>{routine.routineName}</label>
                                     <input
                                         className="input-routine"
                                         type="checkbox"
@@ -68,17 +77,13 @@ const AddTodayExercise = ({handleModel, exercises, checkList, checkHandler, rout
                                         checked={checkList.some((item) => item.type === "routine" && item.id === routine.routineId)}
                                         onChange={(e) => checkHandler(routine.routineId, e.target.checked, "routine")}
                                     />
-                                    <label htmlFor={`routine-${routine.routineId}`}>{routine.routineName}</label>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
 
-                <button onClick={() => {
-                    handleSaveTodayExercise(formattedDate);
-                    fetchMonthData(month)
-                }}>저장
+                <button onClick={() => save()}>저장
                 </button>
             </div>
         </div>

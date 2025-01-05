@@ -1,0 +1,255 @@
+/* ProfilePage.css */
+.profile-container {
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+/* 프로필 헤더 */
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 44px;
+    gap: 30px;
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #0095f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    font-weight: 500;
+}
+
+.profile-infos {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.profile-name {
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 40px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.stat-label {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+/* 탭 메뉴 */
+.profile-tabs {
+    display: flex;
+    border-top: 1px solid #dbdbdb;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    background: none;
+    border: none;
+    border-top: 1px solid transparent;
+    color: #8e8e8e;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-button svg {
+    font-size: 16px;
+}
+
+.tab-button.active {
+    color: #262626;
+    border-top-color: #262626;
+}
+
+/* 포스트 그리드 */
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+.post-item {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.post-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.post-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.post-item:hover img {
+    transform: scale(1.05);
+}
+
+.post-item:hover .post-overlay {
+    opacity: 1;
+}
+
+.post-text {
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+}
+
+/* 친구 목록 */
+.friends-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+.friend-item:hover {
+    transform: translateY(-2px);
+}
+
+.friend-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.friend-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.friend-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #0095f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-name {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.no-content {
+    text-align: center;
+    color: #8e8e8e;
+    padding: 40px 0;
+    grid-column: 1 / -1;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-stats {
+        justify-content: center;
+    }
+
+    .posts-grid {
+        gap: 3px;
+    }
+
+    .friends-list {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+
+/* 로딩 상태 */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #8e8e8e;
+}

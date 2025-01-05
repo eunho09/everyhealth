@@ -1,10 +1,13 @@
 package com.example.everyhealth.controller;
 
 import com.example.everyhealth.domain.Comment;
+import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Post;
 import com.example.everyhealth.dto.CommentDto;
 import com.example.everyhealth.dto.SaveComment;
+import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.CommentService;
+import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +24,17 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RestCommentController {
 
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final PostService postService;
     private final CommentService commentService;
+    private final MemberService memberService;
 
     @PostMapping("/comment")
-    public ResponseEntity<Void> save(@RequestBody SaveComment dto) {
+    public ResponseEntity<Void> save(@CookieValue(name = "jwt") String token , @RequestBody SaveComment dto) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        Member member = memberService.findById(memberId);
         Post post = postService.findById(dto.getPostId());
-        Comment comment = new Comment(dto.getText(), post);
+        Comment comment = new Comment(dto.getText(), post, member);
         commentService.save(comment);
 
 
@@ -39,7 +46,7 @@ public class RestCommentController {
         List<Comment> commentList = commentService.findByPostId(postId);
 
         List<CommentDto> commentDtoList = commentList.stream()
-                .map(comment -> new CommentDto(comment.getId(), comment.getText()))
+                .map(comment -> new CommentDto(comment.getId(), comment.getText(), comment.getMember().getName(), comment.getLocalDateTime()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(commentDtoList);

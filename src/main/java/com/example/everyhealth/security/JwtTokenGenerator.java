@@ -4,6 +4,7 @@ import com.example.everyhealth.domain.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,22 +28,22 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenGenerator {
 
-
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final Key key;
 
-    public JwtTokenGenerator(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenGenerator(@Value("${jwt.secret}") String secretKey,
+                             CustomUserDetailsService customUserDetailsService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.customUserDetailsService = customUserDetailsService;
     }
-
 
     public String generateToken(Member member) {
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("id", member.getId());
         claims.put("name", member.getName());
         claims.put("authorities", member.getRole());
+        claims.put("picture", member.getPicture());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -57,6 +58,16 @@ public class JwtTokenGenerator {
     public Long getUserId(String token) {
         Claims claims = parseClaims(token);
         return claims.get("id", Long.class);
+    }
+
+    public String getName(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("name", String.class);
+    }
+
+    public String getPicture(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("picture", String.class);
     }
 
     // 토큰 유효성 검증

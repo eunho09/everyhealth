@@ -17,11 +17,15 @@ public class Member {
     @Setter
     private String name;
     private String loginId;
-    private String password;
+    private String picture;
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
     private String providerId;
+    private String password;
+
+    @OneToMany(mappedBy = "member")
+    private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Routine> routineList = new ArrayList<>();
@@ -32,11 +36,18 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Friend> friendList = new ArrayList<>();
 
-    public Member(String name, String loginId, MemberRole role, String providerId) {
+    @OneToMany(mappedBy = "member")
+    private List<Today> todayList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Post> postList = new ArrayList<>();
+
+    public Member(String name, String loginId, MemberRole role, String providerId, String picture) {
         this.name = name;
         this.loginId = loginId;
         this.role = role;
         this.providerId = providerId;
+        this.picture = picture;
     }
 
     protected Member() {

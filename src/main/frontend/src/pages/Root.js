@@ -4,7 +4,7 @@ import {Outlet} from "react-router-dom";
 import Layout from "../components/Layout";
 
 const Root = () => {
-    return(
+    return (
         <>
             <div className="container">
                 <Sidebar/>
@@ -13,7 +13,7 @@ const Root = () => {
                 </div>
             </div>
         </>
-    )
+    );
 }
 
 export default Root;

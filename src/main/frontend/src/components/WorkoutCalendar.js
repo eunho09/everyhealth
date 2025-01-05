@@ -6,131 +6,143 @@ import moment from "moment";
 import WorkoutLog from "./WorkoutLog";
 
 const CalendarStyled = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  /*
-  //calender
-  .react-calendar{ 
-    border: 1px solid #a0a096;
-    border-radius: 10px;
-    width: 40rem;
-  }
-  
-  //day
-  .react-calendar__tile{
-    padding: 2rem;
-    border-radius: 50%;
-  }
-  
-  //title
-  .react-calendar__navigation button{ 
-    min-width: 5rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-  }*/
-
-  /* 전체 캘린더 */
-  .react-calendar {
-    width: 100%;
-    max-width: 700px;
-    background: #f7f8fa;
-    border: 1px solid #e6e6e6;
-    border-radius: 12px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    font-family: 'Helvetica Neue', sans-serif;
-    padding: 20px;
-  }
-
-  /* 캘린더 네비게이션 (월 이동 화살표와 타이틀) */
-  .react-calendar__navigation button {
-    background: none;
-    border: none;
-    color: #4a4a4a;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px;
-    cursor: pointer;
-  }
-
-  .react-calendar__navigation button:disabled {
-    color: #c0c0c0;
-  }
-
-  .react-calendar__navigation button:enabled:hover {
-    color: #007bff;
-  }
-
-  /* 요일 헤더 스타일 */
-  .react-calendar__month-view__weekdays {
-    font-weight: bold;
-    font-size: 14px;
-    color: #6d6d6d;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-
-  .react-calendar__month-view__weekdays__weekday {
-    padding: 8px;
-  }
-
-  /* 날짜 셀 스타일 */
-  .react-calendar__tile {
-    background: #fff;
-    padding: 30px;
-    text-align: center;
-    transition: background 0.3s, color 0.3s;
-    box-sizing: border-box;
-  }
-
-  /* tileContent가 포함될 경우 오버플로우 방지 */
-  .react-calendar__tile-content {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    border-radius: 50%;
-    width: 10px; 
-    height: 10px; 
-    background: blue; 
-    margin: 0 10px;
-  }
 
-  .react-calendar__tile:enabled:hover {
-    background: #e6f7ff;
-    color: #007bff;
-    cursor: pointer;
-  }
-
-  .react-calendar__tile--active {
-    background: #007bff;
-    color: #fff;
-  }
-
-  .react-calendar__tile--now {
-    background: #ffe6e6;
-    color: #ff4d4d;
-    font-weight: bold;
-  }
-
-  .react-calendar__tile--hasActive {
-    background: #d1eaff;
-    color: #007bff;
-  }
-
-  /* 반응형 스타일 */
-  @media (max-width: 500px) {
     .react-calendar {
-      font-size: 14px;
+        width: 100%;
+        max-width: 800px;
+        background: white;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+        /* 달력 상단 네비게이션 스타일 */
+        .react-calendar__navigation {
+            margin-bottom: 24px;
+
+            button {
+                min-width: 44px;
+                background: none;
+                border: none;
+                color: #1a1a1a;
+                font-size: 18px;
+                font-weight: 600;
+                padding: 8px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                &:disabled {
+                    opacity: 0.5;
+                }
+
+                &:enabled:hover,
+                &:enabled:focus {
+                    background-color: #f0f0f0;
+                    color: #0066ff;
+                }
+            }
+        }
+
+        /* 요일 헤더 스타일 */
+        .react-calendar__month-view__weekdays {
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 14px;
+            color: #666;
+
+            abbr {
+                text-decoration: none;
+                border: none;
+            }
+        }
+
+        /* 날짜 셀 스타일 */
+        .react-calendar__tile {
+            aspect-ratio: 1;
+            max-width: 100%;
+            padding: 10px;
+            background: none;
+            text-align: center;
+            line-height: 1.6;
+            font-size: 16px;
+            position: relative;
+
+            &:enabled:hover,
+            &:enabled:focus {
+                background-color: #f5f5f5;
+                border-radius: 12px;
+            }
+
+            /* 오늘 날짜 스타일 */
+            &.react-calendar__tile--now {
+                background: #fff3f3;
+                border-radius: 12px;
+                font-weight: 600;
+                color: #ff4d4f;
+            }
+
+            /* 선택된 날짜 스타일 */
+            &.react-calendar__tile--active {
+                background: #1890ff;
+                border-radius: 12px;
+                color: white;
+                font-weight: 600;
+
+                &:enabled:hover,
+                &:enabled:focus {
+                    background: #096dd9;
+                }
+            }
+        }
     }
-  }
 
-`
+    /* 운동 기록 표시 스타일 */
+    .react-calendar__tile-content {
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        background: #1890ff;
+        border-radius: 50%;
+    }
 
-const WorkoutCalendar = ({date, handleDateChange, workoutDates}) => {
+    /* 반응형 스타일 */
+    @media (max-width: 768px) {
+        .react-calendar {
+            padding: 16px;
+            max-width: 100%;
+        }
+
+        .react-calendar__tile {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .react-calendar__navigation button {
+            font-size: 16px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .react-calendar {
+            padding: 12px;
+        }
+
+        .react-calendar__tile {
+            font-size: 12px;
+            padding: 6px;
+        }
+    }
+`;
+
+const WorkoutCalendar = ({date, handleDateChange, workoutDates, fetchMonthData}) => {
 
 
     // 날짜에 동그라미 표시를 추가하는 함수
@@ -146,6 +158,13 @@ const WorkoutCalendar = ({date, handleDateChange, workoutDates}) => {
         return null;
     };
 
+    const handleActiveStartDateChange = ({ activeStartDate }) => {
+        if (activeStartDate) {
+            const month = activeStartDate.getMonth() + 1;
+            fetchMonthData(month);
+        }
+    };
+
     return (
         <>
             <CalendarStyled>
@@ -159,6 +178,7 @@ const WorkoutCalendar = ({date, handleDateChange, workoutDates}) => {
                     next2Label={null} // +1년 & +10년 이동 버튼 숨기기
                     prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
                     tileContent={tileContent}
+                    onActiveStartDateChange={handleActiveStartDateChange}  // 추가된 부분
                  />
             </CalendarStyled>
         </>

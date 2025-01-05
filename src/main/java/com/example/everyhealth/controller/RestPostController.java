@@ -1,10 +1,13 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Post;
 import com.example.everyhealth.domain.UploadFile;
 import com.example.everyhealth.dto.PostDto;
 import com.example.everyhealth.dto.UploadPostDto;
+import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.FileStore;
+import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +29,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RestPostController {
 
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private final MemberService memberService;
     private final PostService postService;
     private final FileStore fileStore;
 
     @PostMapping("/post")
-    public ResponseEntity<Void> save(@RequestPart MultipartFile file, @RequestPart String text ) throws IOException {
+    public ResponseEntity<Void> save(@CookieValue(name = "jwt") String token,
+                                     @RequestPart MultipartFile file,
+                                     @RequestPart String text ) throws IOException {
+
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        Member member = memberService.findById(memberId);
         UploadFile uploadFile = fileStore.storeFile(file);
         String storeFileName = uploadFile.getStoreFileName();
-        Post post = new Post(text, storeFileName);
+        Post post = new Post(text, storeFileName, member);
 
         postService.save(post);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -42,6 +52,18 @@ public class RestPostController {
     @GetMapping("/posts")
     public ResponseEntity<List<PostDto>> findAll() {
         List<Post> postList = postService.findAll();
+
+        List<PostDto> postDtoList = postList.stream()
+                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(postDtoList);
+    }
+
+    @GetMapping("/member/posts")
+    public ResponseEntity<List<PostDto>> findMemberPost(@CookieValue(name = "jwt") String token) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        List<Post> postList = postService.findByMemberId(memberId);
 
         List<PostDto> postDtoList = postList.stream()
                 .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))

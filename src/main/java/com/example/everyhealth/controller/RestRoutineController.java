@@ -4,9 +4,11 @@ import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.*;
+import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RoutineExerciseService;
 import com.example.everyhealth.service.RoutineService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,10 +29,16 @@ public class RestRoutineController {
     private final RoutineService routineService;
     private final MemberService memberService;
     private final RoutineExerciseService routineExerciseService;
+    private final JwtTokenGenerator jwtTokenGenerator;
+
+
 
     @PostMapping("/routine")
-    public ResponseEntity<Long> save(@RequestBody RoutineSaveDto dto) {
-        Member findMember = memberService.findById(dto.getMemberId());
+    public ResponseEntity<Long> save(@CookieValue(name = "jwt") String token,
+                                     @RequestBody RoutineSaveDto dto) {
+
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        Member findMember = memberService.findById(memberId);
         Routine routine = new Routine(dto.getName(), findMember);
         routineService.save(routine);
 
@@ -44,8 +52,9 @@ public class RestRoutineController {
         return ResponseEntity.ok("RoutineExercise created");
     }
 
-    @GetMapping("/member/{memberId}/routines")
-    public List<RoutineResponseDto> findRoutineWithExercises(@PathVariable Long memberId) {
+    @GetMapping("/member/routines")
+    public List<RoutineResponseDto> findRoutineWithExercises(@CookieValue(name = "jwt") String token) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
         List<Routine> routineList = routineService.findRoutineWithExercises(memberId);
         List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(memberId);
 
