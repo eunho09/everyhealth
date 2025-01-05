@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import '../styles/Page.css';
+import '../styles/Calender.css';
 import CalenderLogManager from "../components/feature/CalenderLogManager";
 
 const CalenderLogPage = () => {

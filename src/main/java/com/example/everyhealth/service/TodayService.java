@@ -64,8 +64,8 @@ public class TodayService {
     }
 
     @Transactional
-    public void addTodayExercise(List<TodayExerciseRequest> todayExerciseRequests, LocalDate date) {
-        Today today = todayRepository.fetchByLocalDate(date);
+    public void addTodayExercise(List<TodayExerciseRequest> todayExerciseRequests, LocalDate date, Long memberId) {
+        Today today = todayRepository.fetchByLocalDate(date, memberId);
 
         int baseSequence = today.getTodayExercises().stream()
                 .mapToInt(TodayExercise::getSequence)
@@ -89,13 +89,13 @@ public class TodayService {
         todayRepository.save(today);
     }
 
-    public List<TodayDateDto> findByMonth(int month) {
-        return todayRepository.findByMonth(month);
+    public List<TodayDateDto> findByMonth(int month, Long memberId) {
+        return todayRepository.findByMonth(month, memberId);
     }
 
 
-    public TodayDto fetchByLocalDate(LocalDate date) {
-        Today today = todayRepository.fetchByLocalDate(date);
+    public TodayDto fetchByLocalDate(LocalDate date, Long memberId) {
+        Today today = todayRepository.fetchByLocalDate(date, memberId);
         List<TodayExercise> todayExerciseList = todayExerciseRepository.findByTodayId(today.getId());
 
         List<TodayExerciseDto> todayExerciseDtoList = todayExerciseList.stream()

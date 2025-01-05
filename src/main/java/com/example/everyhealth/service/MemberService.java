@@ -1,6 +1,7 @@
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Member;
+import com.example.everyhealth.dto.MemberDto;
 import com.example.everyhealth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,9 @@ public class MemberService {
 
     public List<Member> findAll() {
         return memberRepository.findAll();
+    }
+
+    public List<MemberDto> findSuggestedFriend(Long memberId) {
+        return memberRepository.findSuggestedFriend(memberId);
     }
 }

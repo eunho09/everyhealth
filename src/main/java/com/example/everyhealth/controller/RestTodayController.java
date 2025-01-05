@@ -1,8 +1,11 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Today;
 import com.example.everyhealth.domain.TodayExercise;
 import com.example.everyhealth.dto.*;
+import com.example.everyhealth.security.JwtTokenGenerator;
+import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.TodayExerciseService;
 import com.example.everyhealth.service.TodayService;
 import lombok.RequiredArgsConstructor;
@@ -19,27 +22,32 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RestTodayController {
 
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final TodayService todayService;
     private final TodayExerciseService todayExerciseService;
+    private final MemberService memberService;
 
     @PostMapping("/today")
-    public ResponseEntity<Void> save(@RequestBody TodaySaveDto dto) {
-        Today today = new Today(dto.getLocalDate());
+    public ResponseEntity<Void> save(@CookieValue(name = "jwt") String token, @RequestBody TodaySaveDto dto) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        Member member = memberService.findById(memberId);
+        Today today = new Today(dto.getLocalDate(), member);
         todayService.save(today);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/today/addTodayExercise/exercise")
+/*    @PostMapping("/today/addTodayExercise/exercise")
     public ResponseEntity<String> addTodayExerciseAsExercise(@RequestBody TodayExerciseAsExerciseRequest dto) {
         todayService.addTodayExerciseAsExercise(dto);
 
         return ResponseEntity.ok("add todayExercise");
-    }
+    }*/
 
     @PostMapping("/today/addTodayExercise/{date}")
-    public ResponseEntity<String> addTodayExercise(@RequestBody List<TodayExerciseRequest> dto, @PathVariable LocalDate date) {
-        todayService.addTodayExercise(dto, date);
+    public ResponseEntity<String> addTodayExercise(@CookieValue(name = "jwt") String token ,@RequestBody List<TodayExerciseRequest> dto, @PathVariable LocalDate date) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        todayService.addTodayExercise(dto, date, memberId);
 
         return ResponseEntity.ok("add todayExercise");
     }
@@ -70,14 +78,16 @@ public class RestTodayController {
     }
 
     @GetMapping("/today/month/{month}")
-    public ResponseEntity<List<TodayDateDto>> findByMonth(@PathVariable int month) {
-        List<TodayDateDto> todayList = todayService.findByMonth(month);
+    public ResponseEntity<List<TodayDateDto>> findByMonth(@CookieValue(name = "jwt") String token, @PathVariable int month) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        List<TodayDateDto> todayList = todayService.findByMonth(month, memberId);
         return ResponseEntity.ok(todayList);
     }
 
     @GetMapping("/today/date/{date}")
-    public ResponseEntity<TodayDto> fetchByLocalDate(@PathVariable LocalDate date) {
-        TodayDto todayDto = todayService.fetchByLocalDate(date);
+    public ResponseEntity<TodayDto> fetchByLocalDate(@CookieValue(name = "jwt") String token, @PathVariable LocalDate date) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        TodayDto todayDto = todayService.fetchByLocalDate(date, memberId);
         return ResponseEntity.ok(todayDto);
     }
 

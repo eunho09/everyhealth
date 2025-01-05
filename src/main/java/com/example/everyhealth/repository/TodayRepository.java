@@ -13,11 +13,11 @@ import java.util.List;
 @Repository
 public interface TodayRepository extends JpaRepository<Today, Long> {
 
-    @Query("select new com.example.everyhealth.dto.TodayDateDto(t.localDate) from Today t where month(t.localDate)=:month ")
-    List<TodayDateDto> findByMonth(@Param("month") int month);
+    @Query("select new com.example.everyhealth.dto.TodayDateDto(t.localDate) from Today t where month(t.localDate)=:month and t.member.id=:memberId ")
+    List<TodayDateDto> findByMonth(@Param("month") int month, @Param("memberId") Long memberId);
 
-    @Query("select t from Today t left join fetch t.todayExercises te left join fetch te.exercise where date(t.localDate)=:date order by te.sequence asc")
-    Today fetchByLocalDate(@Param("date") LocalDate date);
+    @Query("select t from Today t left join fetch t.todayExercises te left join fetch te.exercise where date(t.localDate)=:date and t.member.id=:memberId order by te.sequence asc")
+    Today fetchByLocalDate(@Param("date") LocalDate date, @Param("memberId") Long memberId);
 
     @Query("select t from Today t join fetch t.todayExercises te where t.id=:todayId")
     Today fetchById(@Param("todayId") Long todayId);

@@ -34,12 +34,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2UserInfo.getEmail();
         String loginId = provider + "_" + providerId;
         String name = oAuth2UserInfo.getName();
+        String picture = oAuth2UserInfo.getPicture();
 
         Member findMember = memberRepository.findByLoginId(loginId);
         Member member;
 
         if (findMember == null) {
-            member = new Member(name, loginId, MemberRole.USER, providerId);
+            member = new Member(name, loginId, MemberRole.USER, providerId, picture);
         } else {
             member = findMember;
         }

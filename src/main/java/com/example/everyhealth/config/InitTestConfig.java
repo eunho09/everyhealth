@@ -27,14 +27,14 @@ public class InitTestConfig {
 
     @PostConstruct
     public void init() {
-        initData();
+//        initData();
     }
 
 
     public void initData() {
         log.info("기본 테스트 데이터 실행");
 
-        Member member = new Member("홍길동", "test", MemberRole.USER, "test");
+        Member member = new Member("홍길동", "test", MemberRole.USER, "test", "");
         Long memberId = memberService.save(member);
 
         ArrayList<ArrayList<Integer>> set1 = new ArrayList<>();
@@ -85,9 +85,9 @@ public class InitTestConfig {
 //        Today today1 = new Today(LocalDate.now());
 //        todayService.save(today1);
 
-        Today today2 = new Today(LocalDate.of(2024, 11, 18));
-        Today today3 = new Today(LocalDate.of(2024, 11, 17));
-        Today today4 = new Today(LocalDate.of(2024, 10, 21));
+        Today today2 = new Today(LocalDate.of(2024, 11, 18), member);
+        Today today3 = new Today(LocalDate.of(2024, 11, 17), member);
+        Today today4 = new Today(LocalDate.of(2024, 10, 21), member);
 
         todayService.save(today2);
 //        todayService.save(today3);

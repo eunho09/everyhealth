@@ -1,9 +1,6 @@
 package com.example.everyhealth.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -22,10 +19,16 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<Comment> commentList = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    public Post(String text, String imageUrl) {
+
+    public Post(String text, String imageUrl, Member member) {
         this.text = text;
         this.imageUrl = imageUrl;
+        this.member = member;
+        member.getPostList().add(this);
     }
 
     protected Post() {

@@ -1,44 +1,120 @@
-/* Sidebar.css */
 .sidebar {
     width: 250px;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: #333;
+    background-color: #1f2937;
     color: white;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-    flex-shrink: 0; /* 사이드바는 줄어들지 않음 */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.sidebar h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
+/* 로고 컨테이너 */
+.logo-container {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #374151;
 }
 
-.sidebar ul {
-    list-style-type: none;
+.logo-container img {
+    width: 128px;
+    height: auto;
+}
+
+/* 네비게이션 */
+.sidebar-nav {
+    flex: 1;
+    padding: 1.5rem 1rem;
+}
+
+.sidebar-nav ul {
+    list-style: none;
     padding: 0;
+    margin: 0;
 }
 
-.sidebar ul li {
-    margin: 15px 0;
-    cursor: pointer;
-    font-size: 24px;
+.sidebar-nav li {
+    margin-bottom: 0.5rem;
 }
 
-.sidebar ul li:hover {
-    color: #ddd;
-}
-img {
-    width: 100px;
-}
-
-a:link{
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    color: white;
     text-decoration: none;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
 }
 
-a:visited, a:active{
-    color: inherit;
+.sidebar-nav a:hover {
+    background-color: #374151;
+}
+
+.sidebar-nav span {
+    font-size: 1.125rem;
+}
+
+/* 인증 영역 */
+.auth-container {
+    padding: 1rem;
+    border-top: 1px solid #374151;
+}
+
+.profile-section {
+    padding: 0.5rem;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background-color: #374151;
+    border-radius: 0.5rem;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;  /* 동그란 이미지 */
+    object-fit: cover;   /* 이미지 비율 유지 */
+    border: 2px solid #ffffff;  /* 흰색 테두리 추가 */
+}
+
+.user-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #2563eb;
+    border: none;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    font-size: 1.125rem;
+}
+
+.login-button:hover {
+    background-color: #1d4ed8;
+}
+
+/* 아이콘 스타일링 */
+.sidebar svg {
+    width: 20px;
+    height: 20px;
 }

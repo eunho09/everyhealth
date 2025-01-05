@@ -4,9 +4,10 @@ import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ExerciseCreateDto;
 import com.example.everyhealth.dto.ExerciseDto;
+import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.ExerciseService;
 import com.example.everyhealth.service.MemberService;
-import lombok.Data;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RestExerciseController {
 
-    //멤버 전용도 만들어야 함
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final ExerciseService exerciseService;
     private final MemberService memberService;
 
@@ -31,11 +32,12 @@ public class RestExerciseController {
     }
 
 
-    @GetMapping("/member/{memberId}/exercises")
-    public List<ExerciseDto> findExerciseByMemberId(@PathVariable Long memberId) {
+    @GetMapping("/member/exercises")
+    public List<ExerciseDto> findExerciseByMemberId(@CookieValue(name = "jwt") String token) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
         List<Exercise> exercises = exerciseService.findExercisesByMemberId(memberId);
         return exercises.stream()
-                .map(e -> new ExerciseDto(e))
+                .map(ExerciseDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -43,13 +45,14 @@ public class RestExerciseController {
     public List<ExerciseDto> findAll() {
         List<Exercise> exercises = exerciseService.findAll();
         return exercises.stream()
-                .map(e -> new ExerciseDto(e))
+                .map(ExerciseDto::new)
                 .collect(Collectors.toList());
     }
 
     @PostMapping("/exercise")
-    public ResponseEntity<Long> save(@RequestBody ExerciseCreateDto dto) {
-        Member findMember = memberService.findById(dto.getMemberId());
+    public ResponseEntity<Long> save(@CookieValue(name = "jwt") String token, @RequestBody ExerciseCreateDto dto) {
+        Long memberId = jwtTokenGenerator.getUserId(token);
+        Member findMember = memberService.findById(memberId);
 
         Exercise exercise = new Exercise(dto.getName(),
                 findMember,

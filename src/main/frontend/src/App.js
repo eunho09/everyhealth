@@ -9,6 +9,8 @@ import ExercisePage from "./pages/ExercisePage";
 import PostPage from "./pages/PostPage";
 import PostUpload from "./components/PostUpload";
 import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
+import FriendRequestPage from "./pages/FriendRequestPage";
 
 function App() {
 
@@ -23,7 +25,9 @@ function App() {
         {path: '/routine', element: <RoutinePage/>},
         {path: '/post', element: <PostPage/>},
         {path: '/post/upload', element: <PostUpload/>},
-        {path: '/login', element: <LoginPage/>}
+        {path: '/login', element: <LoginPage/>},
+        {path: '/profile', element: <ProfilePage/>},
+        {path: '/friend', element: <FriendRequestPage/>}
       ]
     }
   ]);

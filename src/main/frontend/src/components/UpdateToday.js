@@ -94,6 +94,8 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
         }));
     };
 
+
+    //일지에 운동 추가
     const save = async () => {
         try {
             const payload = createSavePayload();
@@ -102,6 +104,8 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
             // 서버로 POST 요청
             const data = await updateTodayExercise(todayId, payload);
 
+            /*handleIsEditing(false);
+            setTodayExerciseList([]);*/
             console.log("저장 성공:", data);
         } catch (error) {
             console.error(error);

@@ -3,9 +3,6 @@ package com.example.everyhealth.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 public class Friend {
@@ -21,6 +18,23 @@ public class Friend {
     @JoinColumn(name = "friend_id") //멤버 친구
     private Member friend;
 
-//    @Enumerated(value = EnumType.STRING)
-    private String status;
+    @Enumerated(value = EnumType.STRING)
+    private FriendShip status;
+
+    public Friend(Member member) {
+        this.member = member;
+        member.getFriendList().add(this);
+    }
+
+
+    public Friend() {
+    }
+
+    public void setFriend(Member friend) {
+        this.friend = friend;
+    }
+
+    public void setStatus(FriendShip status) {
+        this.status = status;
+    }
 }

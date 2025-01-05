@@ -9,11 +9,7 @@ export const findOneTodayById = async (todayId) => {
 
 export const getTodayByMonth = async (month) => {
     axios.defaults.withCredentials = true;
-    const response = await api.get(`/api/today/month/${month}`, {
-        headers : {
-            'authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJuYW1lIjoi7Yys7LyA7J207YGsIiwiaWQiOjIsImF1dGhvcml0aWVzIjoiVVNFUiIsImlhdCI6MTczMzIwNzQwMywiZXhwIjoxNzMzMjkzODAzfQ.p_ca5WENqTQuRfTUcdGvX8TMyh_zatA8B3rBwxE_ep6JZPbcOuQOC84gp4NB3Jg1pFWMn4OdUg29LfBIdW-kzg',
-        }
-    });
+    const response = await api.get(`/api/today/month/${month}`)
     return response.data;
 }
 

@@ -1,9 +1,6 @@
 package com.example.everyhealth.service;
 
-import com.example.everyhealth.domain.Exercise;
-import com.example.everyhealth.domain.Member;
-import com.example.everyhealth.domain.Today;
-import com.example.everyhealth.domain.TodayExercise;
+import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.TodayExerciseAsExerciseRequest;
 import com.example.everyhealth.dto.ExerciseInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +33,7 @@ class TodayServiceTest {
 
     @Test
     void save() {
-        Member member = new Member("홍길동", "test", "test");
+        Member member = new Member("홍길동", "test", MemberRole.USER, "test", "");
         Long memberId = memberService.save(member);
 
         ArrayList<ArrayList<Integer>> set = new ArrayList();
@@ -44,7 +41,7 @@ class TodayServiceTest {
         set.add(new ArrayList<>(Arrays.asList(10,25)));
         set.add(new ArrayList<>(Arrays.asList(10,30)));
 
-        Exercise exercise = new Exercise("푸쉬업", member, "무릎꿇고", set, "가슴");
+        Exercise exercise = new Exercise("푸쉬업", member, "무릎꿇고", set, Classification.CHEST);
         Long exerciseId1 = exerciseService.save(exercise);
 
         ArrayList<ArrayList<Integer>> set2 = new ArrayList<>();
@@ -52,7 +49,7 @@ class TodayServiceTest {
         set2.add(new ArrayList<>(Arrays.asList(10,0)));
         set2.add(new ArrayList<>(Arrays.asList(10,0)));
 
-        Exercise exercise2 = new Exercise("디클라인 푸쉬업", member, "무릎꿇고", set2, "가슴");
+        Exercise exercise2 = new Exercise("디클라인 푸쉬업", member, "무릎꿇고", set2, Classification.CHEST);
         Long exerciseId2 = exerciseService.save(exercise2);
 
         ArrayList<ArrayList<Integer>> set3 = new ArrayList<>();
@@ -60,7 +57,7 @@ class TodayServiceTest {
         set3.add(new ArrayList<>(Arrays.asList(20,0)));
         set3.add(new ArrayList<>(Arrays.asList(10,0)));
 
-        Exercise exercise3 = new Exercise("인클라인 푸쉬업", member, "화이팅", set3, "가슴");
+        Exercise exercise3 = new Exercise("인클라인 푸쉬업", member, "화이팅", set3, Classification.CHEST);
         Long exerciseId3 = exerciseService.save(exercise3);
 
         ArrayList<ArrayList<Integer>> set4 = new ArrayList<>();
@@ -68,11 +65,11 @@ class TodayServiceTest {
         set4.add(new ArrayList<>(Arrays.asList(8,65)));
         set4.add(new ArrayList<>(Arrays.asList(6,70)));
 
-        Exercise exercise4 = new Exercise("벤치프레스", member, "최대한 많이", set4, "가슴");
+        Exercise exercise4 = new Exercise("벤치프레스", member, "최대한 많이", set4, Classification.CHEST);
         Long exerciseId4 = exerciseService.save(exercise4);
 
 
-        Today today = new Today(LocalDate.now());
+        Today today = new Today(LocalDate.now(), member);
         Long todayId = todayService.save(today);
 
         List<ExerciseInfo> exerciseInfoList = new ArrayList<>();

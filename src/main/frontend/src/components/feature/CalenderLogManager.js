@@ -79,7 +79,7 @@ const CalenderLogManager = () => {
 
     return (
         <div className="flex">
-            <WorkoutCalendar date={date} handleDateChange={handleDateChange} workoutDates={monthData}/>
+            <WorkoutCalendar date={date} handleDateChange={handleDateChange} workoutDates={monthData} fetchMonthData={fetchMonthData}/>
             <WorkoutLog date={date} todayData={todayData} handleSaveToday={handleSaveToday} fetchMonthData={fetchMonthData} handleIsEditing={handleIsEditing}/>
             {isEditing && (
                 <UpdateToday todayId={selectTodayId} handleIsEditing={handleIsEditing}/>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import "../styles/Modal.css";
+import "../styles/ExerciseList.css";
 import { TiDeleteOutline } from "react-icons/ti";
 import { IoIosArrowBack } from "react-icons/io";
 import {findExerciseByMemberId, getClassification, updateExercise} from "../api/exerciseApi";
@@ -100,16 +101,31 @@ const ExerciseList = () => {
 
     return (
         <div className="exercise-list">
-            <h2>운동 목록</h2>
-            <ul>
-                {exercises.map((exercise, index) => (
-                    <li key={index}>
-                        <button className="text-button" onClick={() => openModal(exercise)}>
-                            {exercise.name}
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            {/* 부위별로 운동 그룹화 */}
+            {Object.entries({
+                "가슴": exercises.filter(ex => ex.classification === "CHEST"),
+                "등": exercises.filter(ex => ex.classification === "BACK"),
+                "어깨": exercises.filter(ex => ex.classification === "SHOULDER"),
+                "이두": exercises.filter(ex => ex.classification === "BICEPS"),
+                "삼두": exercises.filter(ex => ex.classification === "TRICEPS"),
+                "하체": exercises.filter(ex => ex.classification === "LOWERBODY"),
+                "복근": exercises.filter(ex => ex.classification === "ABS"),
+            }).map(([part, exercises]) => (
+                exercises.length > 0 && (
+                    <div key={part} className="exercise-group">
+                        <h3>{part}</h3>
+                        <ul>
+                            {exercises.map((exercise, index) => (
+                                <li key={index}>
+                                    <button className="text-button" onClick={() => openModal(exercise)}>
+                                        {exercise.name}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )
+            ))}
 
             {isModalOpen && selectedExercise && (
                 <div>
