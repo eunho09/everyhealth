@@ -2,6 +2,7 @@ package com.example.everyhealth.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Today {
 
     private LocalDate localDate;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private CheckBox checkBox;
 
@@ -37,4 +39,5 @@ public class Today {
 
     public Today() {
     }
+
 }

@@ -8,6 +8,7 @@ import {addTodayExercise} from "../api/todayApi";
 import {findExerciseByMemberId} from "../api/exerciseApi";
 import {findRoutineByMemberId} from "../api/routineApi";
 import AddTodayExercise from "./AddTodayExercise";
+import WorkoutCheckbox from "./WorkoutCheckbox";
 
 const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIsEditing}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,6 +86,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
     return (
         <div className="workout-log">
             <h2>{formattedDate} 운동 일지</h2>
+
             <button onClick={() => {
                 handleSaveToday(formattedDate);
                 handleModel(true)
@@ -94,7 +96,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
             <button onClick={() => handleIsEditing(true)}>
                 <CgArrowsExchange />
             </button>
-            {todayData ? (
+            {todayData && todayData.todayExercises.length > 0 ? (
                 <div>
                     <ul>
                         {todayData.todayExercises.map((todayExercise, index) => (
@@ -110,6 +112,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
                             </li>
                         ))}
                     </ul>
+                    {todayData?.id && <WorkoutCheckbox todayId={todayData.id} />}
                 </div>
             ) : (
                 <p className="no-log">운동 기록이 없습니다.</p>

@@ -48,4 +48,9 @@ public class FriendService {
         return friendRepository.findMyFriend(memberId);
     }
 
+    @Transactional
+    public void selectRequest(Long memberId, Long friendMemberId, FriendShip friendShip) {
+        Friend friend = friendRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, FriendShip.REQUEST);
+        friend.setStatus(friendShip);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.domain.CheckBox;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Today;
 import com.example.everyhealth.domain.TodayExercise;
@@ -8,6 +9,7 @@ import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.TodayExerciseService;
 import com.example.everyhealth.service.TodayService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -109,5 +111,13 @@ public class RestTodayController {
         todayService.updateSequence(todayExerciseList, todayId);
 
         return ResponseEntity.ok("update sequence todayExercise");
+    }
+
+    @Transactional
+    @PostMapping("/today/checkbox/{todayId}")
+    public ResponseEntity<String> checkbox(@RequestBody String checking, @PathVariable Long todayId) {
+        todayService.updateCheckbox(checking, todayId);
+
+        return ResponseEntity.ok("update checkbox");
     }
 }

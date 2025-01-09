@@ -1,9 +1,6 @@
 package com.example.everyhealth.service;
 
-import com.example.everyhealth.domain.Exercise;
-import com.example.everyhealth.domain.RoutineExercise;
-import com.example.everyhealth.domain.Today;
-import com.example.everyhealth.domain.TodayExercise;
+import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.repository.ExerciseRepository;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
@@ -137,6 +134,16 @@ public class TodayService {
                     todayExercise.setSequence(request.getSequence());
                 }
             }
+        }
+    }
+
+    @Transactional
+    public void updateCheckbox(String checking, Long todayId) {
+        Today today = todayRepository.findById(todayId).get();
+        if ("true".equals(checking)){
+            today.setCheckBox(CheckBox.True);
+        } else{
+            today.setCheckBox(CheckBox.False);
         }
     }
 }

@@ -79,25 +79,27 @@ const AddExercise = () => {
                             <button className="back-button rotate-right" onClick={closeModal}><IoIosArrowBack/></button>
                         </div>
                         <h2>추가</h2>
-                        <input
-                            type="text"
-                            placeholder="운동명"
-                            value={exerciseName}
-                            onChange={(e) => setExerciseName(e.target.value)}
-                        />
-                        <textarea
-                            placeholder="메모"
-                            value={note}
-                            rows="3"
-                            onChange={(e) => setNote(e.target.value)}
-                        />
-                        <select onChange={handleSelect} value={selectClassification}>
-                            {Object.entries(selectBox).map(([key, value]) => (
-                                <option key={key} value={value}>
-                                    {key}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="m-b">
+                            <input
+                                type="text"
+                                placeholder="운동명"
+                                value={exerciseName}
+                                onChange={(e) => setExerciseName(e.target.value)}
+                            />
+                            <textarea
+                                placeholder="메모"
+                                value={note}
+                                rows="3"
+                                onChange={(e) => setNote(e.target.value)}
+                            />
+                            <select onChange={handleSelect} value={selectClassification}>
+                                {Object.entries(selectBox).map(([key, value]) => (
+                                    <option key={key} value={value}>
+                                        {key}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <h3>세트</h3>
                         {sets.map((set, index) => (
                             <div className="row" key={index}>

@@ -25,9 +25,7 @@ const CalenderLogManager = () => {
     const fetchMonthData = async (month) => {
         try {
             const data = await getTodayByMonth(month);
-            const getLocalDate = data.map(value => value.localDate);
-
-            setMonthData(getLocalDate);
+            setMonthData(data);
         } catch (e) {
             console.error(e);
         }
@@ -55,6 +53,7 @@ const CalenderLogManager = () => {
 
     }, [date])
 
+
     const handleDateChange = (newDate) => {
         setDate(newDate);
     };
@@ -68,7 +67,7 @@ const CalenderLogManager = () => {
     }
 
     const hasToday = (dateFormat) => {
-        return monthData.includes(dateFormat);
+        return monthData.find(data => data.localDate === dateFormat);
     }
 
     const handleIsEditing = (boolean) => {

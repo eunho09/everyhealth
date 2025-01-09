@@ -113,6 +113,17 @@ const CalendarStyled = styled.div`
         border-radius: 50%;
     }
 
+    .react-calendar__tile-content-red {
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        background: red;
+        border-radius: 50%;
+    }
+
     /* 반응형 스타일 */
     @media (max-width: 768px) {
         .react-calendar {
@@ -150,9 +161,16 @@ const WorkoutCalendar = ({date, handleDateChange, workoutDates, fetchMonthData})
         if (view === 'month') {
             const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }); //한국 시간으로 포멧팅
             const dateString = formatter.format(date); // YYYY-MM-DD 형식 반환
-            if (Array.isArray(workoutDates) && workoutDates.includes(dateString)) {
-                // return <div style={{ borderRadius: '50%', width: '10px', height: '10px', background: 'blue', margin: '0 auto' }}></div>;
-                return <div className="react-calendar__tile-content"></div>
+            if (Array.isArray(workoutDates)) {
+                const workoutData = workoutDates.find(workout => {
+                    return workout.localDate === dateString;
+                });
+
+                if (workoutData?.checkBox === 'True') {
+                    return <div className="react-calendar__tile-content-red"></div>;
+                } else if (workoutData?.checkBox === 'False') {
+                    return <div className="react-calendar__tile-content"></div>;
+                }
             }
         }
         return null;
