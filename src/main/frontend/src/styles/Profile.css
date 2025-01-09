@@ -8,7 +8,6 @@
 /* 프로필 헤더 */
 .profile-header {
     display: flex;
-    align-items: center;
     margin-bottom: 44px;
     gap: 30px;
 }
@@ -42,6 +41,8 @@
     flex: 1;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    margin-right: 5rem;
     gap: 0.75rem;
     padding: 0.5rem;
     border-radius: 0.5rem;
@@ -55,6 +56,7 @@
 
 .profile-stats {
     display: flex;
+    align-items: center;  /* 세로 중앙 정렬 */
     gap: 40px;
 }
 
@@ -252,4 +254,15 @@
     text-align: center;
     padding: 40px;
     color: #8e8e8e;
+}
+
+/* 친구 추가 아이콘 링크 스타일 */
+.profile-stats a {
+    color: #262626;  /* 기본 색상 */
+    text-decoration: none;  /* 밑줄 제거 */
+}
+
+/* 방문한 링크 스타일 제거 */
+.profile-stats a:visited {
+    color: #262626;  /* 방문 후에도 같은 색상 유지 */
 }

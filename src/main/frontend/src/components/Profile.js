@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/Profile.css';
-import { FaUserFriends, FaRegImages } from 'react-icons/fa';
+import { FaUserFriends, FaRegImages, FaUserPlus } from 'react-icons/fa';
+import {Link} from "react-router-dom";
 
 const ProfilePage = () => {
     const [activeTab, setActiveTab] = useState('posts');
@@ -61,6 +62,11 @@ const ProfilePage = () => {
                         <div className="stat-item">
                             <span className="stat-value">{friends.length}</span>
                             <span className="stat-label">친구</span>
+                        </div>
+                        <div className="">
+                            <Link to="/friend">
+                                <FaUserPlus />
+                            </Link>
                         </div>
                     </div>
                 </div>

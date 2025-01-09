@@ -79,23 +79,19 @@ public class RestFriendController {
     }
 
     //요청이 온 회원을 친구로 수락
-    @Transactional
     @PostMapping("/friend/accept/{memberId}")
     public ResponseEntity<String> acceptFriendShip(@CookieValue(name = "jwt") String token, @PathVariable Long memberId) {
         Long friendMemberId = jwtTokenGenerator.getUserId(token);
-        Friend friend = friendService.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, FriendShip.REQUEST);
-        friend.setStatus(FriendShip.ACCEPT);
+        friendService.selectRequest(memberId, friendMemberId, FriendShip.ACCEPT);
 
         return ResponseEntity.ok("친구 수락");
     }
 
     //요청이 온 회원을 친구거절
-    @Transactional
     @PostMapping("/friend/cancel/{friendMemberId}")
     public ResponseEntity<String> cancelFriendShip(@CookieValue(name = "jwt") String token, @PathVariable Long friendMemberId) {
         Long memberId = jwtTokenGenerator.getUserId(token);
-        Friend friend = friendService.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, FriendShip.REQUEST);
-        friend.setStatus(FriendShip.CANCEL);
+        friendService.selectRequest(memberId, friendMemberId, FriendShip.CANCEL);
 
         return ResponseEntity.ok("친구 거절");
     }
