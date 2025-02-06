@@ -34,9 +34,9 @@ public class RestPostController {
     private final PostService postService;
     private final FileStore fileStore;
 
-    @ExtractMemberId
+
     @PostMapping("/post")
-    public ResponseEntity<Void> save(Long memberId,
+    public ResponseEntity<Void> save(@ExtractMemberId Long memberId,
                                      @RequestPart MultipartFile file,
                                      @RequestPart String text ) throws IOException {
 
@@ -60,9 +60,9 @@ public class RestPostController {
         return ResponseEntity.ok(postDtoList);
     }
 
-    @ExtractMemberId
+
     @GetMapping("/member/posts")
-    public ResponseEntity<List<PostDto>> findMemberPost(Long memberId) {
+    public ResponseEntity<List<PostDto>> findMemberPost(@ExtractMemberId Long memberId) {
         List<Post> postList = postService.findByMemberId(memberId);
 
         List<PostDto> postDtoList = postList.stream()

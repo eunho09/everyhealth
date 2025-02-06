@@ -28,9 +28,9 @@ public class RestFriendController {
     private final MemberService memberService;
     private final FriendService friendService;
 
-    @ExtractMemberId
+
     @GetMapping("/member/friend/request")
-    public ResponseEntity<List<FriendDto>> findByFriendIdAndStatus(Long memberId) {
+    public ResponseEntity<List<FriendDto>> findByFriendIdAndStatus(@ExtractMemberId Long memberId) {
         List<Friend> requestFriendList = friendService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
         List<FriendDto> collect = requestFriendList.stream()
                 .map(f -> new FriendDto(f.getId(),
@@ -45,9 +45,9 @@ public class RestFriendController {
         return ResponseEntity.ok(collect);
     }
 
-    @ExtractMemberId
+
     @GetMapping("/member/friend")
-    public ResponseEntity<List<FriendDto>> findMyFriend(Long memberId) {
+    public ResponseEntity<List<FriendDto>> findMyFriend(@ExtractMemberId Long memberId) {
         List<Friend> friendList = friendService.findMyFriend(memberId);
 
         List<FriendDto> collect = friendList.stream()
@@ -64,9 +64,8 @@ public class RestFriendController {
     }
 
     //친구요청을 보냄
-    @ExtractMemberId
     @PostMapping("/friend/request/{friendMemberId}")
-    public ResponseEntity<String> requestFriendShip(Long memberId ,@PathVariable Long friendMemberId) {
+    public ResponseEntity<String> requestFriendShip(@ExtractMemberId Long memberId ,@PathVariable Long friendMemberId) {
         Member member = memberService.findById(memberId);
         Friend friend = new Friend(member);
 
@@ -79,26 +78,24 @@ public class RestFriendController {
     }
 
     //요청이 온 회원을 친구로 수락
-    @ExtractMemberId
     @PostMapping("/friend/accept/{memberId}")
-    public ResponseEntity<String> acceptFriendShip(Long friendMemberId, @PathVariable Long memberId) {
+    public ResponseEntity<String> acceptFriendShip(@ExtractMemberId Long friendMemberId, @PathVariable Long memberId) {
         friendService.selectRequest(memberId, friendMemberId, FriendShip.ACCEPT);
 
         return ResponseEntity.ok("친구 수락");
     }
 
     //요청이 온 회원을 친구거절
-    @ExtractMemberId
     @PostMapping("/friend/cancel/{friendMemberId}")
-    public ResponseEntity<String> cancelFriendShip(Long memberId, @PathVariable Long friendMemberId) {
+    public ResponseEntity<String> cancelFriendShip(@ExtractMemberId Long memberId, @PathVariable Long friendMemberId) {
         friendService.selectRequest(memberId, friendMemberId, FriendShip.CANCEL);
 
         return ResponseEntity.ok("친구 거절");
     }
 
-    @ExtractMemberId
+
     @GetMapping("/member/suggested-friends")
-    public ResponseEntity<List<MemberDto>> getSuggestedFriends(Long memberId) {
+    public ResponseEntity<List<MemberDto>> getSuggestedFriends(@ExtractMemberId Long memberId) {
         List<MemberDto> suggestedFriends = memberService.findSuggestedFriend(memberId);
         return ResponseEntity.ok(suggestedFriends);
     }

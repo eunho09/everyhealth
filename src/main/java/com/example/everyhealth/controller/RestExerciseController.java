@@ -31,9 +31,9 @@ public class RestExerciseController {
         return new ExerciseDto(findExercise);
     }
 
-    @ExtractMemberId
+
     @GetMapping("/member/exercises")
-    public List<ExerciseDto> findExerciseByMemberId(Long memberId) {
+    public List<ExerciseDto> findExerciseByMemberId(@ExtractMemberId Long memberId) {
         List<Exercise> exercises = exerciseService.findExercisesByMemberId(memberId);
         return exercises.stream()
                 .map(ExerciseDto::new)
@@ -48,9 +48,9 @@ public class RestExerciseController {
                 .collect(Collectors.toList());
     }
 
-    @ExtractMemberId
+
     @PostMapping("/exercise")
-    public ResponseEntity<Long> save(Long memberId, @RequestBody ExerciseCreateDto dto) {
+    public ResponseEntity<Long> save(@ExtractMemberId Long memberId, @RequestBody ExerciseCreateDto dto) {
         Member findMember = memberService.findById(memberId);
 
         Exercise exercise = new Exercise(dto.getName(),

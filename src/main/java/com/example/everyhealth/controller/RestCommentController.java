@@ -29,9 +29,9 @@ public class RestCommentController {
     private final CommentService commentService;
     private final MemberService memberService;
 
-    @ExtractMemberId
+
     @PostMapping("/comment")
-    public ResponseEntity<Void> save(Long memberId, @RequestBody SaveComment dto) {
+    public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody SaveComment dto) {
         Member member = memberService.findById(memberId);
         Post post = postService.findById(dto.getPostId());
         Comment comment = new Comment(dto.getText(), post, member);

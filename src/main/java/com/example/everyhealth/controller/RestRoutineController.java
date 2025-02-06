@@ -33,9 +33,9 @@ public class RestRoutineController {
 
 
 
-    @ExtractMemberId
+
     @PostMapping("/routine")
-    public ResponseEntity<Long> save(Long memberId,
+    public ResponseEntity<Long> save(@ExtractMemberId Long memberId,
                                      @RequestBody RoutineSaveDto dto) {
 
         Member findMember = memberService.findById(memberId);
@@ -52,9 +52,9 @@ public class RestRoutineController {
         return ResponseEntity.ok("RoutineExercise created");
     }
 
-    @ExtractMemberId
+
     @GetMapping("/member/routines")
-    public List<RoutineResponseDto> findRoutineWithExercises(Long memberId) {
+    public List<RoutineResponseDto> findRoutineWithExercises(@ExtractMemberId Long memberId) {
         List<Routine> routineList = routineService.findRoutineWithExercises(memberId);
         List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(memberId);
 
