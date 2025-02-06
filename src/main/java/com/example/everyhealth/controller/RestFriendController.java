@@ -1,5 +1,6 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.Friend;
 import com.example.everyhealth.domain.FriendShip;
 import com.example.everyhealth.domain.Member;
@@ -24,13 +25,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RestFriendController {
 
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final MemberService memberService;
     private final FriendService friendService;
 
+    @ExtractMemberId
     @GetMapping("/member/friend/request")
-    public ResponseEntity<List<FriendDto>> findByFriendIdAndStatus(@CookieValue(name = "jwt") String token) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<List<FriendDto>> findByFriendIdAndStatus(Long memberId) {
         List<Friend> requestFriendList = friendService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
         List<FriendDto> collect = requestFriendList.stream()
                 .map(f -> new FriendDto(f.getId(),
@@ -45,9 +45,9 @@ public class RestFriendController {
         return ResponseEntity.ok(collect);
     }
 
+    @ExtractMemberId
     @GetMapping("/member/friend")
-    public ResponseEntity<List<FriendDto>> findMyFriend(@CookieValue(name = "jwt") String token) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<List<FriendDto>> findMyFriend(Long memberId) {
         List<Friend> friendList = friendService.findMyFriend(memberId);
 
         List<FriendDto> collect = friendList.stream()
@@ -64,9 +64,9 @@ public class RestFriendController {
     }
 
     //친구요청을 보냄
+    @ExtractMemberId
     @PostMapping("/friend/request/{friendMemberId}")
-    public ResponseEntity<String> requestFriendShip(@CookieValue(name = "jwt") String token ,@PathVariable Long friendMemberId) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<String> requestFriendShip(Long memberId ,@PathVariable Long friendMemberId) {
         Member member = memberService.findById(memberId);
         Friend friend = new Friend(member);
 
@@ -79,26 +79,26 @@ public class RestFriendController {
     }
 
     //요청이 온 회원을 친구로 수락
+    @ExtractMemberId
     @PostMapping("/friend/accept/{memberId}")
-    public ResponseEntity<String> acceptFriendShip(@CookieValue(name = "jwt") String token, @PathVariable Long memberId) {
-        Long friendMemberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<String> acceptFriendShip(Long friendMemberId, @PathVariable Long memberId) {
         friendService.selectRequest(memberId, friendMemberId, FriendShip.ACCEPT);
 
         return ResponseEntity.ok("친구 수락");
     }
 
     //요청이 온 회원을 친구거절
+    @ExtractMemberId
     @PostMapping("/friend/cancel/{friendMemberId}")
-    public ResponseEntity<String> cancelFriendShip(@CookieValue(name = "jwt") String token, @PathVariable Long friendMemberId) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<String> cancelFriendShip(Long memberId, @PathVariable Long friendMemberId) {
         friendService.selectRequest(memberId, friendMemberId, FriendShip.CANCEL);
 
         return ResponseEntity.ok("친구 거절");
     }
 
+    @ExtractMemberId
     @GetMapping("/member/suggested-friends")
-    public ResponseEntity<List<MemberDto>> getSuggestedFriends(@CookieValue(name = "jwt") String token) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<List<MemberDto>> getSuggestedFriends(Long memberId) {
         List<MemberDto> suggestedFriends = memberService.findSuggestedFriend(memberId);
         return ResponseEntity.ok(suggestedFriends);
     }
