@@ -29,9 +29,9 @@ public class RestTodayController {
     private final TodayExerciseService todayExerciseService;
     private final MemberService memberService;
 
-    @ExtractMemberId
+
     @PostMapping("/today")
-    public ResponseEntity<Void> save(Long memberId, @RequestBody TodaySaveDto dto) {
+    public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody TodaySaveDto dto) {
         Member member = memberService.findById(memberId);
         Today today = new Today(dto.getLocalDate(), member);
         todayService.save(today);
@@ -46,9 +46,9 @@ public class RestTodayController {
         return ResponseEntity.ok("add todayExercise");
     }*/
 
-    @ExtractMemberId
+
     @PostMapping("/today/addTodayExercise/{date}")
-    public ResponseEntity<String> addTodayExercise(Long memberId ,@RequestBody List<TodayExerciseRequest> dto, @PathVariable LocalDate date) {
+    public ResponseEntity<String> addTodayExercise(@ExtractMemberId Long memberId ,@RequestBody List<TodayExerciseRequest> dto, @PathVariable LocalDate date) {
         todayService.addTodayExercise(dto, date, memberId);
 
         return ResponseEntity.ok("add todayExercise");
@@ -79,16 +79,16 @@ public class RestTodayController {
         return ResponseEntity.ok(dto);
     }
 
-    @ExtractMemberId
+
     @GetMapping("/today/month/{month}")
-    public ResponseEntity<List<TodayDateDto>> findByMonth(Long memberId, @PathVariable int month) {
+    public ResponseEntity<List<TodayDateDto>> findByMonth(@ExtractMemberId Long memberId, @PathVariable int month) {
         List<TodayDateDto> todayList = todayService.findByMonth(month, memberId);
         return ResponseEntity.ok(todayList);
     }
 
-    @ExtractMemberId
+
     @GetMapping("/today/date/{date}")
-    public ResponseEntity<TodayDto> fetchByLocalDate(Long memberId, @PathVariable LocalDate date) {
+    public ResponseEntity<TodayDto> fetchByLocalDate(@ExtractMemberId Long memberId, @PathVariable LocalDate date) {
         TodayDto todayDto = todayService.fetchByLocalDate(date, memberId);
         return ResponseEntity.ok(todayDto);
     }

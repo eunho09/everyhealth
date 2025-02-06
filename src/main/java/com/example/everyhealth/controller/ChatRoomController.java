@@ -23,9 +23,9 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
 
-    @ExtractMemberId
+
     @PostMapping()
-    public ResponseEntity<Void> save(Long memberId, @RequestBody String title) {
+    public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody String title) {
         Member member = memberService.findById(memberId);
 
         ChatRoom chatRoom = new ChatRoom(title, member);
