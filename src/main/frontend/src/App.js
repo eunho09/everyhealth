@@ -11,6 +11,7 @@ import PostUpload from "./components/PostUpload";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import FriendRequestPage from "./pages/FriendRequestPage";
+import ChatRoom from "./components/ChatRoom";
 
 function App() {
 
@@ -27,7 +28,8 @@ function App() {
         {path: '/post/upload', element: <PostUpload/>},
         {path: '/login', element: <LoginPage/>},
         {path: '/profile', element: <ProfilePage/>},
-        {path: '/friend', element: <FriendRequestPage/>}
+        {path: '/friend', element: <FriendRequestPage/>},
+        {path: '/chat/:roomId', element: <ChatRoom/>}
       ]
     }
   ]);

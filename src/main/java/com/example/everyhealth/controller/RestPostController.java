@@ -1,5 +1,6 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Post;
 import com.example.everyhealth.domain.UploadFile;
@@ -29,17 +30,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RestPostController {
 
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final MemberService memberService;
     private final PostService postService;
     private final FileStore fileStore;
 
+    @ExtractMemberId
     @PostMapping("/post")
-    public ResponseEntity<Void> save(@CookieValue(name = "jwt") String token,
+    public ResponseEntity<Void> save(Long memberId,
                                      @RequestPart MultipartFile file,
                                      @RequestPart String text ) throws IOException {
 
-        Long memberId = jwtTokenGenerator.getUserId(token);
         Member member = memberService.findById(memberId);
         UploadFile uploadFile = fileStore.storeFile(file);
         String storeFileName = uploadFile.getStoreFileName();
@@ -60,9 +60,9 @@ public class RestPostController {
         return ResponseEntity.ok(postDtoList);
     }
 
+    @ExtractMemberId
     @GetMapping("/member/posts")
-    public ResponseEntity<List<PostDto>> findMemberPost(@CookieValue(name = "jwt") String token) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<List<PostDto>> findMemberPost(Long memberId) {
         List<Post> postList = postService.findByMemberId(memberId);
 
         List<PostDto> postDtoList = postList.stream()

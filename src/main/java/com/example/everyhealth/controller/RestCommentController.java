@@ -1,5 +1,6 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.Comment;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Post;
@@ -24,14 +25,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RestCommentController {
 
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final PostService postService;
     private final CommentService commentService;
     private final MemberService memberService;
 
+    @ExtractMemberId
     @PostMapping("/comment")
-    public ResponseEntity<Void> save(@CookieValue(name = "jwt") String token , @RequestBody SaveComment dto) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<Void> save(Long memberId, @RequestBody SaveComment dto) {
         Member member = memberService.findById(memberId);
         Post post = postService.findById(dto.getPostId());
         Comment comment = new Comment(dto.getText(), post, member);

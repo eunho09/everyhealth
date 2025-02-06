@@ -1,5 +1,6 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
@@ -29,15 +30,14 @@ public class RestRoutineController {
     private final RoutineService routineService;
     private final MemberService memberService;
     private final RoutineExerciseService routineExerciseService;
-    private final JwtTokenGenerator jwtTokenGenerator;
 
 
 
+    @ExtractMemberId
     @PostMapping("/routine")
-    public ResponseEntity<Long> save(@CookieValue(name = "jwt") String token,
+    public ResponseEntity<Long> save(Long memberId,
                                      @RequestBody RoutineSaveDto dto) {
 
-        Long memberId = jwtTokenGenerator.getUserId(token);
         Member findMember = memberService.findById(memberId);
         Routine routine = new Routine(dto.getName(), findMember);
         routineService.save(routine);
@@ -52,9 +52,9 @@ public class RestRoutineController {
         return ResponseEntity.ok("RoutineExercise created");
     }
 
+    @ExtractMemberId
     @GetMapping("/member/routines")
-    public List<RoutineResponseDto> findRoutineWithExercises(@CookieValue(name = "jwt") String token) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public List<RoutineResponseDto> findRoutineWithExercises(Long memberId) {
         List<Routine> routineList = routineService.findRoutineWithExercises(memberId);
         List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(memberId);
 

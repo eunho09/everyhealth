@@ -1,5 +1,6 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ExerciseCreateDto;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RestExerciseController {
 
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final ExerciseService exerciseService;
     private final MemberService memberService;
 
@@ -31,10 +31,9 @@ public class RestExerciseController {
         return new ExerciseDto(findExercise);
     }
 
-
+    @ExtractMemberId
     @GetMapping("/member/exercises")
-    public List<ExerciseDto> findExerciseByMemberId(@CookieValue(name = "jwt") String token) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public List<ExerciseDto> findExerciseByMemberId(Long memberId) {
         List<Exercise> exercises = exerciseService.findExercisesByMemberId(memberId);
         return exercises.stream()
                 .map(ExerciseDto::new)
@@ -49,9 +48,9 @@ public class RestExerciseController {
                 .collect(Collectors.toList());
     }
 
+    @ExtractMemberId
     @PostMapping("/exercise")
-    public ResponseEntity<Long> save(@CookieValue(name = "jwt") String token, @RequestBody ExerciseCreateDto dto) {
-        Long memberId = jwtTokenGenerator.getUserId(token);
+    public ResponseEntity<Long> save(Long memberId, @RequestBody ExerciseCreateDto dto) {
         Member findMember = memberService.findById(memberId);
 
         Exercise exercise = new Exercise(dto.getName(),
