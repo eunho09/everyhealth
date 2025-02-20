@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class ChatMessageResponseDto {
     private String message;
-    private Member member;
+    private MemberChatResponseDto member;
 
-    public ChatMessageResponseDto(String message, Member member) {
+    public ChatMessageResponseDto(String message, MemberChatResponseDto member) {
         this.message = message;
         this.member = member;
     }

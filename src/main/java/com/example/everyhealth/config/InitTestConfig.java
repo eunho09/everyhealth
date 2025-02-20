@@ -3,10 +3,7 @@ package com.example.everyhealth.config;
 import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.TodayExerciseAsExerciseRequest;
 import com.example.everyhealth.dto.ExerciseInfo;
-import com.example.everyhealth.service.ExerciseService;
-import com.example.everyhealth.service.MemberService;
-import com.example.everyhealth.service.RoutineService;
-import com.example.everyhealth.service.TodayService;
+import com.example.everyhealth.service.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +21,7 @@ public class InitTestConfig {
     private final ExerciseService exerciseService;
     private final RoutineService routineService;
     private final TodayService todayService;
+    private final ChatRoomService chatRoomService;
 
     @PostConstruct
     public void init() {

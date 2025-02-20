@@ -1,0 +1,152 @@
+.poster-container {
+    width: 380px;
+    height: 100%;
+}
+
+.poster-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    height: 500px; /* 카드 높이 고정 */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.poster-header {
+    background: linear-gradient(to bottom right, #2563eb, #1e40af);
+    padding: 1.5rem;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.poster-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    /* 제목이 길 경우 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.poster-description {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+    /* 설명이 길 경우 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.info-text {
+    font-size: 0.875rem;
+    /* 정보가 길 경우 두 줄까지 표시 */
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.poster-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.features-section {
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    /* 특징 섹션 높이 고정 */
+    height: 140px;
+    overflow: hidden;
+}
+
+.features-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.features-title svg {
+    color: #2563eb;
+}
+
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.feature-bullet {
+    width: 8px;
+    height: 8px;
+    background-color: #2563eb;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.chat-button {
+    width: 100%;
+    background-color: #2563eb;
+    color: white;
+    padding: 1rem;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: auto;
+    box-sizing: border-box;
+}
+
+.chat-button:hover {
+    background-color: #1d4ed8;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+}

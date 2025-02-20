@@ -16,6 +16,9 @@ public class ChatRoom {
 
     private String title;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private Club club;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -24,10 +27,12 @@ public class ChatRoom {
     private List<ChatMessage> chatMessageList = new ArrayList<>();
 
 
-    public ChatRoom(String title, Member member) {
+    public ChatRoom(String title, Member member, Club club) {
         this.title = title;
         this.member = member;
         member.getChatRoomList().add(this);
+        this.club = club;
+        club.setChatRoom(this);
     }
 
     public ChatRoom() {

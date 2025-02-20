@@ -1,37 +1,220 @@
-.chat-room {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.messages {
-    height: 400px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
-.message {
-    margin: 10px 0;
-    padding: 5px;
-}
-
-.input-area {
+.chat-container {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f5f5f5;
 }
 
-input {
+/* 헤더 스타일링 */
+.chat-header {
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.chat-header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.connecting-status {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+    color: #f59e0b;
+}
+
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f59e0b;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 메시지 영역 스타일링 */
+.messages-container {
     flex: 1;
-    padding: 8px;
+    overflow-y: auto;
+    padding: 1rem;
 }
 
-button {
-    padding: 8px 16px;
-    background-color: #007bff;
+.message-wrapper {
+    margin-bottom: 1rem;
+}
+
+.message-bubble {
+    background-color: white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    max-width: 80%;
+    display: inline-block;
+}
+
+.message-sender {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.message-content {
+    color: #333;
+    line-height: 1.5;
+}
+
+/* 입력 영역 스타일링 */
+.input-container {
+    background-color: white;
+    border-top: 1px solid #e5e5e5;
+    padding: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.message-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.5rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.message-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.message-input:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.send-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #3b82f6;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.5rem;
     cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.send-button:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.send-button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* 스크롤바 커스터마이징 */
+.messages-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ChatRoom.css에 추가 */
+.message-wrapper {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+}
+
+/* 상대방 메시지 스타일 */
+.other-message {
+    justify-content: flex-start;
+}
+
+.other-message .message-bubble {
+    background-color: white;
+    color: #1F2937;
+}
+
+/* 내 메시지 스타일 */
+.my-message {
+    flex-direction: row-reverse;
+}
+
+.my-message .message-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.my-message .message-bubble {
+    background-color: #2563EB;
+    color: white;
+}
+
+.message-content-wrapper {
+    flex: 1;
+}
+
+.message-bubble {
+    display: inline-block;
+    max-width: 80%;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-initial {
+    width: 100%;
+    height: 100%;
+    background-color: #4B5563;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.125rem;
+    text-transform: uppercase;
+}
+
+.message-sender {
+    font-size: 0.875rem;
+    color: #6B7280;
+    margin-bottom: 0.25rem;
+    padding-left: 0.5rem;
+}
+
+/* 메시지 그룹화를 위한 스타일 */
+.message-wrapper + .message-wrapper {
+    margin-top: 0.5rem;
 }

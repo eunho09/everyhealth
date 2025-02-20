@@ -107,6 +107,7 @@
     border-radius: 0.5rem;
     transition: background-color 0.2s;
     font-size: 1.125rem;
+    box-sizing: border-box;
 }
 
 .login-button:hover {
