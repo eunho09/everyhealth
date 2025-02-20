@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,7 +21,8 @@ public class ChatRoomController {
     private final MemberService memberService;
 
 
-    @PostMapping()
+/*
+    @PostMapping("/chatRoom")
     public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody String title) {
         Member member = memberService.findById(memberId);
 
@@ -33,5 +31,13 @@ public class ChatRoomController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+*/
 
+    @PostMapping("/chatRoom/{roomId}/join")
+    public ResponseEntity<Void> join(@ExtractMemberId Long memberId, @PathVariable Long roomId) {
+        Member member = memberService.findById(memberId);
+        ChatRoom chatRoom = chatRoomService.findById(roomId);
+
+        return ResponseEntity.ok().build();
+    }
 }

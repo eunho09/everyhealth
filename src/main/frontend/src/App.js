@@ -12,6 +12,8 @@ import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import FriendRequestPage from "./pages/FriendRequestPage";
 import ChatRoom from "./components/ChatRoom";
+import ClubPage from "./pages/ClubPage";
+import ClubCreate from "./components/ClubCreate";
 
 function App() {
 
@@ -29,7 +31,9 @@ function App() {
         {path: '/login', element: <LoginPage/>},
         {path: '/profile', element: <ProfilePage/>},
         {path: '/friend', element: <FriendRequestPage/>},
-        {path: '/chat/:roomId', element: <ChatRoom/>}
+        {path: '/chat/:roomId', element: <ChatRoom/>},
+        {path: '/club', element: <ClubPage/>},
+        {path: '/club/create', element: <ClubCreate/>}
       ]
     }
   ]);

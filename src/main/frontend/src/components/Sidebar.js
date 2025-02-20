@@ -34,6 +34,7 @@ const Sidebar = () => {
                     <li><Link to="/post"><span>포스트</span></Link></li>
                     <li><Link to="/exercise"><span>운동</span></Link></li>
                     <li><Link to="/routine"><span>루틴</span></Link></li>
+                    <li><Link to="/club"><span>클럽</span></Link></li>
                 </ul>
             </nav>
 

@@ -1,6 +1,7 @@
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.ChatRoom;
+import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
-    ChatRoomRepository chatRoomRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
     public Long save(ChatRoom chatRoom) {
@@ -28,4 +29,9 @@ public class ChatRoomService {
     public List<ChatRoom> findAll() {
         return chatRoomRepository.findAll();
     }
+
+/*    public Long create(String title, Member member) {
+        ChatRoom chatRoom = new ChatRoom(title, member);
+        return save(chatRoom);
+    }*/
 }

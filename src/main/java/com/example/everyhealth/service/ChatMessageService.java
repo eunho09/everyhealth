@@ -5,6 +5,7 @@ import com.example.everyhealth.domain.ChatMessage;
 import com.example.everyhealth.domain.ChatRoom;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ChatMessageResponseDto;
+import com.example.everyhealth.dto.MemberChatResponseDto;
 import com.example.everyhealth.repository.ChatMessageRepository;
 import com.example.everyhealth.repository.ChatRoomRepository;
 import com.example.everyhealth.repository.MemberRepository;
@@ -22,14 +23,15 @@ public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
-    public ChatMessageResponseDto chatMessageResponse(String message, Long chatRoomId, Long memberId) {
+    public ChatMessageResponseDto saveMessage(String message, Long chatRoomId, Long memberId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).get();
         Member member = memberRepository.findById(memberId).get();
 
         ChatMessage chatMessage = new ChatMessage(message, member, chatRoom);
-
         chatMessageRepository.save(chatMessage);
 
-        return new ChatMessageResponseDto(message, member);
+        MemberChatResponseDto memberChatResponseDto = new MemberChatResponseDto(member.getId(), member.getName(), member.getPicture());
+
+        return new ChatMessageResponseDto(message, memberChatResponseDto);
     }
 }
