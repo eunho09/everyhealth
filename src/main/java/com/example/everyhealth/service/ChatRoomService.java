@@ -1,7 +1,6 @@
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.ChatRoom;
-import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -26,7 +26,6 @@ import java.util.List;
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JwtTokenGenerator jwtTokenGenerator;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
