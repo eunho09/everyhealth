@@ -60,7 +60,6 @@ public class ChatMessageService {
     }
 
     public List<ChatMessage> findOlderMessages(Long roomId, Long messageId, int limit) {
-        log.info("findOlderMessages");
         PageRequest pageRequest = PageRequest.of(0, limit);
         Page<ChatMessage> messages = chatMessageRepository.findOlderMessages(roomId, messageId, pageRequest);
 
