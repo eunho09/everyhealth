@@ -43,13 +43,7 @@ public class Member {
     private List<Post> postList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<ChatMessage> chatMessageList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<ChatRoom> chatRoomList  = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<Club> clubList  = new ArrayList<>();
+    private List<ClubMember> clubMemberList = new ArrayList<>();
 
     public Member(String name, String loginId, MemberRole role, String providerId, String picture) {
         this.name = name;

@@ -68,6 +68,8 @@ const PostUpload = () => {
             setFile(null);
             setPreview(null);
             setText('');
+
+            window.location.href = "/posts";
         } catch (error) {
             console.error('업로드 실패:', error);
             alert('업로드 실패!');

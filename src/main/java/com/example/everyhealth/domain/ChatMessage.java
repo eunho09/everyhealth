@@ -18,17 +18,17 @@ public class ChatMessage {
     private LocalDateTime createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "club_member_id")
+    private ClubMember clubMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    public ChatMessage(String message, Member member, ChatRoom chatRoom) {
+    public ChatMessage(String message, ClubMember clubMember, ChatRoom chatRoom) {
         this.message = message;
-        this.member = member;
-        member.getChatMessageList().add(this);
+        this.clubMember = clubMember;
+        clubMember.getChatMessageList().add(this);
         this.chatRoom = chatRoom;
         chatRoom.getChatMessageList().add(this);
         this.createdDate = LocalDateTime.now();

@@ -22,12 +22,4 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
 
-    @PostMapping("/chatRoom/{roomId}/join")
-    public ResponseEntity<Void> join(@ExtractMemberId Long memberId, @PathVariable Long roomId) {
-        Member member = memberService.findById(memberId);
-        ChatRoom chatRoom = chatRoomService.findById(roomId);
-
-        return ResponseEntity.ok().build();
-    }
-
 }

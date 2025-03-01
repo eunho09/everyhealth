@@ -3,51 +3,94 @@ package com.example.everyhealth.controller;
 import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.ChatRoom;
 import com.example.everyhealth.domain.Club;
+import com.example.everyhealth.domain.ClubMember;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ClubCreate;
 import com.example.everyhealth.dto.ClubDto;
 import com.example.everyhealth.service.ChatRoomService;
+import com.example.everyhealth.service.ClubMemberService;
 import com.example.everyhealth.service.ClubService;
 import com.example.everyhealth.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Slf4j
 public class ClubController {
 
     private final ClubService clubService;
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
+    private final ClubMemberService clubMemberService;
 
     @PostMapping("/club")
     public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody ClubCreate clubCreate) {
         Member member = memberService.findById(memberId);
-        Club club = new Club(clubCreate.getTitle(), clubCreate.getContent(), member, clubCreate.getLocation(), clubCreate.getSchedule(), clubCreate.getHighlights());
+        Club club = new Club(clubCreate.getTitle(), clubCreate.getContent(), clubCreate.getLocation(), clubCreate.getSchedule(), clubCreate.getHighlights());
         clubService.save(club);
 
-        ChatRoom chatRoom = new ChatRoom(clubCreate.getTitle(), member, club);
+        ClubMember clubMember = new ClubMember(club, member, true, LocalDateTime.now());
+        clubMemberService.save(clubMember);
+
+        ChatRoom chatRoom = new ChatRoom(clubCreate.getTitle(), club);
         chatRoomService.save(chatRoom);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PostMapping("/club/{id}/join")
+    public ResponseEntity<Void> join(@ExtractMemberId Long memberId, @PathVariable Long id) {
+
+        boolean exists = clubMemberService.existsByMemberId(memberId);
+
+        if (!exists) {
+            Member member = memberService.findById(memberId);
+            Club club = clubService.findById(id);
+
+            ClubMember clubMember = new ClubMember(club, member, false, LocalDateTime.now());
+            clubMemberService.save(clubMember);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/club/chatRoom/{id}")
+    public ResponseEntity<ClubDto> findByChatRoomId(@PathVariable Long id) {
+        ClubDto clubDto = clubService.findByChatRoomId(id);
+        return ResponseEntity.ok().body(clubDto);
+    }
+
     @GetMapping("/clubs")
-    public ResponseEntity<List<ClubDto>> clubList() {
-        List<Club> clubList = clubService.findAll();
-        List<ClubDto> clubDtoList = clubList.stream()
-                .map(club -> new ClubDto(club.getTitle(), club.getContent(), club.getLocation(), club.getSchedule(), club.getHighlights(), club.getChatRoom().getId()))
-                .toList();
+    public ResponseEntity<List<ClubDto>> clubList(@RequestParam(required = false) String name,
+                                                  @RequestParam(required = false) Long isMyClubs,
+                                                  @ExtractMemberId Long memberId) {
+
+        Long memberIdToUse = (isMyClubs == null || isMyClubs == 0) ? isMyClubs : memberId;
+        List<ClubDto> clubDtoList = clubService.searchClubByMemberAndName(memberIdToUse, name);
+
         return ResponseEntity.ok(clubDtoList);
+    }
+
+    @DeleteMapping("/club/{id}/leave")
+    public ResponseEntity<Void> leaveClub(@PathVariable Long id, @ExtractMemberId Long memberId) {
+        ClubMember clubMember = clubMemberService.findByMemberIdAndClubId(memberId, id);
+
+        if (clubMember.isAdmin()){
+            Club club = clubService.findById(id);
+            clubService.delete(club);
+        }
+
+        clubMemberService.delete(clubMember);
+
+        return ResponseEntity.ok().build();
     }
 }

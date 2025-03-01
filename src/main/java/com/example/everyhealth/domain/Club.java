@@ -18,32 +18,26 @@ public class Club {
     private String location;
     private String schedule;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private ChatRoom chatRoom;
 
     @ElementCollection
     private List<String> highlights = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @OneToMany(mappedBy = "club", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ClubMember> clubMemberList = new ArrayList<>();
 
     protected Club() {
     }
 
-    public Club(String title, String content, Member member, String location, String schedule, List<String> highlights) {
+    public Club(String title, String content, String location, String schedule, List<String> highlights) {
         this.title = title;
         this.content = content;
-        this.member = member;
         this.location = location;
         this.schedule = schedule;
         this.highlights = highlights;
     }
 
-    public void setMember(Member member) {
-        this.member = member;
-        member.getClubList().add(this);
-    }
 
     public void setChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
