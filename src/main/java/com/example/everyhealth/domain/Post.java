@@ -3,6 +3,7 @@ package com.example.everyhealth.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Post {
 
     private String text;
     private String imageUrl;
+    private LocalDateTime createAt;
 
     @OneToMany(mappedBy = "post")
     private List<Comment> commentList = new ArrayList<>();
@@ -29,6 +31,7 @@ public class Post {
         this.imageUrl = imageUrl;
         this.member = member;
         member.getPostList().add(this);
+        this.createAt = LocalDateTime.now();
     }
 
     protected Post() {

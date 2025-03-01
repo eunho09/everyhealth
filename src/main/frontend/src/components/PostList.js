@@ -13,54 +13,116 @@ const PostList = () => {
     const [activePostId, setActivePostId] = useState(null);
     const [comment, setComment] = useState("");
     const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [limit] = useState(5); // 한 번에 가져올 게시물 수
 
+    // 초기 게시물 로드
     useEffect(() => {
-        const fetchPosts = async () => {
+        const fetchInitialPosts = async () => {
+            setLoading(true);
             try {
-                const response = await axios.get("/api/posts");
+                const response = await axios.get("/api/posts", {
+                    params: { limit }
+                });
+
                 setPosts(response.data);
+                setHasMore(response.data.length >= limit);
             } catch (error) {
-                console.error("포스트 데이터 가져오기 실패:", error);
+                console.error("초기 포스트 데이터 가져오기 실패:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchPosts();
-    }, []);
+        fetchInitialPosts();
+    }, [limit]);
 
+    // 스크롤 이벤트 리스너 설정
     useEffect(() => {
-        if (posts.length === 0) return;
+        const handleScroll = () => {
+            // 현재 스크롤 위치 + 화면 높이가 문서 전체 높이에 가까워지면 추가 데이터 로드
+            if (
+                window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 &&
+                !loading &&
+                hasMore &&
+                posts.length > 0
+            ) {
+                loadMorePosts();
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 제거
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [loading, hasMore, posts.length]);
+
+    // 추가 게시물 로드 (스크롤)
+    const loadMorePosts = async () => {
+        if (loading || !hasMore || posts.length === 0) return;
+
+        const lastPostId = posts[posts.length - 1].id;
+
+        setLoading(true);
+        try {
+            const response = await axios.get("/api/posts/scroll", {
+                params: {
+                    limit,
+                    postId: lastPostId
+                }
+            });
+
+            if (response.data.length === 0) {
+                setHasMore(false);
+            } else {
+                setPosts(prevPosts => [...prevPosts, ...response.data]);
+                setHasMore(response.data.length >= limit);
+            }
+        } catch (error) {
+            console.error("스크롤 포스트 데이터 가져오기 실패:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 이미지 로드
+    useEffect(() => {
+        const newPosts = posts.filter(post => !images[post.id]);
+        if (newPosts.length === 0) return;
 
         const fetchImages = async () => {
             try {
-                const imageRequests = posts.map((post) =>
+                const imageRequests = newPosts.map((post) =>
                     axios.get(`/api/images/${post.imageUrl}`, { responseType: "blob" })
                 );
                 const imageResponses = await Promise.all(imageRequests);
 
-                const imageMap = imageResponses.reduce((acc, res, idx) => {
+                const newImageMap = {};
+                imageResponses.forEach((res, idx) => {
+                    const post = newPosts[idx];
                     const imageUrl = URL.createObjectURL(res.data);
-                    acc[posts[idx].id] = {
+                    newImageMap[post.id] = {
                         url: imageUrl,
                         width: 0,
                         height: 0
                     };
-                    return acc;
-                }, {});
+                });
 
-                const loadImageSizes = Object.keys(imageMap).map(async (postId) => {
+                const loadImageSizes = Object.keys(newImageMap).map(async (postId) => {
                     return new Promise((resolve) => {
                         const img = new Image();
                         img.onload = () => {
-                            imageMap[postId].width = img.width;
-                            imageMap[postId].height = img.height;
+                            newImageMap[postId].width = img.width;
+                            newImageMap[postId].height = img.height;
                             resolve();
                         };
-                        img.src = imageMap[postId].url;
+                        img.src = newImageMap[postId].url;
                     });
                 });
 
                 await Promise.all(loadImageSizes);
-                setImages(imageMap);
+                setImages(prevImages => ({ ...prevImages, ...newImageMap }));
             } catch (error) {
                 console.error("이미지 로드 실패:", error);
             }
@@ -120,7 +182,10 @@ const PostList = () => {
                         : 100;
 
                     return (
-                        <article key={post.id} className="post-card">
+                        <article
+                            key={post.id}
+                            className="post-card"
+                        >
                             <div
                                 className="image-container"
                                 style={{paddingBottom: `${aspectRatio}%`}}
@@ -140,11 +205,14 @@ const PostList = () => {
                                         <FaRegMessage/>
                                     </button>
                                 </div>
-                                <p className="post-text">{post.text}</p>
+                                <p className="post-texts">{post.text}</p>
                             </div>
                         </article>
                     );
                 })}
+
+                {loading && <div className="loading">로딩 중...</div>}
+                {!hasMore && posts.length > 0 && <div className="no-more-posts">더 이상 게시물이 없습니다.</div>}
 
                 {showCommentModal && (
                     <div className="modal-overlay" onClick={() => setShowCommentModal(false)}>
@@ -172,25 +240,24 @@ const PostList = () => {
                                     placeholder="댓글을 입력하세요..."
                                     maxLength={1000}  // 최대 글자수 제한
                                 />
-                                    <div className="button-container">
-                                        <button
-                                            className="modal-button submit-button"
-                                            onClick={handleCommentSubmit}
-                                            disabled={!comment.trim()}  // 내용이 없으면 버튼 비활성화
-                                        >
-                                            작성
-                                        </button>
-                                        <button
-                                            className="modal-button cancel-button"
-                                            onClick={() => {
-                                                setShowCommentModal(false);
-                                                setComments([]);
-                                            }
-                                        }
-                                        >
-                                            닫기
-                                        </button>
-                                    </div>
+                                <div className="button-container">
+                                    <button
+                                        className="modal-button submit-button"
+                                        onClick={handleCommentSubmit}
+                                        disabled={!comment.trim()}  // 내용이 없으면 버튼 비활성화
+                                    >
+                                        작성
+                                    </button>
+                                    <button
+                                        className="modal-button cancel-button"
+                                        onClick={() => {
+                                            setShowCommentModal(false);
+                                            setComments([]);
+                                        }}
+                                    >
+                                        닫기
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
