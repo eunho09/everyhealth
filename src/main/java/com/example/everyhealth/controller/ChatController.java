@@ -50,7 +50,7 @@ public class ChatController {
                 .map(m -> new ChatMessageResponseDto(
                         m.getMessage(),
                         m.getId(),
-                        new MemberChatResponseDto(m.getMember().getId(), m.getMember().getName(), m.getMember().getPicture()),
+                        new MemberChatResponseDto(m.getClubMember().getMember().getId(), m.getClubMember().getMember().getName(), m.getClubMember().getMember().getPicture()),
                         m.getCreatedDate()))
                 .toList();
 
@@ -67,7 +67,7 @@ public class ChatController {
                 .map(m -> new ChatMessageResponseDto(
                         m.getMessage(),
                         m.getId(),
-                        new MemberChatResponseDto(m.getMember().getId(), m.getMember().getName(), m.getMember().getPicture()),
+                        new MemberChatResponseDto(m.getClubMember().getMember().getId(), m.getClubMember().getMember().getName(), m.getClubMember().getMember().getPicture()),
                         m.getCreatedDate()))
                 .toList();
 

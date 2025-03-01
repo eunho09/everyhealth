@@ -29,8 +29,12 @@ public class ChatRoomService {
         return chatRoomRepository.findAll();
     }
 
-/*    public Long create(String title, Member member) {
-        ChatRoom chatRoom = new ChatRoom(title, member);
-        return save(chatRoom);
-    }*/
+    @Transactional
+    public void delete(ChatRoom chatRoom) {
+        chatRoomRepository.delete(chatRoom);
+    }
+
+    public ChatRoom findByClubId(Long clubId) {
+        return chatRoomRepository.findByClubId(clubId);
+    }
 }

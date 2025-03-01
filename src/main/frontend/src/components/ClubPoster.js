@@ -2,11 +2,22 @@ import React from 'react';
 import { Calendar, MapPin, Trophy, MessageCircle } from 'lucide-react';
 import '../styles/ClubPoster.css';
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const ClubPoster = ({clubData}) => {
     const navigate = useNavigate();
+
+    const fetchJoinClub = async () => {
+        try {
+            const response = await axios.post(`/api/club/${clubData.id}/join`);
+        } catch (error){
+            console.log(error);
+        }
+    }
+
     const handleChatClick = (chatRoomId) => {
         navigate(`/chat/${chatRoomId}`);
+        fetchJoinClub();
         console.log(`${chatRoomId}번 채팅방으로 이동`);
     };
 

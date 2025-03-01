@@ -17,20 +17,15 @@ public class ChatRoom {
     private String title;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id")
     private Club club;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ChatMessage> chatMessageList = new ArrayList<>();
 
 
-    public ChatRoom(String title, Member member, Club club) {
+    public ChatRoom(String title, Club club) {
         this.title = title;
-        this.member = member;
-        member.getChatRoomList().add(this);
         this.club = club;
         club.setChatRoom(this);
     }

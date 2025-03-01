@@ -35,6 +35,18 @@ const ProfilePage = () => {
         fetchProfileData();
     }, []);
 
+    /*useEffect(() => {
+        if (posts.length === 0) return;
+
+        const fetchPostImage = async () => {
+            try {
+                posts.map((post) => axios.get(`/api/images/${post.imageUrl}`, {
+                    responseType: "Blob"
+                }))
+            }
+        }
+    }, []);*/
+
     if (loading) {
         return <div className="loading">Loading...</div>;
     }
@@ -96,7 +108,7 @@ const ProfilePage = () => {
                     <div className="posts-grid">
                         {posts.map(post => (
                             <div key={post.id} className="post-item">
-                                <img src={post.imageUrl} alt={post.text} />
+                                <img src={`/api/images/${post.imageUrl}`} alt={post.text} />
                                 <div className="post-overlay">
                                     <p className="post-text">{post.text}</p>
                                 </div>

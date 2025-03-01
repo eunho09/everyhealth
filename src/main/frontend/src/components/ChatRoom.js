@@ -1,11 +1,14 @@
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
-import {useEffect, useState, useCallback, useRef} from 'react';
-import {useLocation, useParams} from "react-router-dom";
+import React, {useEffect, useState, useCallback, useRef} from 'react';
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import "../styles/ChatRoom.css";
+import axios from "axios";
 
 const ChatRoom = () => {
+    const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
+    const [club, setClub] = useState(null);
     const [messageInput, setMessageInput] = useState('');
     const [stompClient, setStompClient] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
@@ -41,6 +44,15 @@ const ChatRoom = () => {
             await loadOlderMessages();
         }
     };
+
+    const fetchClub = async () => {
+        try {
+            const response = await axios.get(`/api/club/chatRoom/${roomId}`);
+            setClub(response.data);
+        } catch (error){
+            console.log(error);
+        }
+    }
 
     // 최초 메시지 로딩
     const loadRecentMessages = async () => {
@@ -119,6 +131,7 @@ const ChatRoom = () => {
 
         client.activate();
         setStompClient(client);
+        fetchClub();
 
         return () => {
             if (client) {
@@ -158,12 +171,32 @@ const ChatRoom = () => {
         scrollToBottom();
     }, [messages, scrollToBottom]);
 
+    const handleLeaveRoom = async (chatRoomId) => {
+        // 확인 메시지 표시
+        const isConfirmed = window.confirm("채팅방을 나가시겠습니까? 방장인 경우 클럽이 삭제됩니다.");
+
+        if (isConfirmed) {
+            try {
+                const response = await axios.delete(`/api/club/${club.id}/leave`);
+
+                if (response.status === 200) {
+                    alert("채팅방에서 나갔습니다.");
+                    navigate("/club");
+                }
+            } catch (error) {
+                console.error("채팅방 나가기 실패:", error);
+                alert("채팅방 나가기에 실패했습니다.");
+            }
+        }
+    };
+
     const currentUserId = "1";
 
     return (
         <div className="chat-container">
             <div className="chat-header">
                 <h1>채팅방 #{roomId}</h1>
+                <button onClick={handleLeaveRoom}>나가기</button>
                 {!isConnected && (
                     <div className="connecting-status">
                         <div className="loading-spinner"></div>
