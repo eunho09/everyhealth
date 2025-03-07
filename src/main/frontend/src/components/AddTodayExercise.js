@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import "../styles/AddTodayExercise.css"
 import {IoIosArrowBack} from "react-icons/io";
 
-const AddTodayExercise = ({handleModel, exercises, checkList, setCheckList, checkHandler, routines, handleSaveTodayExercise, formattedDate, month, fetchMonthData}) => {
+const AddTodayExercise = ({onDataChanged, handleModel, exercises, checkList, setCheckList, checkHandler, routines, handleSaveTodayExercise, formattedDate, month, fetchMonthData}) => {
 
     const [activeTab, setActiveTab] = useState("exercises"); // "exercises" 또는 "routines"
 
@@ -13,6 +13,7 @@ const AddTodayExercise = ({handleModel, exercises, checkList, setCheckList, chec
     const save = () => {
         handleSaveTodayExercise(formattedDate);
         fetchMonthData(month)
+        onDataChanged();
         handleModel(false);
         setCheckList([]);
     }

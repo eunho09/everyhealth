@@ -3,13 +3,14 @@ import { Calendar, MapPin, Trophy, MessageCircle } from 'lucide-react';
 import '../styles/ClubPoster.css';
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import {clubService} from "../services/ClubService";
 
 const ClubPoster = ({clubData}) => {
     const navigate = useNavigate();
 
     const fetchJoinClub = async () => {
         try {
-            const response = await axios.post(`/api/club/${clubData.id}/join`);
+            const data = await clubService.join(clubData.id);
         } catch (error){
             console.log(error);
         }

@@ -101,7 +101,6 @@ const CalendarStyled = styled.div`
         }
     }
 
-    /* 운동 기록 표시 스타일 */
     .react-calendar__tile-content {
         position: absolute;
         bottom: 4px;
@@ -109,7 +108,8 @@ const CalendarStyled = styled.div`
         transform: translateX(-50%);
         width: 6px;
         height: 6px;
-        background: #1890ff;
+        background: transparent;
+        border: 1px solid red;
         border-radius: 50%;
     }
 

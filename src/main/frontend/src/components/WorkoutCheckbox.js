@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {todayService} from "../services/todayService";
 
-const WorkoutCheckbox = ({ todayId }) => {
+const WorkoutCheckbox =  ({onDataChanged, todayId }) => {
     const [isChecked, setIsChecked] = useState(false);
 
     // Load initial checkbox state
     useEffect(() => {
         const fetchCheckboxState = async () => {
             try {
-                const response = await axios.get(`/api/today/${todayId}`);
-                setIsChecked(response.data.checkBox === 'True');
+                const data = await todayService.findOneTodayById(todayId);
+                setIsChecked(data.checkBox === 'True');
             } catch (error) {
                 console.error('Error fetching checkbox state:', error);
             }
@@ -23,17 +24,11 @@ const WorkoutCheckbox = ({ todayId }) => {
         setIsChecked(checked);
 
         try {
-            await axios.post(`/api/today/checkbox/${todayId}`,
-                checked ? "true" : "false",
-                {
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    }
-                }
-            );
+            await todayService.updateCheckbox(todayId, checked);
+
+            onDataChanged();
         } catch (error) {
             console.error('Error updating checkbox:', error);
-            // Revert checkbox state if API call fails
             setIsChecked(!checked);
         }
     };

@@ -3,7 +3,8 @@ import { Plus, Search } from 'lucide-react';
 import ClubPoster from '../components/ClubPoster';
 import '../styles/ClubList.css';
 import axios from "axios";
-import api from "../api/api";
+import api from "../services/api";
+import {clubService} from "../services/ClubService";
 
 const ClubListPage = () => {
     const [clubs, setClubs] = useState([]);
@@ -15,8 +16,8 @@ const ClubListPage = () => {
     useEffect(() => {
         const fetchClubList = async () => {
             try {
-                const response = await axios.get("api/clubs")
-                setClubs(response.data);
+                const data = await clubService.findAll();
+                setClubs(data);
             } catch (error){
                 console.error(error);
             }
@@ -30,8 +31,8 @@ const ClubListPage = () => {
 
     const fetchSearch = async () => {
         try {
-            const response = await axios.get(`/api/clubs?name=${searchClubName}&isMyClubs=${isMyClubs}`)
-            setClubs(response.data);
+            const data = await clubService.findByNameAndMyClub(searchClubName, isMyClubs)
+            setClubs(data);
         } catch(error){
             console.log(error);
         }

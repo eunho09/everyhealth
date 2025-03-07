@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/ClubCreate.css';
+import {clubService} from "../services/ClubService";
 
 const ClubCreate = () => {
     const navigate = useNavigate();
@@ -33,18 +34,7 @@ const ClubCreate = () => {
         if (!validateForm()) return;
 
         try {
-            // API 호출
-            const response = await fetch('/api/club', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (!response.ok) throw new Error('클럽 생성에 실패했습니다.');
-
-            // 성공 시 클럽 목록 페이지로 이동
+            const data = clubService.save(formData);
             navigate('/club');
         } catch (error) {
             console.error('Error creating club:', error);

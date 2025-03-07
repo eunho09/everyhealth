@@ -24,4 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p from Post p where p.id >:postId order by p.createAt desc")
     Page<Post> findByLtPostId(@Param("postId") Long postId, PageRequest pageRequest);
+
+    @Query("select p from Post p where p.member.id=(select f.friend.id from Friend f where f.id=:friendId)")
+    List<Post> findByFriendId(@Param("friendId") Long friendId);
 }

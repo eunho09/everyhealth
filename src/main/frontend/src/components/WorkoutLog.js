@@ -4,13 +4,13 @@ import { TiPlus } from "react-icons/ti";
 import {IoIosArrowBack} from "react-icons/io";
 import axios from "axios";
 import {CgArrowsExchange} from "react-icons/cg";
-import {addTodayExercise} from "../api/todayApi";
-import {findExerciseByMemberId} from "../api/exerciseApi";
-import {findRoutineByMemberId} from "../api/routineApi";
+import {routineService} from "../services/routineService";
 import AddTodayExercise from "./AddTodayExercise";
 import WorkoutCheckbox from "./WorkoutCheckbox";
+import {exerciseService} from "../services/exerciseService";
+import {todayService} from "../services/todayService";
 
-const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIsEditing}) => {
+const WorkoutLog = ({ onDataChanged, date, todayData, handleSaveToday, fetchMonthData, handleIsEditing}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [routines, setRoutines] = useState([]);
@@ -23,7 +23,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
 
     const fetchExercises = async () => {
         try {
-            const data = await findExerciseByMemberId();
+            const data = await exerciseService.findExerciseByMemberId();
             console.log(data)
             setExercises(data);
         } catch (error) {
@@ -33,7 +33,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
 
     const fetchRoutines = async () => {
         try {
-            const data = await findRoutineByMemberId();
+            const data = await routineService.findRoutineByMemberId();
             console.log(data)
             setRoutines(data);
         } catch (error) {
@@ -68,7 +68,7 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
 
     const handleSaveTodayExercise = async (formattedDate) => {
         try {
-            const data = addTodayExercise(formattedDate, checkList);
+            const data = todayService.addTodayExercise(formattedDate, checkList);
 
             console.log(data);
         } catch (error){
@@ -112,13 +112,14 @@ const WorkoutLog = ({ date, todayData, handleSaveToday, fetchMonthData, handleIs
                             </li>
                         ))}
                     </ul>
-                    {todayData?.id && <WorkoutCheckbox todayId={todayData.id} />}
+                    {todayData?.id && <WorkoutCheckbox onDataChanged={onDataChanged} todayId={todayData.id} />}
                 </div>
             ) : (
                 <p className="no-log">운동 기록이 없습니다.</p>
             )}
             {isModalOpen && (
                 <AddTodayExercise
+                    onDataChanged={onDataChanged}
                     handleModel={handleModel}
                     exercises={exercises}
                     checkList={checkList}

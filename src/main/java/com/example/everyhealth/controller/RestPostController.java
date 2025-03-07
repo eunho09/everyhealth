@@ -99,4 +99,14 @@ public class RestPostController {
         return new UrlResource("file:" + fileStore.getFullName(fileName));
     }
 
+    @GetMapping("/posts/friend/{friendId}")
+    public ResponseEntity<List<PostDto>> findByFriendId(@PathVariable Long friendId) {
+        List<Post> postList = postService.findByFriendId(friendId);
+
+        List<PostDto> postDtoList = postList.stream()
+                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(postDtoList);
+    }
 }

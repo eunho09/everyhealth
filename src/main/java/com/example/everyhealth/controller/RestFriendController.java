@@ -99,4 +99,10 @@ public class RestFriendController {
         List<MemberDto> suggestedFriends = memberService.findSuggestedFriend(memberId);
         return ResponseEntity.ok(suggestedFriends);
     }
+
+    @GetMapping("/friend/check/{friendId}")
+    public ResponseEntity<Boolean> checkFriendShip(@PathVariable Long friendId, @ExtractMemberId Long memberId) {
+        boolean b = friendService.checkFriendShip(friendId, memberId);
+        return ResponseEntity.ok(b);
+    }
 }

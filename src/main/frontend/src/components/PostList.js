@@ -5,6 +5,8 @@ import { FaRegMessage } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import '../styles/PostList.css'
 import Comment from "./Comment";
+import {postService} from "../services/postService";
+import {commentService} from "../services/commentService";
 
 const PostList = () => {
     const [posts, setPosts] = useState([]);
@@ -15,19 +17,17 @@ const PostList = () => {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const [limit] = useState(5); // 한 번에 가져올 게시물 수
+    const [limit] = useState(5);
 
     // 초기 게시물 로드
     useEffect(() => {
         const fetchInitialPosts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get("/api/posts", {
-                    params: { limit }
-                });
+                const data = await postService.findAll(limit);
 
-                setPosts(response.data);
-                setHasMore(response.data.length >= limit);
+                setPosts(data);
+                setHasMore(data.length >= limit);
             } catch (error) {
                 console.error("초기 포스트 데이터 가져오기 실패:", error);
             } finally {
@@ -66,18 +66,13 @@ const PostList = () => {
 
         setLoading(true);
         try {
-            const response = await axios.get("/api/posts/scroll", {
-                params: {
-                    limit,
-                    postId: lastPostId
-                }
-            });
+            const data = await postService.scroll(limit, lastPostId);
 
-            if (response.data.length === 0) {
+            if (data.length === 0) {
                 setHasMore(false);
             } else {
-                setPosts(prevPosts => [...prevPosts, ...response.data]);
-                setHasMore(response.data.length >= limit);
+                setPosts(prevPosts => [...prevPosts, ...data]);
+                setHasMore(data.length >= limit);
             }
         } catch (error) {
             console.error("스크롤 포스트 데이터 가져오기 실패:", error);
@@ -94,8 +89,7 @@ const PostList = () => {
         const fetchImages = async () => {
             try {
                 const imageRequests = newPosts.map((post) =>
-                    axios.get(`/api/images/${post.imageUrl}`, { responseType: "blob" })
-                );
+                    postService.getPostImageUrl(post.imageUrl));
                 const imageResponses = await Promise.all(imageRequests);
 
                 const newImageMap = {};
@@ -139,8 +133,8 @@ const PostList = () => {
         setActivePostId(postId);
         setShowCommentModal(true);
         try {
-            const response = await axios.get(`/api/comment/${postId}`);
-            setComments(response.data);
+            const data = await commentService.findByPostId(postId);
+            setComments(data);
         } catch (error) {
             console.error("댓글 불러오기 실패:", error);
             setComments([]);
@@ -154,13 +148,10 @@ const PostList = () => {
         }
 
         try {
-            await axios.post(`/api/comment`, {
-                postId: activePostId,
-                text: comment
-            });
+            await commentService.save(activePostId, comment);
 
-            const response = await axios.get(`/api/comment/${activePostId}`);
-            setComments(response.data);
+            const data = await commentService.findByPostId(activePostId);
+            setComments(data);
             setComment("");
         } catch (error) {
             console.error("댓글 추가 실패:", error);
@@ -191,7 +182,7 @@ const PostList = () => {
                                 style={{paddingBottom: `${aspectRatio}%`}}
                             >
                                 <img
-                                    src={imageData.url}
+                                    src={`/api/images/${post.imageUrl}`}
                                     alt="포스트 이미지"
                                     className="post-image"
                                 />
