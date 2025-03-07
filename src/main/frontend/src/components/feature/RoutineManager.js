@@ -3,8 +3,8 @@ import axios from 'axios';
 import RoutineList from '../RoutineList';
 import AddRoutineExercise from '../AddRoutineExercise';
 import UpdateRoutine from "../UpdateRoutine";
-import {addRoutineExercise, findRoutineById, findRoutineByMemberId} from "../../api/routineApi";
-import {findExerciseByMemberId} from "../../api/exerciseApi";
+import {exerciseService} from "../../services/exerciseService";
+import {routineService} from "../../services/routineService";
 
 const RoutineManager = () => {
     const [routines, setRoutines] = useState([]);
@@ -21,7 +21,7 @@ const RoutineManager = () => {
         // 비동기 함수 정의
         const fetchRoutineData = async () => {
             try {
-                const data = await findRoutineByMemberId();
+                const data = await routineService.findRoutineByMemberId();
                 setRoutines(data);
                 console.log(data);
             } catch (error) {
@@ -36,7 +36,7 @@ const RoutineManager = () => {
         // 추가할 운동 데이터 로드
         const fetchExercises = async () => {
             try {
-                const data = await findExerciseByMemberId();
+                const data = await exerciseService.findExerciseByMemberId();
                 setExercises(data);
             } catch (error) {
                 console.error("운동 데이터 로드 중 오류 발생:", error);
@@ -97,9 +97,9 @@ const RoutineManager = () => {
         })
 
         try {
-            await addRoutineExercise(routineId, checkedList);
+            await routineService.addRoutineExercise(routineId, checkedList);
 
-            const data = await findRoutineById();
+            const data = await routineService.findRoutineById();
             setRoutines(data);
 
             closeModal(routineId);

@@ -3,6 +3,7 @@ import axios from "axios";
 import Plus from "./Plus";
 import { IoIosArrowBack } from "react-icons/io";
 import "../styles/Modal.css";
+import {routineService} from "../services/routineService";
 
 const AddRoutine = () => {
 
@@ -26,11 +27,7 @@ const AddRoutine = () => {
 
     const saveRoutine = async () => {
         try {
-            const response = await axios.post("/api/routine", {
-                name:name,
-                memberId:1
-            })
-            console.log(response.data);
+            await routineService.save(name)
         } catch (error){
             console.error(error);
         }

@@ -21,4 +21,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "AND m.id NOT IN (SELECT f.friend.id FROM Friend f WHERE f.member.id = :memberId) " +
             "ORDER BY RAND()")
     List<MemberDto> findSuggestedFriend(@Param("memberId") Long memberId);
+
+    @Query("select m from Member m where m.id=(select f.friend.id from Friend f where f.id=:friendId)")
+    Member findByFriendInfo(@Param("friendId") Long friendId);
 }

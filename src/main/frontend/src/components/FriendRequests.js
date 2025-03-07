@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaCheck, FaTimes, FaUserFriends, FaUserPlus } from 'react-icons/fa';
 import '../styles/FriendRequests.css';
+import {friendService} from "../services/friendService";
 
 const FriendRequests = () => {
     const [friendRequests, setFriendRequests] = useState([]);
@@ -19,9 +20,8 @@ const FriendRequests = () => {
 
     const fetchFriendRequests = async () => {
         try {
-            const response = await axios.get('/api/member/friend/request');
-            setFriendRequests(response.data);
-            console.log(response.data);
+            const data = await friendService.getRequest();
+            setFriendRequests(data);
         } catch (err) {
             setError('친구 요청을 불러오는데 실패했습니다.');
             console.error('친구 요청 로드 실패:', err);
@@ -30,10 +30,9 @@ const FriendRequests = () => {
 
     const fetchSuggestedFriends = async () => {
         try {
-            // API 엔드포인트는 백엔드 구현에 맞게 수정 필요
-            const response = await axios.get('/api/member/suggested-friends');
-            setSuggestedFriends(Array.isArray(response.data) ? response.data : []);
-            console.log(response.data);
+            const data = await friendService.getSuggestedFriends();
+            setSuggestedFriends(Array.isArray(data) ? data : []);
+            console.log(data);
         } catch (err) {
             setSuggestedFriends([]); // 에러 시 빈 배열로 설정
             console.error('추천 친구 로드 실패:', err);
@@ -42,7 +41,7 @@ const FriendRequests = () => {
 
     const handleAccept = async (friendId) => {
         try {
-            await axios.post(`/api/friend/accept/${friendId}`);
+            await friendService.acceptFriend(friendId);
             setFriendRequests(prev => prev.filter(request => request.member.id !== friendId));
             alert('친구 요청을 수락했습니다.');
         } catch (err) {
@@ -53,7 +52,7 @@ const FriendRequests = () => {
 
     const handleReject = async (friendId) => {
         try {
-            await axios.post(`/api/friend/cancel/${friendId}`);
+            await friendService.cancelRequest(friendId);
             setFriendRequests(prev => prev.filter(request => request.friend.id !== friendId));
             alert('친구 요청을 거절했습니다.');
         } catch (err) {
@@ -64,8 +63,7 @@ const FriendRequests = () => {
 
     const handleSendRequest = async (friendId) => {
         try {
-            await axios.post(`/api/friend/request/${friendId}`);
-            // 요청 성공 후 추천 목록에서 제거
+            await friendService.send(friendId);
             setSuggestedFriends(prev => prev.filter(friend => friend.id !== friendId));
             alert('친구 요청을 보냈습니다.');
         } catch (err) {

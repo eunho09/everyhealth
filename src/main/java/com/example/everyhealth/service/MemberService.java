@@ -33,4 +33,8 @@ public class MemberService {
     public List<MemberDto> findSuggestedFriend(Long memberId) {
         return memberRepository.findSuggestedFriend(memberId);
     }
+
+    public Member findByFriendInfo(Long friendId) {
+        return memberRepository.findByFriendInfo(friendId);
+    }
 }

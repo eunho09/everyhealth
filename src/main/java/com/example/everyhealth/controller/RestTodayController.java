@@ -1,12 +1,10 @@
 package com.example.everyhealth.controller;
 
 import com.example.everyhealth.aop.ExtractMemberId;
-import com.example.everyhealth.domain.CheckBox;
-import com.example.everyhealth.domain.Member;
-import com.example.everyhealth.domain.Today;
-import com.example.everyhealth.domain.TodayExercise;
+import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.security.JwtTokenGenerator;
+import com.example.everyhealth.service.FriendService;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.TodayExerciseService;
 import com.example.everyhealth.service.TodayService;
@@ -28,6 +26,7 @@ public class RestTodayController {
     private final TodayService todayService;
     private final TodayExerciseService todayExerciseService;
     private final MemberService memberService;
+    private final FriendService friendService;
 
 
     @PostMapping("/today")
@@ -86,12 +85,35 @@ public class RestTodayController {
         return ResponseEntity.ok(todayList);
     }
 
+    @GetMapping("/today/friendAndMonth/{friendId}/{month}")
+    public ResponseEntity<List<TodayDateDto>> findByFriendAndMonth(
+            @PathVariable Long friendId,
+            @PathVariable int month,
+            @ExtractMemberId Long memberId) {
+        Friend friend = friendService.findByFriendIdAndMemberId(friendId, memberId);
+        Member member = friend.getFriend();
+        List<TodayDateDto> todayList = todayService.findByMonth(month, member.getId());
+        return ResponseEntity.ok(todayList);
+    }
+
 
     @GetMapping("/today/date/{date}")
     public ResponseEntity<TodayDto> fetchByLocalDate(@ExtractMemberId Long memberId, @PathVariable LocalDate date) {
         TodayDto todayDto = todayService.fetchByLocalDate(date, memberId);
         return ResponseEntity.ok(todayDto);
     }
+
+    @GetMapping("/today/friendAndDate/{friendId}/{date}")
+    public ResponseEntity<TodayDto> fetchByLocalDateAndFriendId(
+            @ExtractMemberId Long memberId,
+            @PathVariable LocalDate date,
+            @PathVariable Long friendId) {
+        Friend friend = friendService.findByFriendIdAndMemberId(friendId, memberId);
+        Member member = friend.getFriend();
+        TodayDto todayDto = todayService.fetchByLocalDate(date, member.getId());
+        return ResponseEntity.ok(todayDto);
+    }
+
 
     @PatchMapping("/update/todayExercise/{todayId}")
     public ResponseEntity<String> updateTodayExercise(@RequestBody List<UpdateTodayExerciseDto> dto, @PathVariable Long todayId) {
@@ -114,8 +136,8 @@ public class RestTodayController {
     }
 
     @PostMapping("/today/checkbox/{todayId}")
-    public ResponseEntity<String> checkbox(@RequestBody String checking, @PathVariable Long todayId) {
-        todayService.updateCheckbox(checking, todayId);
+    public ResponseEntity<String> checkbox(@PathVariable Long todayId, @RequestParam boolean checked) {
+        todayService.updateCheckbox(checked, todayId);
 
         return ResponseEntity.ok("update checkbox");
     }

@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
-import axios from "axios";
-import {deleteRoutineExercise, findRoutineById, updateRoutineExercise, updateSequence} from "../api/routineApi";
+import {routineService} from "../services/routineService";
 
 const UpdateRoutine = ({ routineId, close }) => {
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
@@ -40,7 +39,7 @@ const UpdateRoutine = ({ routineId, close }) => {
 
     const handleDeleteRoutineExercise = async (routineExerciseId) => {
         try {
-            const data = await deleteRoutineExercise(routineExerciseId);
+            const data = await routineService.deleteRoutineExercise(routineExerciseId);
             console.log(data);
         } catch (error) {
             console.error(error);
@@ -73,7 +72,7 @@ const UpdateRoutine = ({ routineId, close }) => {
                 sequence: index + 1,
             }));
             console.log("routineId : " + routineId);
-            await updateSequence(routineId, updatedOrder);
+            await routineService.updateSequence(routineId, updatedOrder);
             console.log("updatedOrder : " + updatedOrder);
             console.log("순서 업데이트 성공");
         } catch (error) {
@@ -101,7 +100,7 @@ const UpdateRoutine = ({ routineId, close }) => {
             console.log("저장할 데이터:", payload);
 
             // 서버로 POST 요청
-            const data = await updateRoutineExercise(routineId, payload);
+            const data = await routineService.updateRoutineExercise(routineId, payload);
 
             console.log("저장 성공:", data);
         } catch (error) {
@@ -112,7 +111,7 @@ const UpdateRoutine = ({ routineId, close }) => {
     useEffect(() => {
         const fetchRoutine = async () => {
             try {
-                const data = await findRoutineById(routineId);
+                const data = await routineService.findRoutineById(routineId);
                 setRoutineExerciseList(data);
                 setRepWeight(
                     data.map((exercise) => exercise.repWeight)

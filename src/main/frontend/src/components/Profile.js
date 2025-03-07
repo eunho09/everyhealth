@@ -1,9 +1,10 @@
 // ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../styles/Profile.css';
 import { FaUserFriends, FaRegImages, FaUserPlus } from 'react-icons/fa';
 import {Link} from "react-router-dom";
+import {loginService} from "../services/loginService";
+import {memberService} from "../services/memberService";
 
 const ProfilePage = () => {
     const [activeTab, setActiveTab] = useState('posts');
@@ -16,15 +17,15 @@ const ProfilePage = () => {
         const fetchProfileData = async () => {
             try {
                 const [profileRes, postsRes, friendsRes] = await Promise.all([
-                    axios.get('/api/login/check'),
-                    axios.get('/api/member/posts'),
-                    axios.get('/api/member/friend')
+                    loginService.loginCheck(),
+                    memberService.findPost(),
+                    memberService.findFriend()
                 ]);
 
-                setProfile(profileRes.data);
-                setPosts(postsRes.data);
-                setFriends(friendsRes.data);
-                console.log(friendsRes.data);
+                setProfile(profileRes);
+                setPosts(postsRes);
+                setFriends(friendsRes);
+                console.log(friendsRes);
             } catch (error) {
                 console.error('데이터 로드 실패:', error);
             } finally {
@@ -34,18 +35,6 @@ const ProfilePage = () => {
 
         fetchProfileData();
     }, []);
-
-    /*useEffect(() => {
-        if (posts.length === 0) return;
-
-        const fetchPostImage = async () => {
-            try {
-                posts.map((post) => axios.get(`/api/images/${post.imageUrl}`, {
-                    responseType: "Blob"
-                }))
-            }
-        }
-    }, []);*/
 
     if (loading) {
         return <div className="loading">Loading...</div>;
@@ -121,20 +110,22 @@ const ProfilePage = () => {
                 ) : (
                     <div className="friends-list">
                         {friends.map(friend => (
-                            <div key={friend.id} className="friend-item">
-                                <div className="friend-avatar">
-                                    {friend.friend.picture ? (
-                                        <img src={friend.friend.picture} alt={friend.friend.name} />
-                                    ) : (
-                                        <div className="friend-avatar-placeholder">
-                                            {friend.friend.name.charAt(0)}
-                                        </div>
-                                    )}
+                            <a key={friend.id} href={`/friendProfile/${friend.id}`}>
+                                <div key={friend.id} className="friend-item">
+                                    <div className="friend-avatar">
+                                        {friend.friend.picture ? (
+                                            <img src={friend.friend.picture} alt={friend.friend.name}/>
+                                        ) : (
+                                            <div className="friend-avatar-placeholder">
+                                                {friend.friend.name.charAt(0)}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="friend-info">
+                                        <h3 className="friend-name">{friend.friend.name}</h3>
+                                    </div>
                                 </div>
-                                <div className="friend-info">
-                                    <h3 className="friend-name">{friend.friend.name}</h3>
-                                </div>
-                            </div>
+                            </a>
                         ))}
                         {friends.length === 0 && (
                             <p className="no-content">아직 친구가 없습니다.</p>

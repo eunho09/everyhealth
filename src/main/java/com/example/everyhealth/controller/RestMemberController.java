@@ -1,6 +1,7 @@
 package com.example.everyhealth.controller;
 
 import com.example.everyhealth.domain.Member;
+import com.example.everyhealth.dto.MemberDto;
 import com.example.everyhealth.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,5 +20,11 @@ public class RestMemberController {
     public String findById(@PathVariable Long id) {
         Member member = memberService.findById(id);
         return member.getName();
+    }
+
+    @GetMapping("/member/friend/{friendId}")
+    public MemberDto findByFriendInfo(@PathVariable Long friendId) {
+        Member friendInfo = memberService.findByFriendInfo(friendId);
+        return new MemberDto(friendInfo.getId(), friendInfo.getName(), friendInfo.getPicture());
     }
 }

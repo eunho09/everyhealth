@@ -138,9 +138,9 @@ public class TodayService {
     }
 
     @Transactional
-    public void updateCheckbox(String checking, Long todayId) {
+    public void updateCheckbox(boolean checked, Long todayId) {
         Today today = todayRepository.findById(todayId).get();
-        if ("true".equals(checking)){
+        if (checked){
             today.setCheckBox(CheckBox.True);
         } else{
             today.setCheckBox(CheckBox.False);

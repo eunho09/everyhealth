@@ -4,7 +4,7 @@ import "../styles/Modal.css"
 import axios from "axios";
 import { TiDeleteOutline } from "react-icons/ti";
 import {IoIosArrowBack} from "react-icons/io";
-import {getClassification, saveExercise} from "../api/exerciseApi";
+import {exerciseService} from "../services/exerciseService";
 
 const AddExercise = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,7 +30,7 @@ const AddExercise = () => {
         const repWeight = sets.map(set => [set.reps, set.weight])
 
         try {
-            const data = await saveExercise(exerciseName, note, repWeight, selectClassification);
+            const data = await exerciseService.saveExercise(exerciseName, note, repWeight, selectClassification);
             console.log(data);
         } catch (error){
             console.error(error);
@@ -55,7 +55,7 @@ const AddExercise = () => {
 
     useEffect(() => {
         const fetchSelectBox = async () => {
-            const data = await getClassification();
+            const data = await exerciseService.getClassification();
             console.log(data);
             setSelectBox(data);
         }

@@ -4,7 +4,7 @@ import "../styles/Modal.css";
 import "../styles/ExerciseList.css";
 import { TiDeleteOutline } from "react-icons/ti";
 import { IoIosArrowBack } from "react-icons/io";
-import {findExerciseByMemberId, getClassification, updateExercise} from "../api/exerciseApi";
+import {exerciseService} from "../services/exerciseService";
 
 
 const ExerciseList = () => {
@@ -33,7 +33,7 @@ const ExerciseList = () => {
     useEffect(() => {
         const fetchExercise = async () => {
             try {
-                const data = await findExerciseByMemberId();
+                const data = await exerciseService.findExerciseByMemberId();
                 console.log(data);
                 setExercises(data);
                 setSelectClassification(data.classification);
@@ -63,7 +63,7 @@ const ExerciseList = () => {
 
     const handleUpdateExercise = async (id) => {
         try {
-            const data = await updateExercise(id, selectedExercise);
+            const data = await exerciseService.updateExercise(id, selectedExercise);
             window.location.reload();
             console.log(data)
         } catch (error) {
@@ -87,7 +87,7 @@ const ExerciseList = () => {
 
     useEffect(() => {
         const fetchSelectBox = async () => {
-            const data = await getClassification();
+            const data = await exerciseService.getClassification();
             console.log(data);
             setSelectBox(data);
         }

@@ -4,6 +4,8 @@ import React, {useEffect, useState, useCallback, useRef} from 'react';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import "../styles/ChatRoom.css";
 import axios from "axios";
+import {clubService} from "../services/ClubService";
+import {chatService} from "../services/chatService";
 
 const ChatRoom = () => {
     const navigate = useNavigate();
@@ -47,8 +49,8 @@ const ChatRoom = () => {
 
     const fetchClub = async () => {
         try {
-            const response = await axios.get(`/api/club/chatRoom/${roomId}`);
-            setClub(response.data);
+            const data = await clubService.findClub(roomId);
+            setClub(data);
         } catch (error){
             console.log(error);
         }
@@ -58,9 +60,7 @@ const ChatRoom = () => {
     const loadRecentMessages = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`/api/rooms/${roomId}/recentMessage?limit=20`);
-            const data = await response.json();
-            console.log(data);
+            const data = await chatService.recentMessage(roomId);
             setMessages(data);
             if (data.length > 0) {
                 setOldestMessageId(data[0].messageId); // 가장 오래된 메시지의 ID 저장
@@ -79,8 +79,7 @@ const ChatRoom = () => {
         setIsLoading(true);
         try {
             console.log('Fetching older messages:', oldestMessageId); // 디버깅 로그
-            const response = await fetch(`/api/rooms/${roomId}/olderMessage?messageId=${oldestMessageId}`);
-            const olderMessages = await response.json();
+            const olderMessages = await chatService.olderMessage(roomId, oldestMessageId);
             console.log('Received older messages:', olderMessages); // 디버깅 로그
 
             if (olderMessages.length > 0) {
@@ -171,18 +170,15 @@ const ChatRoom = () => {
         scrollToBottom();
     }, [messages, scrollToBottom]);
 
-    const handleLeaveRoom = async (chatRoomId) => {
+    const handleLeaveRoom = async () => {
         // 확인 메시지 표시
         const isConfirmed = window.confirm("채팅방을 나가시겠습니까? 방장인 경우 클럽이 삭제됩니다.");
 
         if (isConfirmed) {
             try {
-                const response = await axios.delete(`/api/club/${club.id}/leave`);
-
-                if (response.status === 200) {
-                    alert("채팅방에서 나갔습니다.");
-                    navigate("/club");
-                }
+                const data = await clubService.leaveChatRoom(club.id);
+                alert("채팅방에서 나갔습니다.");
+                navigate("/club");
             } catch (error) {
                 console.error("채팅방 나가기 실패:", error);
                 alert("채팅방 나가기에 실패했습니다.");

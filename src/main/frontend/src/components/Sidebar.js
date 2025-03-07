@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import '../styles/Sidebar.css';
 import logo from '../assets/logo.png';
 import {Link} from "react-router-dom";
-import {loginCheck} from "../api/LoginApi";
+import {loginService} from "../services/loginService";
 
 const Sidebar = () => {
     const [user, setUser] = useState(null);
@@ -10,7 +10,7 @@ const Sidebar = () => {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await loginCheck();
+                const response = await loginService.loginCheck();
                 if (response.check) {
                     setUser(response);
                 }

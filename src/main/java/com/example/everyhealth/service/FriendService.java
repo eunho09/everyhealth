@@ -53,4 +53,13 @@ public class FriendService {
         Friend friend = friendRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, FriendShip.REQUEST);
         friend.setStatus(friendShip);
     }
+
+    public boolean checkFriendShip(Long friendId, Long memberId) {
+        Friend friend = friendRepository.checkFriendShip(friendId, memberId);
+        return friend != null;
+    }
+
+    public Friend findByFriendIdAndMemberId(Long friendId, Long memberId) {
+        return friendRepository.fetchByFriendIdAndMemberId(friendId, memberId);
+    }
 }

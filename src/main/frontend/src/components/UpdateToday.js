@@ -3,9 +3,9 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import axios from "axios";
-import {deleteTodayExercise, findOneTodayById, updateSequence, updateTodayExercise} from "../api/todayApi";
+import {todayService} from "../services/todayService";
 
-const UpdateToday = ({ todayId, handleIsEditing }) => {
+const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
     const [today, setToday] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
     const [todayExerciseList, setTodayExerciseList] = useState([]);
@@ -36,12 +36,13 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
 
         // 해당 운동의 세트 정보 삭제
         const updatedRepWeight = repWeight.filter((_, i) => i !== exerciseIndex);
+        console.log("exerciseIndex", exerciseIndex);
         setRepWeight(updatedRepWeight);
     };
 
     const handleDeleteRoutineExercise = async (todayExerciseId) => {
         try {
-            const data = await deleteTodayExercise(todayExerciseId);
+            const data = await todayService.deleteTodayExercise(todayExerciseId);
             console.log(data);
         } catch (error) {
             console.error(error);
@@ -73,7 +74,7 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
                 id: exercise.id,
                 sequence: index + 1,
             }));
-            const data = await updateSequence(todayId, updatedOrder);
+            const data = await todayService.updateSequence(todayId, updatedOrder);
             console.log(data);
         } catch (error) {
             console.error(error);
@@ -102,10 +103,9 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
             console.log("저장할 데이터:", payload);
 
             // 서버로 POST 요청
-            const data = await updateTodayExercise(todayId, payload);
+            const data = await todayService.updateTodayExercise(todayId, payload);
 
-            /*handleIsEditing(false);
-            setTodayExerciseList([]);*/
+            onDataChanged();
             console.log("저장 성공:", data);
         } catch (error) {
             console.error(error);
@@ -115,7 +115,7 @@ const UpdateToday = ({ todayId, handleIsEditing }) => {
     useEffect(() => {
         const fetchToday = async () => {
             try {
-                const data = await findOneTodayById(todayId);
+                const data = await todayService.findOneTodayById(todayId);
                 setToday(data);
                 setTodayExerciseList(data.todayExercises);
                 setRepWeight(

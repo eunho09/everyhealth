@@ -46,4 +46,8 @@ public class PostService {
         PageRequest pageRequest = PageRequest.of(0, limit);
         return postRepository.findByLtPostId(postId, pageRequest).stream().toList();
     }
+
+    public List<Post> findByFriendId(Long friendId) {
+        return postRepository.findByFriendId(friendId);
+    }
 }
