@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Slf4j
-public class ClubController {
+public class RestClubController {
 
     private final ClubService clubService;
     private final ChatRoomService chatRoomService;

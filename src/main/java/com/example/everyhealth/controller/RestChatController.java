@@ -1,17 +1,12 @@
 package com.example.everyhealth.controller;
 
 
-import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.ChatMessage;
-import com.example.everyhealth.dto.ChatMessageRequest;
 import com.example.everyhealth.dto.ChatMessageResponseDto;
 import com.example.everyhealth.dto.MemberChatResponseDto;
-import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.ChatMessageService;
-import com.example.everyhealth.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,7 +14,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +23,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class ChatController {
+public class RestChatController {
 
     private final ChatMessageService chatMessageService;
 
