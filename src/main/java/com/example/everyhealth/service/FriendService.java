@@ -58,8 +58,4 @@ public class FriendService {
         Friend friend = friendRepository.checkFriendShip(friendId, memberId);
         return friend != null;
     }
-
-    public Friend findByFriendIdAndMemberId(Long friendId, Long memberId) {
-        return friendRepository.fetchByFriendIdAndMemberId(friendId, memberId);
-    }
 }

@@ -31,7 +31,6 @@ const AddExercise = () => {
 
         try {
             const data = await exerciseService.saveExercise(exerciseName, note, repWeight, selectClassification);
-            console.log(data);
         } catch (error){
             console.error(error);
         }
@@ -56,7 +55,13 @@ const AddExercise = () => {
     useEffect(() => {
         const fetchSelectBox = async () => {
             const data = await exerciseService.getClassification();
-            console.log(data);
+            const defaultKey = "가슴";
+            if (data[defaultKey]) {
+                setSelectClassification(data[defaultKey]);
+            } else if (Object.keys(data).length > 0) {
+                const firstKey = Object.keys(data)[0];
+                setSelectClassification(data[firstKey]);
+            }
             setSelectBox(data);
         }
 

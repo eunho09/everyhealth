@@ -88,10 +88,8 @@ public class RestTodayController {
     @GetMapping("/today/friendAndMonth/{friendId}/{month}")
     public ResponseEntity<List<TodayDateDto>> findByFriendAndMonth(
             @PathVariable Long friendId,
-            @PathVariable int month,
-            @ExtractMemberId Long memberId) {
-        Friend friend = friendService.findByFriendIdAndMemberId(friendId, memberId);
-        Member member = friend.getFriend();
+            @PathVariable int month) {
+        Member member = memberService.findByFriendInfo(friendId);
         List<TodayDateDto> todayList = todayService.findByMonth(month, member.getId());
         return ResponseEntity.ok(todayList);
     }
@@ -105,11 +103,9 @@ public class RestTodayController {
 
     @GetMapping("/today/friendAndDate/{friendId}/{date}")
     public ResponseEntity<TodayDto> fetchByLocalDateAndFriendId(
-            @ExtractMemberId Long memberId,
             @PathVariable LocalDate date,
             @PathVariable Long friendId) {
-        Friend friend = friendService.findByFriendIdAndMemberId(friendId, memberId);
-        Member member = friend.getFriend();
+        Member member = memberService.findByFriendInfo(friendId);
         TodayDto todayDto = todayService.fetchByLocalDate(date, member.getId());
         return ResponseEntity.ok(todayDto);
     }

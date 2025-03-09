@@ -30,7 +30,7 @@ public class TokenAspect {
         HttpServletRequest request =
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        String token = WebUtils.getCookie(request, "jwt").getValue();
+        String token = WebUtils.getCookie(request, "access_token").getValue();
         if (token == null) {
             return joinPoint.proceed();
         }
