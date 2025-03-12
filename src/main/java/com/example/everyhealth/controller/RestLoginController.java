@@ -1,5 +1,7 @@
 package com.example.everyhealth.controller;
 
+import com.example.everyhealth.aop.ExtractMemberId;
+import com.example.everyhealth.aop.TokenAspect;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.RefreshToken;
 import com.example.everyhealth.dto.LoginInfo;
@@ -10,49 +12,58 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class RestLoginController {
 
     private final JwtTokenGenerator jwtTokenGenerator;
     private final RefreshTokenService refreshTokenService;
-    private final MemberService memberService;
 
-    @GetMapping("/login")
-    public ResponseEntity<Void> login(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://localhost:3000/login");
+    @Value("${jwt.access-token-expire-time}")
+    private Long accessTokenExpireTime;
 
-        return ResponseEntity.status(HttpStatus.FOUND).build();
-    }
+    @Value("${jwt.refresh-token-expire-time}")
+    private Long refreshTokenExpireTime;
 
-    @GetMapping("/api/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping("/api/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @ExtractMemberId Long memberId) {
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
+                log.info("cookieName={}, cookieValue={}", cookie.getName(), cookie.getValue());
                 if ("access_token".equals(cookie.getName())) {
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
+                    response.addCookie(cookie);
+                } else if ("refresh_token".equals(cookie.getName())){
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/api/token/refresh");
                     response.addCookie(cookie);
                 }
             }
         }
 
-        /*Long memberId = request.get("memberId");
-
-        // 리프레시 토큰 삭제
-        refreshTokenService.deleteByMemberId(memberId);*/
+        refreshTokenService.deleteByMemberId(memberId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -83,44 +94,45 @@ public class RestLoginController {
     }
 
     @PostMapping("/api/token/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
-        // 요청에서 리프레시 토큰을 가져옴
-        String refreshToken = request.get("refreshToken");
-
-        try {
-            // 토큰 유효성 검증
-            if (!jwtTokenGenerator.validateToken(refreshToken)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
-            }
-
-            // DB에서 리프레시 토큰 조회
-            Optional<RefreshToken> storedToken = refreshTokenService.findByToken(refreshToken);
-
-            if (storedToken.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token not found in database");
-            }
-
-            RefreshToken tokenEntity = storedToken.get();
-
-            // 토큰 만료 확인
-            refreshTokenService.verifyExpiration(tokenEntity);
-
-            // 사용자 ID로 회원 정보 조회
-            Long memberId = tokenEntity.getMemberId();
-            Member member = memberService.findById(memberId);
-
-            // 새 액세스 토큰 생성
-            String newAccessToken = jwtTokenGenerator.generateAccessToken(member);
-
-            // 응답 생성
-            Map<String, Object> response = new HashMap<>();
-            response.put("accessToken", newAccessToken);
-            response.put("refreshToken", refreshToken); // 동일한 리프레시 토큰 유지
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: " + e.getMessage());
+    public ResponseEntity<String> refreshToken(
+            @CookieValue(name = "refresh_token") String refreshToken,
+            HttpServletResponse response) {
+        if (!jwtTokenGenerator.validateToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
+
+        Optional<RefreshToken> token = refreshTokenService.findByToken(refreshToken);
+
+        if (token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token not found in database");
+        }
+
+        refreshTokenService.verifyExpiration(token.get());
+
+        String accessToken = jwtTokenGenerator.refreshAccessToken(token.get().getToken());
+        String newRefreshToken = jwtTokenGenerator.generateRefreshToken(token.get().getMemberId());
+        refreshTokenService.update(token.get(), newRefreshToken);
+
+        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofMinutes(accessTokenExpireTime))
+                .sameSite("LAX")
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/api/token/refresh")
+                .maxAge(Duration.ofDays(refreshTokenExpireTime))
+                .sameSite("LAX")
+                .build();
+
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+        return ResponseEntity.ok().body("토큰이 갱신되었습니다.");
     }
 }

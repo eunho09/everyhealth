@@ -35,6 +35,7 @@ public class TokenAspect {
             return joinPoint.proceed();
         }
 
+
         Long memberId = jwtTokenGenerator.getUserId(token);
 
         Object[] args = joinPoint.getArgs();
