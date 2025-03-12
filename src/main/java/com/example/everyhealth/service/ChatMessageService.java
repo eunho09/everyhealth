@@ -30,7 +30,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ChatMessageService {
 
-    private final MemberRepository memberRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ClubMemberRepository clubMemberRepository;

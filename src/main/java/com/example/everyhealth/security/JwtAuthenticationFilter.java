@@ -20,11 +20,9 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenGenerator jwtTokenGenerator;
-    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        // 쿠키에서 JWT 추출
         String token = extractTokenFromCookie(request);
 
         if (token != null && jwtTokenGenerator.validateToken(token)) {

@@ -2,8 +2,10 @@ import React from 'react';
 import "../styles/Login.css";
 
 function Login() {
+
     const handleGoogleLogin = () => {
-        window.location.href = "http://localhost:8080/oauth2/authorization/google";
+        const baseUrl = window.location.hostname;
+        window.location.href = `http://${baseUrl}:8080/oauth2/authorization/google`;
     }
 
     return (

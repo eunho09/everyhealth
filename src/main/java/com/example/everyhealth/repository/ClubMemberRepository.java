@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 public interface ClubMemberRepository extends JpaRepository<ClubMember, Long> {
 
     @Query("select cm from ClubMember cm where cm.member.id =:memberId")
-    public ClubMember existsByMemberId(@Param("memberId") Long memberId);
+    ClubMember existsByMemberId(@Param("memberId") Long memberId);
 
     @Query("select cm from ClubMember cm where cm.member.id =:memberId and cm.club.id =:clubId")
-    public ClubMember findByMemberIdAndClubId(@Param("memberId") Long memberId, @Param("clubId") Long clubId);
+    ClubMember findByMemberIdAndClubId(@Param("memberId") Long memberId, @Param("clubId") Long clubId);
 
     @Query("select cm from ClubMember cm where cm.member.id=:memberId and cm.club.chatRoom.id=:chatRoomId")
-    public ClubMember findByMemberIdAndChatRoomId(@Param("memberId") Long memberId, @Param("chatRoomId") Long chatRoomId);
+    ClubMember findByMemberIdAndChatRoomId(@Param("memberId") Long memberId, @Param("chatRoomId") Long chatRoomId);
 }

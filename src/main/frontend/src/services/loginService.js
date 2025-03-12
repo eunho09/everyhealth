@@ -3,7 +3,7 @@ import api from "./api";
 
 export const loginService = {
     logout: async () => {
-        const response = await api.get("/api/logout");
+        const response = await api.post("/api/logout");
         return response.data;
     },
 

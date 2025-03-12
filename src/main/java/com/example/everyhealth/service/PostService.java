@@ -2,11 +2,8 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Post;
 import com.example.everyhealth.repository.PostRepository;
-import com.example.everyhealth.repository.PostSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -19,14 +19,13 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private Long refreshTokenExpirationDays = 7L;
+    @Value("${jwt.refresh-token-expire-time}")
+    private Long refreshTokenExpirationDays;
 
     @Transactional
     public RefreshToken createRefreshToken(Long memberId, String token) {
-        // 만료 시간 계산
         Instant expiryDate = Instant.now().plus(refreshTokenExpirationDays, ChronoUnit.DAYS);
 
-        // 기존 토큰이 있으면 업데이트, 없으면 새로 생성
         Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByMemberId(memberId);
 
         if (refreshTokenOpt.isPresent()) {
@@ -60,5 +59,11 @@ public class RefreshTokenService {
     @Transactional
     public void deleteByMemberId(Long memberId) {
         refreshTokenRepository.deleteByMemberId(memberId);
+    }
+
+    @Transactional
+    public void update(RefreshToken refreshToken, String token) {
+        Instant expiryDate = Instant.now().plus(refreshTokenExpirationDays, ChronoUnit.DAYS);
+        refreshToken.updateToken(token, expiryDate);
     }
 }
