@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -24,4 +25,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("select m from Member m where m.id=(select f.friend.id from Friend f where f.id=:friendId)")
     Member findByFriendInfo(@Param("friendId") Long friendId);
+
+    @Query("select m from Member m where m.name=:name")
+    Optional<Member> findByName(@Param("name") String name);
 }
