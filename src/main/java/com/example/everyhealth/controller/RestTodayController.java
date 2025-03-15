@@ -38,20 +38,38 @@ public class RestTodayController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-/*    @PostMapping("/today/addTodayExercise/exercise")
-    public ResponseEntity<String> addTodayExerciseAsExercise(@RequestBody TodayExerciseAsExerciseRequest dto) {
-        todayService.addTodayExerciseAsExercise(dto);
-
-        return ResponseEntity.ok("add todayExercise");
-    }*/
-
-
     @PostMapping("/today/addTodayExercise/{date}")
     public ResponseEntity<String> addTodayExercise(@ExtractMemberId Long memberId ,@RequestBody List<TodayExerciseRequest> dto, @PathVariable LocalDate date) {
         todayService.addTodayExercise(dto, date, memberId);
 
         return ResponseEntity.ok("add todayExercise");
     }
+
+    @GetMapping("/member/todays")
+    public ResponseEntity<List<TodayDto>> memberTodays(@ExtractMemberId Long memberId) {
+        List<Today> todays = todayService.fetchMemberId(memberId);
+
+        List<TodayDto> todayList = todays.stream()
+                .map(t -> {
+                    List<TodayExercise> todayExercises = t.getTodayExercises();
+                    List<TodayExerciseDto> list = todayExercises.stream()
+                            .map(te -> new TodayExerciseDto(
+                                    te.getId(),
+                                    te.getExercise().getName(),
+                                    te.getRepWeight(),
+                                    te.getSequence()))
+                            .toList();
+
+                    return new TodayDto(t.getId(),
+                            list,
+                            t.getLocalDate(),
+                            t.getCheckBox());
+                }).toList();
+
+        return ResponseEntity.ok(todayList);
+    }
+
+
 
     @GetMapping("/today/{todayId}")
     public ResponseEntity<TodayDto> findById(@PathVariable Long todayId) {
