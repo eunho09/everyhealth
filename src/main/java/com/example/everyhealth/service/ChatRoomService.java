@@ -37,4 +37,8 @@ public class ChatRoomService {
     public ChatRoom findByClubId(Long clubId) {
         return chatRoomRepository.findByClubId(clubId);
     }
+
+    public List<ChatRoom> fetchByMemberId(Long memberId) {
+        return chatRoomRepository.fetchByMemberId(memberId);
+    }
 }

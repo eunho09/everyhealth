@@ -41,6 +41,10 @@ public class TodayService {
         return todayRepository.findAll();
     }
 
+    public List<Today> fetchMemberId(Long memberId) {
+        return todayRepository.fetchByMemberId(memberId);
+    }
+
     @Transactional
     public void delete(Today today) {
         todayRepository.delete(today);
