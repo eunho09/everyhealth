@@ -31,16 +31,16 @@ const RoutineList = ({ routines, toggleState, onToggle, open, edit}) => {
                                 <li key={exerciseIndex} className="exercise-box">
                                     <strong>{exercise.exerciseName}</strong>
                                     <ul className="set-list">
-                                        {exercise.repWeight.map((set, setIndex) => (
-                                            <li key={setIndex} className="set-item">
+                                        {exercise.repWeightList.map((repWeight, index) => (
+                                            <li key={index} className="set-item">
                                                 <div>
-                                                {setIndex + 1}세트
+                                                {index + 1}세트
                                                 </div>
                                                 <div>
-                                                {set[0]}회
+                                                {repWeight.reps}회
                                                 </div>
                                                 <div>
-                                                {set[1] !== 0 && `${set[1]}kg`}
+                                                {repWeight.weight !== 0 && `${repWeight.weight}kg`}
                                                 </div>
                                             </li>
                                         ))}

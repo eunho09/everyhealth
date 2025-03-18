@@ -27,10 +27,8 @@ const AddExercise = () => {
     const handleAddExercise = async (e) => {
         e.preventDefault();
 
-        const repWeight = sets.map(set => [set.reps, set.weight])
-
         try {
-            const data = await exerciseService.saveExercise(exerciseName, note, repWeight, selectClassification);
+            const data = await exerciseService.saveExercise(exerciseName, note, sets, selectClassification);
         } catch (error){
             console.error(error);
         }

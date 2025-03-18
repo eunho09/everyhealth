@@ -8,22 +8,19 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ExerciseDto {
-
+public class ExerciseResponseDto {
     private Long id;
     private String name;
     private String memo;
-    private List<RepWeight> repWeightList;
+    private List<RepWeightDto> repWeightList;
     private Classification classification;
 
-    public ExerciseDto(Exercise exercise) {
+    public ExerciseResponseDto(Exercise exercise) {
         this.id = exercise.getId();
         this.name = exercise.getName();
         this.memo = exercise.getMemo();
-        this.repWeightList = exercise.getRepWeightList();
+        this.repWeightList = exercise.getRepWeightList().stream()
+                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight())).toList();
         this.classification = exercise.getClassification();
-    }
-
-    public ExerciseDto() {
     }
 }

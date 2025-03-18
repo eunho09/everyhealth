@@ -56,7 +56,9 @@ public class RestTodayController {
                             .map(te -> new TodayExerciseDto(
                                     te.getId(),
                                     te.getExercise().getName(),
-                                    te.getRepWeight(),
+                                    te.getRepWeightList().stream()
+                                            .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
+                                            .toList(),
                                     te.getSequence()))
                             .toList();
 
@@ -81,7 +83,9 @@ public class RestTodayController {
                 .map(todayExercise -> new TodayExerciseDto(
                         todayExercise.getId(),
                         todayExercise.getExercise().getName(),
-                        todayExercise.getRepWeight(),
+                        todayExercise.getRepWeightList().stream()
+                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
+                                .toList(),
                         todayExercise.getSequence()
                 ))
                 .collect(Collectors.toList());

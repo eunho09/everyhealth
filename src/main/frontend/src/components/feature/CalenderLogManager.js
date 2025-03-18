@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import WorkoutCalendar from "../WorkoutCalendar";
 import WorkoutLog from "../WorkoutLog";
-import axios from "axios";
 import moment from "moment";
 import UpdateToday from "../UpdateToday";
 import {todayService} from "../../services/todayService";
@@ -45,8 +44,8 @@ const CalenderLogManager = () => {
             const fetchDateData = async () => {
                 try {
                     const data = await todayService.getTodayDate(dateFormat);
-                    setTodayData(data);
                     setSelectTodayId(data.id);
+                    setTodayData(data);
                 } catch (e) {
                     console.error("날짜 데이터 가져오기 실패:", e);
                 }
@@ -56,6 +55,10 @@ const CalenderLogManager = () => {
             setTodayData(undefined);
         }
     }, [date, monthData]); // monthData가 변경되었을 때도 실행되도록 수정
+
+    useEffect(() => {
+        console.log(todayData);
+    }, [todayData])
 
     const handleDateChange = (newDate) => {
         setDate(newDate);

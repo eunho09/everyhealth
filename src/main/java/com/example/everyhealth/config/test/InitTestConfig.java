@@ -1,20 +1,19 @@
-package com.example.everyhealth.config;
+package com.example.everyhealth.config.test;
 
 import com.example.everyhealth.domain.*;
-import com.example.everyhealth.dto.TodayExerciseAsExerciseRequest;
-import com.example.everyhealth.dto.ExerciseInfo;
 import com.example.everyhealth.service.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@Profile("test")
 @RequiredArgsConstructor
 @Slf4j
 public class InitTestConfig {
@@ -34,11 +33,17 @@ public class InitTestConfig {
     public void init() {
 //        loadExerciseTestData();
 //        loadRoutineTestData();
-        loadTodayTestData();
+//        loadTodayTestData();
 //        loadMessageTestData();
+        loadMemberTestData();
     }
 
-    public void loadExerciseTestData(){
+    private void loadMemberTestData(){
+        Member member = new Member("test", "test", MemberRole.USER, "google", "picture");
+        memberService.save(member);
+    }
+
+/*    public void loadExerciseTestData(){
         Member member = new Member("test", "test", MemberRole.USER, "google", "picture");
         memberService.save(member);
 
@@ -130,6 +135,6 @@ public class InitTestConfig {
         for (int i = 1; i <= 20; i++) {
             chatMessageService.saveMessage("message" + i, chatRoom.getId(), clubMember.getMember().getId());
         }
-    }
+    }*/
 
 }

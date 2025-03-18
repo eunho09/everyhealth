@@ -3,7 +3,7 @@ spring:
     name: everyhealth
 
   profiles:
-    active: test
+    active: default
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -15,13 +15,13 @@ public interface RoutineExerciseRepository extends JpaRepository<RoutineExercise
     @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e where re.routine.id =:routineId order by re.sequence asc")
     List<RoutineExercise> findRoutineExerciseByRoutineId(@Param("routineId") Long routineId);
 
-    @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e join fetch re.repWeight where e.member.id =:memberId")
+    @Query("select re from RoutineExercise re join re.routine r join fetch re.exercise e join fetch re.repWeightList where e.member.id =:memberId")
     List<RoutineExercise> findRoutineExerciseByMemberId(@Param("memberId") Long memberId);
 
-    @Query("select re from RoutineExercise re join fetch re.exercise join fetch re.repWeight where re.routine.id=:routineId order by re.sequence asc")
+    @Query("select re from RoutineExercise re join fetch re.exercise join fetch re.repWeightList where re.routine.id=:routineId order by re.sequence asc")
     List<RoutineExercise> findByRoutineId(@Param("routineId") Long routineId);
 
-    @Query("select re from RoutineExercise re join fetch re.exercise join fetch re.repWeight join fetch re.routine r where r.id=:routineId order by re.sequence asc")
+    @Query("select re from RoutineExercise re join fetch re.exercise join fetch re.repWeightList join fetch re.routine r where r.id=:routineId order by re.sequence asc")
     List<RoutineExercise> findAllByRoutineIdWithExerciseAndRepWeight(@Param("routineId") Long routineId);
 
 }

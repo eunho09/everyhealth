@@ -5,16 +5,13 @@ import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.*;
-import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RoutineExerciseService;
 import com.example.everyhealth.service.RoutineService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -67,10 +64,11 @@ public class RestRoutineController {
                         routine.getId(),
                         routine.getName(),
                         routineExerciseMap.getOrDefault(routine.getId(), new ArrayList<>()).stream()
-                                .map(routineExercise -> new REResponseDto(
+                                .map(routineExercise -> new RoutineExerciseResponseDto(
                                         routineExercise.getId(),
                                         routineExercise.getSequence(),
-                                        routineExercise.getRepWeight(),
+                                        routineExercise.getRepWeightList().stream()
+                                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight())).toList(),
                                         routineExercise.getExercise().getName()
                                 ))
                                 .collect(Collectors.toList())
@@ -80,14 +78,15 @@ public class RestRoutineController {
 
 
     @GetMapping("/routine/{routineId}")
-    public List<REResponseDto> findOne(@PathVariable Long routineId) {
+    public List<RoutineExerciseResponseDto> findOne(@PathVariable Long routineId) {
 
         List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(routineId);
         return routineExerciseList.stream()
-                .map(routineExercise -> new REResponseDto(
+                .map(routineExercise -> new RoutineExerciseResponseDto(
                         routineExercise.getId(),
                         routineExercise.getSequence(),
-                        routineExercise.getRepWeight(),
+                        routineExercise.getRepWeightList().stream()
+                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight())).toList(),
                         routineExercise.getExercise().getName()
                 ))
                 .collect(Collectors.toList());
@@ -97,7 +96,7 @@ public class RestRoutineController {
     public List<RoutineExerciseDto> findRoutineExerciseByRoutineId(@PathVariable Long routineId) {
         return routineExerciseService.findRoutineExerciseByRoutineId(routineId)
                 .stream()
-                .map(routineExercise -> new RoutineExerciseDto(routineExercise.getSequence(), routineExercise.getRoutine().getName(), routineExercise.getExercise().getRepWeight(), routineExercise.getExercise().getName()))
+                .map(routineExercise -> new RoutineExerciseDto(routineExercise.getSequence(), routineExercise.getRoutine().getName(), routineExercise.getExercise().getRepWeightList(), routineExercise.getExercise().getName()))
                 .collect(Collectors.toList());
     }
 
@@ -122,7 +121,7 @@ public class RestRoutineController {
     }
 
     @PatchMapping("/routineExercise/update/{routineId}")
-    public ResponseEntity<String> updateRepWeight(@PathVariable Long routineId, @RequestBody List<REResponseDto> responseDtoList) {
+    public ResponseEntity<String> updateRepWeight(@PathVariable Long routineId, @RequestBody List<RoutineExerciseUpdateDto> responseDtoList) {
         routineExerciseService.updateRepWeight(responseDtoList, routineId);
         return ResponseEntity.ok("update RepWeight");
     }

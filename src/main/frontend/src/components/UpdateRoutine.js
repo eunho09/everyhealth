@@ -2,95 +2,88 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
-import {routineService} from "../services/routineService";
+import { todayService } from "../services/todayService";
 
-const UpdateRoutine = ({ routineId, close }) => {
-    const [isLoading, setIsLoading] = useState(true); // 로딩 상태
-    const [routineExerciseList, setRoutineExerciseList] = useState([]);
-    const [repWeight, setRepWeight] = useState([[]]);
+const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [today, setToday] = useState(null);
+    const [todayExerciseList, setTodayExerciseList] = useState([]);
 
-    const handleSetChange = (exerciseIndex, setIndex, subIndex, value) => {
-        // 상태를 복사하여 변경 작업
-        const updatedSets = [...repWeight]; // repWeight 배열 복사
-        if (updatedSets[exerciseIndex] && updatedSets[exerciseIndex][setIndex]) {
-            updatedSets[exerciseIndex][setIndex][subIndex] = value; // 값 변경
+    // handleSetChange 함수 개선
+    const handleSetChange = (exerciseIndex, setIndex, field, value) => {
+        const updatedList = [...todayExerciseList];
+        const numberValue = value ? parseFloat(value) : 0;
+        console.log("updatedList", updatedList);
+
+        // 특정 운동의 특정 세트를 업데이트
+        if (field === 'reps') {
+            updatedList[exerciseIndex].repWeightList[setIndex].reps = numberValue;
+        } else if (field === 'weight') {
+            updatedList[exerciseIndex].repWeightList[setIndex].weight = numberValue;
         }
-        setRepWeight(updatedSets); // 변경된 배열로 상태 업데이트
+        setTodayExerciseList(updatedList);
     };
 
+    // 세트 제거 함수 개선
     const removeSet = (exerciseIndex, setIndex) => {
-        const updatedSets = repWeight.map((sets, i) =>
-            i === exerciseIndex ? sets.filter((_, j) => j !== setIndex) : sets
-        );
-        setRepWeight(updatedSets);
+        const updatedList = [...todayExerciseList];
+        updatedList[exerciseIndex].repWeightList = updatedList[exerciseIndex].repWeightList.filter((_, i) => i !== setIndex);
+        setTodayExerciseList(updatedList);
     };
 
-    const removeExercise = (exerciseIndex, routineExerciseId) => {
-        handleDeleteRoutineExercise(routineExerciseId);
-
-        // 운동 삭제
-        const updatedExercises = routineExerciseList.filter((_, i) => i !== exerciseIndex);
-        setRoutineExerciseList(updatedExercises);
-
-        // 해당 운동의 세트 정보 삭제
-        const updatedRepWeight = repWeight.filter((_, i) => i !== exerciseIndex);
-        setRepWeight(updatedRepWeight);
+    // 운동 제거 함수
+    const removeExercise = (exerciseIndex, todayExerciseId) => {
+        handleDeleteExercise(todayExerciseId);
+        setTodayExerciseList(prev => prev.filter((_, i) => i !== exerciseIndex));
     };
 
-    const handleDeleteRoutineExercise = async (routineExerciseId) => {
+    const handleDeleteExercise = async (todayExerciseId) => {
         try {
-            const data = await routineService.deleteRoutineExercise(routineExerciseId);
+            const data = await todayService.deleteTodayExercise(todayExerciseId);
             console.log(data);
         } catch (error) {
             console.error(error);
         }
     };
 
+    // 드래그 앤 드롭 핸들러 개선
     const onDragEnd = (result) => {
-        if (!result.destination) return; // 드래그를 놓지 않은 경우 무시
-
-        // routineExerciseList의 순서를 변경
-        const reorderedExercises = Array.from(routineExerciseList);
+        if (!result.destination) return;
+        const reorderedExercises = Array.from(todayExerciseList);
         const [movedExercise] = reorderedExercises.splice(result.source.index, 1);
         reorderedExercises.splice(result.destination.index, 0, movedExercise);
-        setRoutineExerciseList(reorderedExercises);
-
-        // repWeight의 순서도 동일하게 변경
-        const reorderedRepWeight = Array.from(repWeight);
-        const [movedRep] = reorderedRepWeight.splice(result.source.index, 1);
-        reorderedRepWeight.splice(result.destination.index, 0, movedRep);
-        setRepWeight(reorderedRepWeight);
-
-        // 순서가 변경된 데이터를 서버에 동기화
+        setTodayExerciseList(reorderedExercises);
         syncExerciseOrder(reorderedExercises);
     };
 
     const syncExerciseOrder = async (updatedList) => {
         try {
             const updatedOrder = updatedList.map((exercise, index) => ({
-                routineExerciseId: exercise.routineExerciseId,
+                id: exercise.id,
                 sequence: index + 1,
             }));
-            console.log("routineId : " + routineId);
-            await routineService.updateSequence(routineId, updatedOrder);
-            console.log("updatedOrder : " + updatedOrder);
+            await todayService.updateSequence(todayId, updatedOrder);
             console.log("순서 업데이트 성공");
         } catch (error) {
             console.error("순서 업데이트 실패:", error);
         }
     };
 
+    // 세트 추가 함수 개선
     const addSet = (exerciseIndex) => {
-        const updatedRepWeight = repWeight.map((sets, index) =>
-            index === exerciseIndex ? [...sets, [0, 0]] : sets
-        );
-        setRepWeight(updatedRepWeight);
+        const updatedList = [...todayExerciseList];
+        updatedList[exerciseIndex].repWeightList.push({
+            reps: 0,
+            weight: 0
+        });
+        setTodayExerciseList(updatedList);
     };
 
+    // 저장 페이로드 생성 개선
     const createSavePayload = () => {
-        return routineExerciseList.map((exercise, index) => ({
-            routineExerciseId: exercise.routineExerciseId,
-            repWeight: repWeight[index], // 해당 운동의 세트 정보
+        return todayExerciseList.map(exercise => ({
+            id: exercise.id,
+            repWeightList: exercise.repWeightList
         }));
     };
 
@@ -98,10 +91,8 @@ const UpdateRoutine = ({ routineId, close }) => {
         try {
             const payload = createSavePayload();
             console.log("저장할 데이터:", payload);
-
-            // 서버로 POST 요청
-            const data = await routineService.updateRoutineExercise(routineId, payload);
-
+            const data = await todayService.updateTodayExercise(todayId, payload);
+            onDataChanged();
             console.log("저장 성공:", data);
         } catch (error) {
             console.error(error);
@@ -109,30 +100,27 @@ const UpdateRoutine = ({ routineId, close }) => {
     };
 
     useEffect(() => {
-        const fetchRoutine = async () => {
+        const fetchToday = async () => {
             try {
-                const data = await routineService.findRoutineById(routineId);
-                setRoutineExerciseList(data);
-                setRepWeight(
-                    data.map((exercise) => exercise.repWeight)
-                );
+                const data = await todayService.findOneTodayById(todayId);
+                setToday(data);
+                setTodayExerciseList(data.todayExercises);
                 console.log("검색 결과:", data);
             } catch (error) {
-                console.error("루틴 로드 중 오류 발생:", error);
+                console.error("일지 로드 중 오류 발생:", error);
             } finally {
-                setIsLoading(false); // 로딩 상태 종료
+                setIsLoading(false);
             }
         };
-
-        fetchRoutine(); // 비동기 함수 호출
-    }, [routineId]);
+        fetchToday();
+    }, [todayId]);
 
     if (isLoading) {
-        return <div>로딩 중...</div>; // 로딩 메시지 표시
+        return <div>로딩 중...</div>;
     }
 
-    if (!routineExerciseList) {
-        return <div>루틴 데이터를 찾을 수 없습니다.</div>; // 데이터 없음 처리
+    if (!today || !today.todayExercises || today.todayExercises.length === 0) {
+        return <div>일지 데이터를 찾을 수 없습니다.</div>;
     }
 
     return (
@@ -140,23 +128,23 @@ const UpdateRoutine = ({ routineId, close }) => {
             <div className="modal-overlay">
                 <div className="modal-content">
                     <div className="button-position">
-                        <button className="back-button rotate-right" onClick={() => close()}>
+                        <button className="back-button rotate-right" onClick={() => handleIsEditing(false)}>
                             <IoIosArrowBack />
                         </button>
                     </div>
                     <h3>수정</h3>
                     <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId="routineExerciseList">
+                        <Droppable droppableId="todayExerciseList">
                             {(provided) => (
                                 <div
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
-                                    className="routine-exercise-list"
+                                    className="today-exercise-list"
                                 >
-                                    {routineExerciseList.map((routineExercise, exerciseIndex) => (
+                                    {todayExerciseList.map((todayExercise, exerciseIndex) => (
                                         <Draggable
-                                            key={routineExercise.routineExerciseId}
-                                            draggableId={routineExercise.routineExerciseId.toString()}
+                                            key={todayExercise.id}
+                                            draggableId={todayExercise.id.toString()}
                                             index={exerciseIndex}
                                         >
                                             {(provided) => (
@@ -164,10 +152,10 @@ const UpdateRoutine = ({ routineId, close }) => {
                                                     ref={provided.innerRef}
                                                     {...provided.draggableProps}
                                                     {...provided.dragHandleProps}
-                                                    className="routine-exercise-item"
+                                                    className="today-exercise-item"
                                                 >
                                                     <div className="exercise-header">
-                                                        <span>{routineExercise.exerciseName}</span>
+                                                        <span>{todayExercise.exerciseName}</span>
                                                         <button
                                                             className="small-text-button"
                                                             onClick={() => addSet(exerciseIndex)}
@@ -179,14 +167,15 @@ const UpdateRoutine = ({ routineId, close }) => {
                                                             onClick={() =>
                                                                 removeExercise(
                                                                     exerciseIndex,
-                                                                    routineExercise.routineExerciseId
+                                                                    todayExercise.id
                                                                 )
                                                             }
                                                         >
                                                             삭제
                                                         </button>
                                                     </div>
-                                                    {repWeight[exerciseIndex]?.map((set, setIndex) => (
+                                                    {/* 각 운동별 세트 정보 렌더링 */}
+                                                    {todayExercise.repWeightList && todayExercise.repWeightList.map((repWeight, setIndex) => (
                                                         <div className="row" key={setIndex}>
                                                             <div className="number">
                                                                 {setIndex + 1}
@@ -194,15 +183,13 @@ const UpdateRoutine = ({ routineId, close }) => {
                                                             <input
                                                                 className="small-input"
                                                                 type="number"
-                                                                placeholder={`반복 횟수 (Set ${
-                                                                    setIndex + 1
-                                                                })`}
-                                                                value={set[0]}
+                                                                placeholder="반복 횟수"
+                                                                value={repWeight.reps}
                                                                 onChange={(e) =>
                                                                     handleSetChange(
                                                                         exerciseIndex,
                                                                         setIndex,
-                                                                        0,
+                                                                        "reps",
                                                                         e.target.value
                                                                     )
                                                                 }
@@ -210,15 +197,13 @@ const UpdateRoutine = ({ routineId, close }) => {
                                                             <input
                                                                 className="small-input"
                                                                 type="number"
-                                                                placeholder={`무게 (Set ${
-                                                                    setIndex + 1
-                                                                })`}
-                                                                value={set[1]}
+                                                                placeholder="무게"
+                                                                value={repWeight.weight}
                                                                 onChange={(e) =>
                                                                     handleSetChange(
                                                                         exerciseIndex,
                                                                         setIndex,
-                                                                        1,
+                                                                        "weight",
                                                                         e.target.value
                                                                     )
                                                                 }
@@ -251,4 +236,4 @@ const UpdateRoutine = ({ routineId, close }) => {
     );
 };
 
-export default UpdateRoutine;
+export default UpdateToday;

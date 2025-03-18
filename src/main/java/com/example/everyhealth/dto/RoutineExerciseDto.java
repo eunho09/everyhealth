@@ -1,5 +1,6 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.RepWeight;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -10,10 +11,10 @@ public class RoutineExerciseDto {
 
     private Integer sequence;
     private String routineName;
-    private List<ArrayList<Integer>> repWeight;
+    private List<RepWeight> repWeight;
     private String exerciseName;
 
-    public RoutineExerciseDto(Integer sequence, String routineName, List<ArrayList<Integer>> repWeight, String exerciseName) {
+    public RoutineExerciseDto(Integer sequence, String routineName, List<RepWeight> repWeight, String exerciseName) {
         this.sequence = sequence;
         this.routineName = routineName;
         this.repWeight = repWeight;
