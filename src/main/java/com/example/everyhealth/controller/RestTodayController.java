@@ -30,9 +30,9 @@ public class RestTodayController {
 
 
     @PostMapping("/today")
-    public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody TodaySaveDto dto) {
+    public ResponseEntity<Void> save(@ExtractMemberId Long memberId) {
         Member member = memberService.findById(memberId);
-        Today today = new Today(dto.getLocalDate(), member);
+        Today today = new Today(LocalDate.now(), member);
         todayService.save(today);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

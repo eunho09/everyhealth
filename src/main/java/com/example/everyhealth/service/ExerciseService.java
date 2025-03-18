@@ -35,7 +35,7 @@ public class ExerciseService {
 
     @Transactional
     public void update(Long id, ExerciseDto dto) {
-        Exercise exercise = findById(id);
+        Exercise exercise = fetchById(id);
         if (dto.getName() != null) {
             exercise.setName(dto.getName());
         }
@@ -88,5 +88,9 @@ public class ExerciseService {
 
     public Exercise fetchById(Long id) {
         return exerciseRepository.fetchById(id);
+    }
+
+    public List<Exercise> fetchAll(){
+        return exerciseRepository.fetchAll();
     }
 }

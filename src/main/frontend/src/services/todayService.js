@@ -21,10 +21,8 @@ export const todayService = {
         return response.data;
     },
 
-    saveToday: async (date) => {
-        const response = await api.post("/api/today", {
-            localDate: date
-        })
+    saveToday: async () => {
+        const response = await api.post("/api/today");
         return response.data;
     },
 
