@@ -18,4 +18,7 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     @Query("select e from Exercise e join fetch e.repWeightList where e.id=:exerciseId")
     Exercise fetchById(@Param("exerciseId") Long exerciseId);
+
+    @Query("select e from Exercise e join fetch e.repWeightList")
+    List<Exercise> fetchAll();
 }

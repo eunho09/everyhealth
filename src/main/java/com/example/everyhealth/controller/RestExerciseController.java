@@ -48,7 +48,7 @@ public class RestExerciseController {
 
     @GetMapping("/exercises")
     public ResponseEntity<List<ExerciseResponseDto>> findAll() {
-        List<Exercise> exercises = exerciseService.findAll();
+        List<Exercise> exercises = exerciseService.fetchAll();
         List<ExerciseResponseDto> response = exercises.stream()
                 .map(ExerciseResponseDto::new)
                 .collect(Collectors.toList());
