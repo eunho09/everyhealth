@@ -11,7 +11,7 @@ export const exerciseService = {
         const response = await api.post("/api/exercise", {
             name: exerciseName,
             memo: note,
-            repWeight: repWeight,
+            repWeightList: repWeight,
             classification: classification,
         });
 
@@ -23,7 +23,7 @@ export const exerciseService = {
             name: selectedExercise.name,
             memo: selectedExercise.memo,
             classification: selectedExercise.classification,
-            repWeight: selectedExercise.repWeight,
+            repWeightList: selectedExercise.repWeightList,
         });
 
         return response.data;

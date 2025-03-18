@@ -1,6 +1,7 @@
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
+import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.ExerciseInfo;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -45,10 +45,14 @@ public class RoutineService {
     @Transactional
     public Routine addExercise(Long routineId, List<ExerciseInfo> exerciseInfoList) {
         Routine routine = findById(routineId);
-        exerciseInfoList.stream()
+        exerciseInfoList
                 .forEach(exercise -> {
                     Exercise findExercise = exerciseRepository.fetchById(exercise.getExerciseId());
-                    new RoutineExercise(findExercise, routine, exercise.getSequence(), findExercise.getRepWeight());
+                    RoutineExercise routineExercise = new RoutineExercise(findExercise, routine, exercise.getSequence());
+
+                    List<RepWeight> repWeightList = findExercise.getRepWeightList();
+                    repWeightList
+                            .forEach(rw -> new RepWeight(rw.getReps(), rw.getWeight(), routineExercise));
                 });
 
         routineRepository.save(routine);

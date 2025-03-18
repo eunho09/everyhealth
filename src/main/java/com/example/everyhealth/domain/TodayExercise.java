@@ -21,30 +21,22 @@ public class TodayExercise {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "today_exercise_rep_weight",
-            joinColumns = @JoinColumn(name = "today_exercise_id") // RoutineExercise와 연결
-    )
-    private List<ArrayList<Integer>> repWeight = new ArrayList<>();
+    @OneToMany(mappedBy = "todayExercise", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RepWeight> repWeightList = new ArrayList<>();
 
     private Integer sequence;
 
-    public TodayExercise(Exercise exercise, Today today, List<ArrayList<Integer>> repWeight, Integer sequence) {
+    public TodayExercise(Exercise exercise, Today today, Integer sequence) {
         this.exercise = exercise;
         exercise.getTodayExercises().add(this);
         this.today = today;
         today.getTodayExercises().add(this);
-        this.repWeight = new ArrayList<>(repWeight);
         this.sequence = sequence;
     }
 
     public TodayExercise() {
     }
 
-    public void setRepWeight(List<ArrayList<Integer>> repWeight) {
-        this.repWeight = repWeight;
-    }
 
     public void setSequence(Integer sequence) {
         this.sequence = sequence;

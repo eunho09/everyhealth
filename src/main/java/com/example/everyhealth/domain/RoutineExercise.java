@@ -23,20 +23,15 @@ public class RoutineExercise {
 
     private Integer sequence;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "routine_exercise_rep_weight",
-            joinColumns = @JoinColumn(name = "routine_exercise_id") // RoutineExercise와 연결
-    )
-    private List<ArrayList<Integer>> repWeight = new ArrayList<>();
+    @OneToMany(mappedBy = "routineExercise", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<RepWeight> repWeightList = new ArrayList<>();
 
-    public RoutineExercise(Exercise exercise, Routine routine, Integer sequence, List<ArrayList<Integer>> repWeight) {
+    public RoutineExercise(Exercise exercise, Routine routine, Integer sequence) {
         this.exercise = exercise;
         exercise.getRoutineExerciseList().add(this);
         this.routine = routine;
         routine.getRoutineExerciseList().add(this);
         this.sequence = sequence;
-        this.repWeight = new ArrayList<>(repWeight);
     }
 
     public RoutineExercise() {
@@ -56,7 +51,4 @@ public class RoutineExercise {
         this.sequence = sequence;
     }
 
-    public void setRepWeight(List<ArrayList<Integer>> repWeight) {
-        this.repWeight = repWeight;
-    }
 }

@@ -1,22 +1,22 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.RepWeight;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class REResponseDto {
+public class RoutineExerciseUpdateDto {
 
     private Long routineExerciseId;
     private Integer sequence;
-    private List<ArrayList<Integer>> repWeight;
+    private List<RepWeight> repWeightList;
     private String exerciseName;
 
-    public REResponseDto(Long routineExerciseId,Integer sequence, List<ArrayList<Integer>> repWeight, String exerciseName) {
+    public RoutineExerciseUpdateDto(Long routineExerciseId, Integer sequence, List<RepWeight> repWeightList, String exerciseName) {
         this.routineExerciseId = routineExerciseId;
         this.sequence = sequence;
-        this.repWeight = repWeight;
+        this.repWeightList = repWeightList;
         this.exerciseName = exerciseName;
     }
 }

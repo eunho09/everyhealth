@@ -96,16 +96,16 @@ const WorkoutLog = ({ onDataChanged, date, todayData, handleSaveToday, fetchMont
             <button onClick={() => handleIsEditing(true)}>
                 <CgArrowsExchange />
             </button>
-            {todayData && todayData.todayExercises.length > 0 ? (
+            {todayData?.todayExercises?.length > 0 ? (
                 <div>
                     <ul>
                         {todayData.todayExercises.map((todayExercise, index) => (
                             <li key={index}>
                                 <div>{todayExercise.exerciseName}</div>
                                 <ul className="set-list">
-                                    {todayExercise.repWeight.map((set, setIndex) => (
+                                    {todayExercise.repWeightList.map((repWeight, setIndex) => (
                                         <li key={setIndex}>
-                                            {setIndex + 1}세트: {set[0]}회 {set[1] !== 0 && `${set[1]}kg`}
+                                            {setIndex + 1}세트: {repWeight.reps}회 {repWeight.weight !== 0 && `${repWeight.weight}kg`}
                                         </li>
                                     ))}
                                 </ul>

@@ -1,16 +1,21 @@
 package com.example.everyhealth.service;
 
+import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.domain.RoutineExercise;
-import com.example.everyhealth.dto.REResponseDto;
+import com.example.everyhealth.dto.RoutineExerciseResponseDto;
 import com.example.everyhealth.dto.RoutineExerciseSequence;
+import com.example.everyhealth.dto.RoutineExerciseUpdateDto;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
-import com.example.everyhealth.repository.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,13 +67,43 @@ public class RoutineExerciseService {
     }
 
     @Transactional
-    public void updateRepWeight(List<REResponseDto> responseDtoList, Long routineId) {
+    public void updateRepWeight(List<RoutineExerciseUpdateDto> responseDtoList, Long routineId) {
         List<RoutineExercise> findRoutineExercise = routineExerciseRepository.findByRoutineId(routineId);
 
+        Map<Long, RoutineExerciseUpdateDto> responseDtoMap = responseDtoList.stream()
+                .collect(Collectors.toMap(RoutineExerciseUpdateDto::getRoutineExerciseId, dto -> dto));
+
         for (RoutineExercise routineExercise : findRoutineExercise) {
-            for (REResponseDto response : responseDtoList) {
-                if (routineExercise.getId().equals(response.getRoutineExerciseId())) {
-                    routineExercise.setRepWeight(response.getRepWeight());
+            Long routineExerciseId = routineExercise.getId();
+
+            if (responseDtoMap.containsKey(routineExerciseId)) {
+                RoutineExerciseUpdateDto responseDto = responseDtoMap.get(routineExerciseId);
+                List<RepWeight> newRepWeightList = responseDto.getRepWeightList();
+
+                List<RepWeight> existRepWeight = routineExercise.getRepWeightList();
+
+                Set<Long> newRepWeightIds = newRepWeightList.stream()
+                        .map(RepWeight::getId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+
+                existRepWeight.removeIf(rw -> !newRepWeightIds.contains(rw.getId()));
+
+                for (RepWeight newRepWeight : newRepWeightList) {
+                    if (newRepWeight.getId() == null) {
+                        new RepWeight(
+                                newRepWeight.getReps(),
+                                newRepWeight.getWeight(),
+                                routineExercise);
+                    } else{
+                        existRepWeight.stream()
+                                .filter(rw -> rw.getId().equals(newRepWeight.getId()))
+                                .findFirst()
+                                .ifPresent(rw -> {
+                                    rw.setReps(newRepWeight.getReps());
+                                    rw.setWeight(newRepWeight.getWeight());
+                                });
+                    }
                 }
             }
         }

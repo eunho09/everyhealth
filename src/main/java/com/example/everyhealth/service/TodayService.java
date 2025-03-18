@@ -8,12 +8,14 @@ import com.example.everyhealth.repository.TodayExerciseRepository;
 import com.example.everyhealth.repository.TodayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpRange;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,20 +53,6 @@ public class TodayService {
     }
 
     @Transactional
-    public void addTodayExerciseAsExercise(TodayExerciseAsExerciseRequest dto) {
-        Today today = todayRepository.findById(dto.getTodayId()).get();
-
-        dto.getExerciseInfoList()
-                .stream()
-                .forEach(exerciseInfo -> {
-                    Exercise exercise = exerciseRepository.fetchById(exerciseInfo.getExerciseId());
-                    new TodayExercise(exercise, today, exercise.getRepWeight(), exerciseInfo.getSequence());
-                });
-
-        todayRepository.save(today);
-    }
-
-    @Transactional
     public void addTodayExercise(List<TodayExerciseRequest> todayExerciseRequests, LocalDate date, Long memberId) {
         Today today = todayRepository.fetchByLocalDate(date, memberId);
 
@@ -76,13 +64,24 @@ public class TodayService {
         for (TodayExerciseRequest request : todayExerciseRequests) {
             if (request.getType().equals("exercise")) {
                 Exercise exercise = exerciseRepository.findById(request.getId()).get();
-                new TodayExercise(exercise, today, exercise.getRepWeight(), baseSequence++);
+                TodayExercise todayExercise = new TodayExercise(exercise, today, baseSequence++);
+
+                List<RepWeight> repWeightList = exercise.getRepWeightList();
+
+                for (RepWeight repWeight : repWeightList) {
+                    new RepWeight(repWeight.getReps(), repWeight.getWeight(), todayExercise);
+                }
             }
 
             if (request.getType().equals("routine")) {
                 List<RoutineExercise> routineExerciseList = routineExerciseRepository.findByRoutineId(request.getId());
                 for (RoutineExercise routineExercise : routineExerciseList) {
-                    new TodayExercise(routineExercise.getExercise(), today, routineExercise.getRepWeight(), baseSequence++);
+                    TodayExercise todayExercise = new TodayExercise(routineExercise.getExercise(), today, baseSequence++);
+
+                    List<RepWeight> repWeightList = routineExercise.getRepWeightList();
+                    for (RepWeight repWeight : repWeightList) {
+                        new RepWeight(repWeight.getReps(), repWeight.getWeight(), todayExercise);
+                    }
                 }
             }
         }
@@ -103,7 +102,9 @@ public class TodayService {
                 .map(todayExercise -> new TodayExerciseDto(
                         todayExercise.getId(),
                         todayExercise.getExercise().getName(),
-                        todayExercise.getRepWeight(),
+                        todayExercise.getRepWeightList().stream()
+                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
+                                .toList(),
                         todayExercise.getSequence()
                 ))
                 .collect(Collectors.toList());
@@ -112,15 +113,41 @@ public class TodayService {
     }
 
     @Transactional
-    public void updateTodayExercise(List<UpdateTodayExerciseDto> dto, Long todayId) {
+    public void updateTodayExercise(List<UpdateTodayExerciseDto> updateDtoList, Long todayId) {
         Today today = todayRepository.fetchById(todayId);
 
         List<TodayExercise> todayExerciseList = today.getTodayExercises();
 
-        for (UpdateTodayExerciseDto updateTodayExerciseDto : dto) {
-            for (TodayExercise todayExercise : todayExerciseList) {
-                if (updateTodayExerciseDto.getId().equals(todayExercise.getId())) {
-                    todayExercise.setRepWeight(updateTodayExerciseDto.getRepWeight());
+        Map<Long, UpdateTodayExerciseDto> updateDtoMap = updateDtoList.stream()
+                .collect(Collectors.toMap(UpdateTodayExerciseDto::getId, dto -> dto));
+
+        for (TodayExercise todayExercise : todayExerciseList) {
+            Long todayExerciseId = todayExercise.getId();
+
+            if (updateDtoMap.containsKey(todayExerciseId)) {
+                UpdateTodayExerciseDto updateTodayExerciseDto = updateDtoMap.get(todayExerciseId);
+                List<RepWeight> newRepWeightList = updateTodayExerciseDto.getRepWeightList();
+                List<RepWeight> existsRepWeights = todayExercise.getRepWeightList();
+
+                Set<Long> newRepWeightIds = newRepWeightList.stream()
+                        .map(RepWeight::getId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+
+                existsRepWeights.removeIf(rw -> !newRepWeightIds.contains(rw.getId()));
+
+                for (RepWeight newRepWeight : newRepWeightList) {
+                    if (newRepWeight.getId() == null) {
+                        new RepWeight(newRepWeight.getReps(), newRepWeight.getWeight(), todayExercise);
+                    } else {
+                        existsRepWeights.stream()
+                                .filter(rw -> rw.getId().equals(newRepWeight.getId()))
+                                .findFirst()
+                                .ifPresent(rw -> {
+                                    rw.setReps(newRepWeight.getReps());
+                                    rw.setWeight(newRepWeight.getWeight());
+                                });
+                    }
                 }
             }
         }

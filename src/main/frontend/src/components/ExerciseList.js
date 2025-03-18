@@ -12,7 +12,6 @@ const ExerciseList = () => {
     const [selectedExercise, setSelectedExercise] = useState(null);
     const [isModalOpen, setModelOpen] = useState(false);
     const [selectBox, setSelectBox] = useState({});
-    const [selectClassification, setSelectClassification] = useState();
 
     const openModal = (exercise) => {
         setSelectedExercise(exercise);
@@ -36,7 +35,6 @@ const ExerciseList = () => {
                 const data = await exerciseService.findExerciseByMemberId();
                 console.log(data);
                 setExercises(data);
-                setSelectClassification(data.classification);
             } catch (error){
                 console.error(error);
             }
@@ -49,11 +47,22 @@ const ExerciseList = () => {
         setSelectedExercise((prev) => ({ ...prev, [field]: value }));
     };
 
-    const handleSetChange = (index, subIndex, value) => {
-        const updatedSets = selectedExercise.repWeight.map((set, i) =>
-            i === index ? set.map((item, j) => (j === subIndex ? value : item)) : set
-        );
-        setSelectedExercise((prev) => ({ ...prev, repWeight: updatedSets }));
+    const handleSetChange = (index, field, value) => {
+        const updatedRepWeightList = selectedExercise.repWeightList.map((repWeight, i) => {
+            if (i === index) {
+                return {
+                    ...repWeight,
+                    [field]: value
+                }
+            }
+
+            return repWeight;
+        });
+
+        setSelectedExercise((prev) => ({
+            ...prev,
+            repWeightList: updatedRepWeightList
+        }));
     };
 
 
@@ -74,14 +83,14 @@ const ExerciseList = () => {
     const addSet = () => {
         setSelectedExercise((prev) => ({
             ...prev,
-            repWeight: [...prev.repWeight, { reps: '', weight: '' }]
+            repWeightList: [...prev.repWeightList, { reps: '', weight: '' }]
         }));
     };
 
     const removeSet = (index) => {
         setSelectedExercise((prev) => ({
             ...prev,
-            repWeight: prev.repWeight.filter((_, i) => i !== index)
+            repWeightList: prev.repWeightList.filter((_, i) => i !== index)
         }));
     };
 
@@ -94,10 +103,6 @@ const ExerciseList = () => {
 
         fetchSelectBox();
     }, [])
-
-    const handleSelect = (e) => {
-        setSelectClassification(e.target.value);
-    }
 
     return (
         <div className="exercise-list">
@@ -155,20 +160,20 @@ const ExerciseList = () => {
                                 ))}
                             </select>
                             <h3>세트</h3>
-                            {selectedExercise.repWeight && selectedExercise.repWeight.map((set, index) => (
+                            {selectedExercise.repWeightList && selectedExercise.repWeightList.map((set, index) => (
                                 <div className="row" key={index}>
                                     <div className="number">{index + 1}</div>
                                     <input
                                         type="number"
                                         placeholder="반복 횟수"
-                                        value={set[0]}
-                                        onChange={(e) => handleSetChange(index, 0, e.target.value)}
+                                        value={set.reps}
+                                        onChange={(e) => handleSetChange(index, "reps", e.target.value)}
                                     />
                                     <input
                                         type="number"
                                         placeholder="무게"
-                                        value={set[1]}
-                                        onChange={(e) => handleSetChange(index, 1, e.target.value)}
+                                        value={set.weight}
+                                        onChange={(e) => handleSetChange(index, "weight", e.target.value)}
                                     />
                                     <button className="small-button" onClick={() => removeSet(index)}>
                                         <TiDeleteOutline />
