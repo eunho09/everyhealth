@@ -2,9 +2,7 @@ import api from "./api";
 
 export const routineService = {
     save: async (name) => {
-        const response = await api.post("/api/routine", {
-            name:name
-        })
+        const response = await api.post(`/api/routine?name=${name}`)
         return response.data;
     },
 
@@ -33,7 +31,7 @@ export const routineService = {
     },
 
     updateSequence: async (routineId, updateList) => {
-        const response = await api.put(`/api/routineExercise/updateSequence/${routineId}`, updateList);
+        const response = await api.patch(`/api/routineExercise/updateSequence/${routineId}`, updateList);
         return response.data;
     },
 
