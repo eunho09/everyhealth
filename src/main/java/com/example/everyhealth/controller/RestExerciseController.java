@@ -10,6 +10,7 @@ import com.example.everyhealth.dto.ExerciseResponseDto;
 import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.ExerciseService;
 import com.example.everyhealth.service.MemberService;
+import com.example.everyhealth.service.RepWeightService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class RestExerciseController {
 
     private final ExerciseService exerciseService;
     private final MemberService memberService;
+    private final RepWeightService repWeightService;
 
     @GetMapping("/exercise/{id}")
     public ResponseEntity<ExerciseResponseDto> findById(@PathVariable Long id) {
@@ -83,7 +85,8 @@ public class RestExerciseController {
 
     @DeleteMapping("/exercise/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        exerciseService.delete(id);
+        repWeightService.deleteByExerciseId(id);
+        exerciseService.deleteById(id);
         return ResponseEntity.ok("운동을 삭제했습니다.");
     }
 }

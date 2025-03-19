@@ -21,4 +21,9 @@ public class RepWeightService {
     public void deleteByRoutineExerciseId(Long routineExerciseId) {
         repWeightRepository.deleteByRoutineExerciseId(routineExerciseId);
     }
+
+    @Transactional
+    public void deleteByExerciseId(Long exerciseId) {
+        repWeightRepository.deleteByExerciseId(exerciseId);
+    }
 }

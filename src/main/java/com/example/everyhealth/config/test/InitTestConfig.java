@@ -39,8 +39,11 @@ public class InitTestConfig {
     }
 
     private void loadMemberTestData(){
-        Member member = new Member("test", "test", MemberRole.USER, "google", "picture");
-        memberService.save(member);
+        List<Member> memberList = memberService.findAll();
+        if (memberList.isEmpty()){
+            Member member = new Member("test", "test", MemberRole.USER, "google", "picture");
+            memberService.save(member);
+        }
     }
 
 /*    public void loadExerciseTestData(){

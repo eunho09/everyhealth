@@ -17,5 +17,9 @@ public interface RepWeightRepository extends JpaRepository<RepWeight, Long> {
     @Modifying
     @Query("delete from RepWeight re where re.routineExercise.id =:routineExerciseId")
     void deleteByRoutineExerciseId(@Param("routineExerciseId") Long routineExerciseId);
+
+    @Modifying
+    @Query("delete from RepWeight re where re.exercise.id =:exerciseId")
+    void deleteByExerciseId(@Param("exerciseId") Long exerciseId);
 }
 

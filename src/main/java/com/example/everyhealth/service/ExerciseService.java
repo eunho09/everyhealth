@@ -93,4 +93,9 @@ public class ExerciseService {
     public List<Exercise> fetchAll(){
         return exerciseRepository.fetchAll();
     }
+
+    @Transactional
+    public void deleteById(Long id) {
+        exerciseRepository.deleteById(id);
+    }
 }
