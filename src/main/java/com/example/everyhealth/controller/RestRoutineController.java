@@ -6,6 +6,7 @@ import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.service.MemberService;
+import com.example.everyhealth.service.RepWeightService;
 import com.example.everyhealth.service.RoutineExerciseService;
 import com.example.everyhealth.service.RoutineService;
 import lombok.RequiredArgsConstructor;
@@ -28,19 +29,19 @@ public class RestRoutineController {
     private final RoutineService routineService;
     private final MemberService memberService;
     private final RoutineExerciseService routineExerciseService;
-
+    private final RepWeightService repWeightService;
 
 
 
     @PostMapping("/routine")
-    public ResponseEntity<Long> save(@ExtractMemberId Long memberId,
-                                     @RequestBody RoutineSaveDto dto) {
+    public ResponseEntity<String> save(@ExtractMemberId Long memberId,
+                                     @RequestParam String name) {
 
         Member findMember = memberService.findById(memberId);
-        Routine routine = new Routine(dto.getName(), findMember);
+        Routine routine = new Routine(name, findMember);
         routineService.save(routine);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(routine.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(routine.getName() + "을 생성했습니다.");
     }
 
     @PostMapping("/routineExercise")
@@ -52,36 +53,45 @@ public class RestRoutineController {
 
 
     @GetMapping("/member/routines")
-    public List<RoutineResponseDto> findRoutineWithExercises(@ExtractMemberId Long memberId) {
-        List<Routine> routineList = routineService.findRoutineWithExercises(memberId);
-        List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(memberId);
+    public ResponseEntity<List<RoutineResponseDto>> memberRoutines(@ExtractMemberId Long memberId) {
+        List<Routine> routineList = routineService.fetchByMemberId(memberId);
+        List<RoutineExercise> routineExerciseList = routineExerciseService.fetchByRoutineIds(routineList.stream().map(r -> r.getId()).toList());
 
-        Map<Long, List<RoutineExercise>> routineExerciseMap = routineExerciseList.stream()
-                .collect(Collectors.groupingBy(routineExercise -> routineExercise.getRoutine().getId()));
+        Map<Long, RoutineExercise> routineExerciseMap = routineExerciseList.stream()
+                .collect(Collectors.toMap(re -> re.getId(), dto -> dto));
 
-        return routineList.stream()
-                .map(routine -> new RoutineResponseDto(
-                        routine.getId(),
-                        routine.getName(),
-                        routineExerciseMap.getOrDefault(routine.getId(), new ArrayList<>()).stream()
-                                .map(routineExercise -> new RoutineExerciseResponseDto(
-                                        routineExercise.getId(),
-                                        routineExercise.getSequence(),
-                                        routineExercise.getRepWeightList().stream()
-                                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight())).toList(),
-                                        routineExercise.getExercise().getName()
-                                ))
-                                .collect(Collectors.toList())
+        List<RoutineResponseDto> responseDto = routineList.stream()
+                .map(r -> new RoutineResponseDto(
+                        r.getId(),
+                        r.getName(),
+                        r.getRoutineExerciseList().stream()
+                                .map(re -> {
+                                    RoutineExercise fetchRe = routineExerciseMap.get(re.getId());
+                                    return new RoutineExerciseResponseDto(
+                                            fetchRe.getId(),
+                                            fetchRe.getSequence(),
+                                            fetchRe.getRepWeightList().stream()
+                                                    .map(rw -> new RepWeightDto(
+                                                            rw.getId(),
+                                                            rw.getReps(),
+                                                            rw.getWeight()
+                                                    ))
+                                                    .toList(),
+                                            fetchRe.getExercise().getName()
+                                    );
+                                }).toList()
                 ))
-                .collect(Collectors.toList());
+                .toList();
+
+        return ResponseEntity.ok(responseDto);
     }
 
 
     @GetMapping("/routine/{routineId}")
-    public List<RoutineExerciseResponseDto> findOne(@PathVariable Long routineId) {
+    public ResponseEntity<List<RoutineExerciseResponseDto>> findOne(@PathVariable Long routineId) {
 
         List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(routineId);
-        return routineExerciseList.stream()
+        List<RoutineExerciseResponseDto> responseList = routineExerciseList.stream()
                 .map(routineExercise -> new RoutineExerciseResponseDto(
                         routineExercise.getId(),
                         routineExercise.getSequence(),
@@ -90,31 +100,42 @@ public class RestRoutineController {
                         routineExercise.getExercise().getName()
                 ))
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseList);
     }
 
     @GetMapping("/routineExercise/{routineId}")
-    public List<RoutineExerciseDto> findRoutineExerciseByRoutineId(@PathVariable Long routineId) {
-        return routineExerciseService.findRoutineExerciseByRoutineId(routineId)
+    public ResponseEntity<List<RoutineExerciseDto>> fetchRoutineExerciseByRoutineId(@PathVariable Long routineId) {
+        List<RoutineExerciseDto> responseList = routineExerciseService.fetchRoutineExerciseByRoutineId(routineId)
                 .stream()
-                .map(routineExercise -> new RoutineExerciseDto(routineExercise.getSequence(), routineExercise.getRoutine().getName(), routineExercise.getExercise().getRepWeightList(), routineExercise.getExercise().getName()))
+                .map(routineExercise -> new RoutineExerciseDto(
+                        routineExercise.getSequence(),
+                        routineExercise.getRoutine().getName(),
+                        routineExercise.getExercise().getRepWeightList().stream()
+                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
+                                .toList(),
+                        routineExercise.getExercise().getName()))
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseList);
     }
 
     @DeleteMapping("/routine/{id}")
     public ResponseEntity<Void> deleteRoutine(@PathVariable Long id) {
-        Routine routine = routineService.findById(id);
-        routineService.delete(routine);
+        repWeightService.deleteByRoutineId(id);
+        routineExerciseService.deleteByRoutineId(id);
+        routineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/routineExercise/{id}")
     public ResponseEntity<Void> deleteRoutineExercise(@PathVariable Long id) {
-        RoutineExercise routineExercise = routineExerciseService.findById(id);
-        routineExerciseService.delete(routineExercise);
+        repWeightService.deleteByRoutineExerciseId(id);
+        routineExerciseService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/routineExercise/updateSequence/{routineId}")
+    @PatchMapping("/routineExercise/updateSequence/{routineId}")
     public ResponseEntity<String> updateSequence(@PathVariable Long routineId, @RequestBody List<RoutineExerciseSequence> routineExerciseSequence) {
         routineExerciseService.updateSequence(routineExerciseSequence, routineId);
         return ResponseEntity.ok("update sequence");

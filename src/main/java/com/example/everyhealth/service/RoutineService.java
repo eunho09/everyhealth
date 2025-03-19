@@ -59,8 +59,13 @@ public class RoutineService {
         return routine;
     }
 
-    public List<Routine> findRoutineWithExercises(Long memberId) {
-        return routineRepository.findRoutineWithExercises(memberId);
+    public List<Routine> fetchByMemberId(Long memberId) {
+        return routineRepository.fetchByMemberId(memberId);
+    }
+
+    @Transactional
+    public void deleteById(Long routineId) {
+        routineRepository.deleteById(routineId);
     }
 
 }

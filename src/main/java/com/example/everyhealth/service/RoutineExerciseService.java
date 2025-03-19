@@ -2,7 +2,6 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.domain.RoutineExercise;
-import com.example.everyhealth.dto.RoutineExerciseResponseDto;
 import com.example.everyhealth.dto.RoutineExerciseSequence;
 import com.example.everyhealth.dto.RoutineExerciseUpdateDto;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
@@ -44,12 +43,8 @@ public class RoutineExerciseService {
         routineExerciseRepository.delete(routineExercise);
     }
 
-    public List<RoutineExercise> findRoutineExerciseByRoutineId(Long routineId) {
-        return routineExerciseRepository.findRoutineExerciseByRoutineId(routineId);
-    }
-
-    public List<RoutineExercise> findRoutineExerciseByMemberId(Long memberId) {
-        return routineExerciseRepository.findRoutineExerciseByMemberId(memberId);
+    public List<RoutineExercise> fetchRoutineExerciseByRoutineId(Long routineId) {
+        return routineExerciseRepository.fetchRoutineExerciseByRoutineId(routineId);
     }
 
     @Transactional
@@ -111,6 +106,20 @@ public class RoutineExerciseService {
 
     public List<RoutineExercise> findAllByRoutineIdWithExerciseAndRepWeight(Long routineId) {
         return routineExerciseRepository.findAllByRoutineIdWithExerciseAndRepWeight(routineId);
+    }
+
+    @Transactional
+    public void deleteById(Long routineExerciseId) {
+        routineExerciseRepository.deleteById(routineExerciseId);
+    }
+
+    @Transactional
+    public void deleteByRoutineId(Long routineId) {
+        routineExerciseRepository.deleteByRoutineId(routineId);
+    }
+
+    public List<RoutineExercise> fetchByRoutineIds(List<Long> routineIds) {
+        return routineExerciseRepository.fetchByRoutineIds(routineIds);
     }
 }
 
