@@ -65,4 +65,9 @@ public class ClubService {
                         c.getChatRoom().getId()))
                 .toList();
     }
+
+    @Transactional
+    public void deleteById(Long id) {
+        clubRepository.deleteById(id);
+    }
 }
