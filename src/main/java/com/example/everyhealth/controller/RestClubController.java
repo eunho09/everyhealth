@@ -85,8 +85,8 @@ public class RestClubController {
         ClubMember clubMember = clubMemberService.findByMemberIdAndClubId(memberId, id);
 
         if (clubMember.isAdmin()){
-            Club club = clubService.findById(id);
-            clubService.delete(club);
+            clubMemberService.deleteByClubId(id);
+            clubService.deleteById(id);
         }
 
         clubMemberService.delete(clubMember);

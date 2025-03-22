@@ -49,17 +49,6 @@ public class RestPostController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-/*    @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> findAll() {
-        List<Post> postList = postService.findAll();
-
-        List<PostDto> postDtoList = postList.stream()
-                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(postDtoList);
-    }*/
-
     @GetMapping("/posts")
     public ResponseEntity<List<PostDto>> findAll(@RequestParam(defaultValue = "10") int limit) {
         List<Post> postList = postService.findRecent(limit);

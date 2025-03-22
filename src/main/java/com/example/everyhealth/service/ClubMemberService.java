@@ -30,8 +30,7 @@ public class ClubMemberService {
     }
 
     public boolean existsByMemberId(Long memberId) {
-        ClubMember clubMember = clubMemberRepository.existsByMemberId(memberId);
-        return clubMember != null;
+        return clubMemberRepository.existsByMemberId(memberId);
     }
 
     @Transactional
@@ -45,5 +44,10 @@ public class ClubMemberService {
 
     public ClubMember findByMemberIdAndChatRoomId(Long memberId, Long chatRoomId) {
         return clubMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId);
+    }
+
+    @Transactional
+    public void deleteByClubId(Long clubId) {
+        clubMemberRepository.deleteByClubId(clubId);
     }
 }
