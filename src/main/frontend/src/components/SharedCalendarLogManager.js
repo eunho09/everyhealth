@@ -35,12 +35,13 @@ const SharedCalendarLogManager = ({ friendId }) => {
         checkFriendship();
     }, [friendId, navigate]);
 
-    const fetchMonthData = useCallback(async (month) => {
+    const fetchMonthData = useCallback(async (year, month) => {
         if (!isFriend) return;
 
         try {
             const targetMonth = month || date.getMonth() + 1;
-            const data = await sharedTodayService.findByFriendAndMonth(friendId, targetMonth);
+            const targetYear = month || date.getFullYear();
+            const data = await sharedTodayService.findByFriendAndMonth(friendId, targetYear, targetMonth);
             setMonthData(data);
         } catch (e) {
             console.error("월 데이터 가져오기 실패:", e);
@@ -50,7 +51,8 @@ const SharedCalendarLogManager = ({ friendId }) => {
     useEffect(() => {
         if (isFriend) {
             const month = date.getMonth() + 1;
-            fetchMonthData(month);
+            const year = date.getFullYear() + 1;
+            fetchMonthData(year, month);
         }
     }, [fetchMonthData, isFriend]);
 

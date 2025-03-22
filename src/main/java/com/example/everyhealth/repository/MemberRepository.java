@@ -23,8 +23,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "ORDER BY RAND()")
     List<MemberDto> findSuggestedFriend(@Param("memberId") Long memberId);
 
-    @Query("select m from Member m where m.id=(select f.friend.id from Friend f where f.id=:friendId)")
-    Member findByFriendInfo(@Param("friendId") Long friendId);
+    @Query("select m.id from Member m where m.id=(select f.member.id from Friend f where f.id=:friendId)")
+    Long findIdByFriendId(@Param("friendId") Long friendId);
+
+    @Query("select m from Member m where m.id=(select f.member.id from Friend f where f.id=:friendId)")
+    Member findByFriendId(@Param("friendId") Long friendId);
+
+    @Query("select exists (select 1 from Member m join m.friendList f where m.id=:id and f.id =:friendId and f.status=com.example.everyhealth.domain.FriendShip.ACCEPT)")
+    boolean existsByIdAndFriendId(@Param("id") Long id, @Param("friendId") Long friendId);
 
     @Query("select m from Member m where m.name=:name")
     Optional<Member> findByName(@Param("name") String name);

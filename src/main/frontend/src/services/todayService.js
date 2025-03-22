@@ -6,8 +6,8 @@ export const todayService = {
         return response.data;
     },
 
-    getTodayByMonth: async (month) => {
-        const response = await api.get(`/api/today/month/${month}`)
+    getTodayByMonth: async (year, month) => {
+        const response = await api.get(`/api/today/yearAndMonth/${year}/${month}`)
         return response.data;
     },
 
@@ -17,22 +17,22 @@ export const todayService = {
     },
 
     getTodayDateByFriend: async (friendId, date) => {
-        const response = await api.get(`/api/today/friendAndDate/${friendId}/${date}`);
+        const response = await api.get(`/api/today/friend/${friendId}/date/${date}`);
         return response.data;
     },
 
-    saveToday: async () => {
-        const response = await api.post("/api/today");
+    saveToday: async (date) => {
+        const response = await api.post(`/api/today?date=${date}`);
         return response.data;
     },
 
     addTodayExercise: async (date, checkList) => {
-        const response = await api.post(`/api/today/addTodayExercise/${date}`, checkList);
+        const response = await api.post(`/api/todayExercise/${date}`, checkList);
         return response.data;
     },
 
     deleteTodayExercise: async (todayExerciseId) => {
-        const response = await api.delete(`/api/delete/todayExercise/${todayExerciseId}`);
+        const response = await api.delete(`/api/todayExercise/${todayExerciseId}`);
         return response.data;
     },
 
@@ -42,7 +42,7 @@ export const todayService = {
     },
 
     updateTodayExercise: async (todayId, updateList) => {
-        const response = await api.patch(`/api/update/todayExercise/${todayId}`, updateList);
+        const response = await api.patch(`/api/todayExercise/${todayId}`, updateList);
         return response.data;
     },
 
@@ -51,8 +51,8 @@ export const todayService = {
         return response.data;
     },
 
-    findByFriendAndMonth: async (friendId, month) => {
-        const response = await api.get(`/api/today/friendAndMonth/${friendId}/${month}`);
+    findByFriendAndMonth: async (friendId, year, month) => {
+        const response = await api.get(`/api/today/friend/${friendId}/yearAndMonth/${year}/${month}`);
         return response.data;
     }
 }
