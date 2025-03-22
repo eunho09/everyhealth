@@ -13,14 +13,17 @@ import java.util.List;
 @Repository
 public interface TodayRepository extends JpaRepository<Today, Long> {
 
-    @Query("select new com.example.everyhealth.dto.TodayDateDto(t.localDate, t.checkBox) from Today t where month(t.localDate)=:month and t.member.id=:memberId ")
-    List<TodayDateDto> findByMonth(@Param("month") int month, @Param("memberId") Long memberId);
+    @Query("select new com.example.everyhealth.dto.TodayDateDto(t.localDate, t.checkBox) from Today t where year(t.localDate)=:year and month(t.localDate)=:month and t.member.id=:memberId ")
+    List<TodayDateDto> findByYearAndMonth(@Param("year") int year, @Param("month") int month, @Param("memberId") Long memberId);
 
-    @Query("select t from Today t left join fetch t.todayExercises te left join fetch te.exercise where date(t.localDate)=:date and t.member.id=:memberId order by te.sequence asc")
-    Today fetchByLocalDate(@Param("date") LocalDate date, @Param("memberId") Long memberId);
+    @Query("select t from Today t where date(t.localDate)=:date and t.member.id=:memberId")
+    Today findByLocalDateAndMemberId(@Param("date") LocalDate date, @Param("memberId") Long memberId);
 
-    @Query("select t from Today t join fetch t.todayExercises te join fetch te.repWeightList where t.id=:todayId")
-    Today fetchById(@Param("todayId") Long todayId);
+    @Query("select t from Today t left join fetch t.todayExercises te where date(t.localDate)=:date and t.member.id=:memberId order by te.sequence asc")
+    Today fetchWithTodayExercises(@Param("date") LocalDate date, @Param("memberId") Long memberId);
+
+    @Query("select t from Today t join fetch t.todayExercises te where t.id=:todayId")
+    Today fetchByIdWithTodayExercises(@Param("todayId") Long todayId);
 
     @Query("select t from Today t join fetch t.todayExercises te where t.member.id=:memberId")
     List<Today> fetchByMemberId(@Param("memberId") Long memberId);

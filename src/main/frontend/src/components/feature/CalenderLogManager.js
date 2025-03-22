@@ -13,12 +13,13 @@ const CalenderLogManager = () => {
     const [selectTodayId, setSelectTodayId] = useState();
 
     // fetchMonthData를 useCallback으로 메모이제이션
-    const fetchMonthData = useCallback(async (month) => {
+    const fetchMonthData = useCallback(async (year, month) => {
         try {
             // 인자로 month를 받지 않으면 현재 date 객체의 월을 사용
             const targetMonth = month || date.getMonth() + 1;
+            const targetYear = year || date.getFullYear();
             console.log(`${targetMonth}월 데이터를 가져옵니다.`);
-            const data = await todayService.getTodayByMonth(targetMonth);
+            const data = await todayService.getTodayByMonth(targetYear, targetMonth);
             setMonthData(data);
         } catch (e) {
             console.error("월 데이터 가져오기 실패:", e);
@@ -34,7 +35,8 @@ const CalenderLogManager = () => {
     // 컴포넌트 마운트 시 초기 데이터 로드
     useEffect(() => {
         const month = date.getMonth() + 1;
-        fetchMonthData(month);
+        const year = date.getFullYear();
+        fetchMonthData(year, month);
     }, [fetchMonthData]); // fetchMonthData가 변경될 때 실행
 
     // 날짜 변경 시 해당 날짜의 데이터 로드

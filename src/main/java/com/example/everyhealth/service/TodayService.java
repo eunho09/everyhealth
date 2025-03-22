@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +51,7 @@ public class TodayService {
 
     @Transactional
     public void addTodayExercise(List<TodayExerciseRequest> todayExerciseRequests, LocalDate date, Long memberId) {
-        Today today = todayRepository.fetchByLocalDate(date, memberId);
+        Today today = todayRepository.fetchWithTodayExercises(date, memberId);
 
         int baseSequence = today.getTodayExercises().stream()
                 .mapToInt(TodayExercise::getSequence)
@@ -63,7 +60,7 @@ public class TodayService {
 
         for (TodayExerciseRequest request : todayExerciseRequests) {
             if (request.getType().equals("exercise")) {
-                Exercise exercise = exerciseRepository.findById(request.getId()).get();
+                Exercise exercise = exerciseRepository.fetchById(request.getId());
                 TodayExercise todayExercise = new TodayExercise(exercise, today, baseSequence++);
 
                 List<RepWeight> repWeightList = exercise.getRepWeightList();
@@ -89,14 +86,14 @@ public class TodayService {
         todayRepository.save(today);
     }
 
-    public List<TodayDateDto> findByMonth(int month, Long memberId) {
-        return todayRepository.findByMonth(month, memberId);
+    public List<TodayDateDto> findByYearAndMonth(int year, int month, Long memberId) {
+        return todayRepository.findByYearAndMonth(year, month, memberId);
     }
 
 
     public TodayDto fetchByLocalDate(LocalDate date, Long memberId) {
-        Today today = todayRepository.fetchByLocalDate(date, memberId);
-        List<TodayExercise> todayExerciseList = todayExerciseRepository.findByTodayId(today.getId());
+        Today today = todayRepository.findByLocalDateAndMemberId(date, memberId);
+        List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(today.getId());
 
         List<TodayExerciseDto> todayExerciseDtoList = todayExerciseList.stream()
                 .map(todayExercise -> new TodayExerciseDto(
@@ -114,9 +111,7 @@ public class TodayService {
 
     @Transactional
     public void updateTodayExercise(List<UpdateTodayExerciseDto> updateDtoList, Long todayId) {
-        Today today = todayRepository.fetchById(todayId);
-
-        List<TodayExercise> todayExerciseList = today.getTodayExercises();
+        List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(todayId);
 
         Map<Long, UpdateTodayExerciseDto> updateDtoMap = updateDtoList.stream()
                 .collect(Collectors.toMap(UpdateTodayExerciseDto::getId, dto -> dto));
@@ -155,7 +150,7 @@ public class TodayService {
 
     @Transactional
     public void updateSequence(List<UpdateSeqTodayExercise> updateSeqTodayExerciseList, Long todayId) {
-        Today today = todayRepository.fetchById(todayId);
+        Today today = todayRepository.fetchByIdWithTodayExercises(todayId);
 
         List<TodayExercise> todayExercises = today.getTodayExercises();
 
@@ -165,6 +160,11 @@ public class TodayService {
                     todayExercise.setSequence(request.getSequence());
                 }
             }
+        }
+
+        todayExercises.sort(Comparator.comparingInt(te -> te.getSequence()));
+        for (int i = 0; i < todayExercises.size(); i++) {
+            todayExercises.get(i).setSequence(i + 1);
         }
     }
 

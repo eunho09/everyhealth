@@ -34,7 +34,15 @@ public class MemberService {
         return memberRepository.findSuggestedFriend(memberId);
     }
 
-    public Member findByFriendInfo(Long friendId) {
-        return memberRepository.findByFriendInfo(friendId);
+    public Long findIdByFriendId(Long friendId) {
+        return memberRepository.findIdByFriendId(friendId);
+    }
+
+    public Member findByFriendId(Long friendId) {
+        return memberRepository.findByFriendId(friendId);
+    }
+
+    public boolean existsByIdAndFriendId(Long id, Long friendId) {
+        return memberRepository.existsByIdAndFriendId(id, friendId);
     }
 }
