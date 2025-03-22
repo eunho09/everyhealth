@@ -32,16 +32,9 @@ public class FriendService {
         return friendRepository.findAll();
     }
 
-    public List<Friend> findByMemberId(Long memberId) {
-        return friendRepository.findByMemberId(memberId);
-    }
 
     public List<Friend> findByFriendIdAndStatus(Long friendMemberId, FriendShip status) {
         return friendRepository.findByFriendIdAndStatus(friendMemberId, status);
-    }
-
-    public Friend findByMemberIdAndFriendIdAndStatus(Long memberId, Long friendMemberId, FriendShip status) {
-        return friendRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, status);
     }
 
     public List<Friend> findMyFriend(Long memberId) {

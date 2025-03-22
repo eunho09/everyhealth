@@ -5,6 +5,7 @@ import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Slf4j
 public class RestTodayController {
 
     private final TodayService todayService;
@@ -126,8 +128,7 @@ public class RestTodayController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        Long findMemberId = memberService.findIdByFriendId(friendId);
-        List<TodayDateDto> todayList = todayService.findByYearAndMonth(year, month, findMemberId);
+        List<TodayDateDto> todayList = todayService.findByYearAndMonth(year, month, friendId);
 
         return ResponseEntity.ok(todayList);
     }
@@ -150,8 +151,7 @@ public class RestTodayController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        Long findMemberId = memberService.findIdByFriendId(friendId);
-        TodayDto todayDto = todayService.fetchByLocalDate(date, findMemberId);
+        TodayDto todayDto = todayService.fetchByLocalDate(date, friendId);
         return ResponseEntity.ok(todayDto);
     }
 
