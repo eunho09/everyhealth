@@ -26,7 +26,7 @@ public class ClubMember {
 
     private LocalDateTime joinAt;
 
-    @OneToMany(mappedBy = "clubMember", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "clubMember", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> chatMessageList = new ArrayList<>();
 
     protected ClubMember() {

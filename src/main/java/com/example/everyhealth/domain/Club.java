@@ -18,13 +18,13 @@ public class Club {
     private String location;
     private String schedule;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private ChatRoom chatRoom;
 
     @ElementCollection
     private List<String> highlights = new ArrayList<>();
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClubMember> clubMemberList = new ArrayList<>();
 
     protected Club() {

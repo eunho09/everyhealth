@@ -16,11 +16,11 @@ import java.util.List;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    @Query("SELECT m FROM ChatMessage m WHERE m.chatRoom.id = :roomId " +
-            "ORDER BY m.createdDate desc")
+    @Query("select m from ChatMessage m join fetch m.clubMember cm join fetch cm.member where m.chatRoom.id = :roomId " +
+            "order by m.createdDate desc")
     Page<ChatMessage> findByRecentMessage(@Param("roomId") Long roomId, Pageable pageable);
 
 
-    @Query("select m from ChatMessage m where m.id <:messageId and m.chatRoom.id =:roomId order by m.createdDate desc")
+    @Query("select m from ChatMessage m join fetch m.clubMember cm join fetch cm.member where m.id <:messageId and m.chatRoom.id =:roomId order by m.createdDate desc")
     Page<ChatMessage> findOlderMessages(@Param("roomId") Long roomId, @Param("messageId") Long messageId, PageRequest pageRequest);
 }
