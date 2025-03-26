@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, {useState, useEffect, useCallback} from 'react';
 import RoutineList from '../RoutineList';
 import AddRoutineExercise from '../AddRoutineExercise';
 import UpdateRoutine from "../UpdateRoutine";
@@ -152,7 +151,7 @@ const RoutineManager = () => {
             {isEditing && (
                 <UpdateRoutine
                     routineId={selectedRoutineId}
-                    close={editingClose}
+                    handleIsEditing={editingClose}
                 />
             )}
         </div>

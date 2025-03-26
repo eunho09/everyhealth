@@ -7,6 +7,10 @@ import com.example.everyhealth.dto.RoutineExerciseUpdateDto;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Cache;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +52,8 @@ public class RoutineExerciseService {
     }
 
     @Transactional
-    public String updateSequence(List<RoutineExerciseSequence> routineExerciseSequence, Long routineId) {
+    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
+    public void updateSequence(List<RoutineExerciseSequence> routineExerciseSequence, Long routineId) {
         List<RoutineExercise> findRoutineExercise = routineExerciseRepository.findByRoutineId(routineId);
         for (RoutineExercise routineExercise : findRoutineExercise){
             for (RoutineExerciseSequence sequence : routineExerciseSequence) {
@@ -57,11 +62,10 @@ public class RoutineExerciseService {
                 }
             }
         }
-
-        return "수정완료";
     }
 
     @Transactional
+    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
     public void updateRepWeight(List<RoutineExerciseUpdateDto> responseDtoList, Long routineId) {
         List<RoutineExercise> findRoutineExercise = routineExerciseRepository.findByRoutineId(routineId);
 
@@ -114,6 +118,7 @@ public class RoutineExerciseService {
     }
 
     @Transactional
+    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
     public void deleteByRoutineId(Long routineId) {
         routineExerciseRepository.deleteByRoutineId(routineId);
     }

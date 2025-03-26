@@ -3,8 +3,12 @@ package com.example.everyhealth.service;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.dto.ExerciseDto;
+import com.example.everyhealth.dto.ExerciseResponseDto;
 import com.example.everyhealth.repository.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +24,8 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
 
     @Transactional
+    @CachePut(value = "exercises", key = "#exercise.id")
+    @CacheEvict(value = {"exercisesByMember", "exerciseAll"}, allEntries = true)
     public Long save(Exercise exercise) {
         exerciseRepository.save(exercise);
         return exercise.getId();
@@ -34,6 +40,8 @@ public class ExerciseService {
     }
 
     @Transactional
+    @CachePut(value = "exercises", key = "#id")
+    @CacheEvict(value = {"exercisesByMember", "exerciseAll"}, allEntries = true)
     public void update(Long id, ExerciseDto dto) {
         Exercise exercise = fetchById(id);
         if (dto.getName() != null) {
@@ -77,24 +85,43 @@ public class ExerciseService {
         }
     }
 
+    @Transactional
+    @CacheEvict(value = {"exercises", "exercisesByMember", "exerciseAll"}, allEntries = true)
     public void delete(Long id) {
         Exercise exercise = findById(id);
         exerciseRepository.delete(exercise);
     }
 
-    public List<Exercise> findExercisesByMemberId(Long id) {
-        return exerciseRepository.findExercisesByMemberId(id);
+    @Cacheable(value = "exercisesByMember", key = "#memberId")
+    public List<ExerciseResponseDto> fetchMemberExercises(Long memberId) {
+        List<Exercise> exercises = exerciseRepository.findExercisesByMemberId(memberId);
+
+        return exercises.stream()
+                .map(ExerciseResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     public Exercise fetchById(Long id) {
         return exerciseRepository.fetchById(id);
     }
 
-    public List<Exercise> fetchAll(){
-        return exerciseRepository.fetchAll();
+    @Cacheable(value = "exercises", key = "#id")
+    public ExerciseResponseDto fetchOne(Long id){
+        Exercise findExercise = exerciseRepository.fetchById(id);
+        return new ExerciseResponseDto(findExercise);
+    }
+
+    @Cacheable(value = "exerciseAll")
+    public List<ExerciseResponseDto> fetchAll() {
+        List<Exercise> exercises = exerciseRepository.fetchAll();
+        return exercises.stream()
+                .map(ExerciseResponseDto::new)
+                .collect(Collectors.toList());
+
     }
 
     @Transactional
+    @CacheEvict(value = {"exercises", "exercisesByMember", "exerciseAll"}, allEntries = true)
     public void deleteById(Long id) {
         exerciseRepository.deleteById(id);
     }

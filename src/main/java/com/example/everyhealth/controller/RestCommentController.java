@@ -37,17 +37,12 @@ public class RestCommentController {
         Comment comment = new Comment(dto.getText(), post, member);
         commentService.save(comment);
 
-
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/comment/{postId}")
     public ResponseEntity<List<CommentDto>> findByPostId(@PathVariable Long postId) {
-        List<Comment> commentList = commentService.findByPostId(postId);
-
-        List<CommentDto> commentDtoList = commentList.stream()
-                .map(comment -> new CommentDto(comment.getId(), comment.getText(), comment.getMember().getName(), comment.getLocalDateTime()))
-                .collect(Collectors.toList());
+        List<CommentDto> commentDtoList = commentService.findByPostId(postId);
 
         return ResponseEntity.ok(commentDtoList);
     }

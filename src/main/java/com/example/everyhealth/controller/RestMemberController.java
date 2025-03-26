@@ -24,7 +24,6 @@ public class RestMemberController {
 
     @GetMapping("/member/friend/{friendId}")
     public MemberDto findByFriendInfo(@PathVariable Long friendId) {
-        Member friendInfo = memberService.findByFriendId(friendId);
-        return new MemberDto(friendInfo.getId(), friendInfo.getName(), friendInfo.getPicture());
+        return memberService.findByFriendId(friendId);
     }
 }

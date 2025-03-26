@@ -12,6 +12,7 @@ import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -74,16 +75,13 @@ public class RestPostController {
 
     @GetMapping("/member/posts")
     public ResponseEntity<List<PostDto>> findMemberPost(@ExtractMemberId Long memberId) {
-        List<Post> postList = postService.findByMemberId(memberId);
+        List<PostDto> postList = postService.findByMemberId(memberId);
 
-        List<PostDto> postDtoList = postList.stream()
-                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(postDtoList);
+        return ResponseEntity.ok(postList);
     }
 
     @GetMapping("/images/{fileName}")
+    @Cacheable(value = "images", key = "#fileName")
     public Resource downloadImage(@PathVariable String fileName) throws MalformedURLException {
         return new UrlResource("file:" + fileStore.getFullName(fileName));
     }

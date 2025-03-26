@@ -9,15 +9,15 @@ import java.util.List;
 @Data
 public class RoutineExerciseDto {
 
+    private Long id;
     private Integer sequence;
-    private String routineName;
-    private List<RepWeightDto> repWeight;
+    private List<RepWeightDto> repWeightList;
     private String exerciseName;
 
-    public RoutineExerciseDto(Integer sequence, String routineName, List<RepWeightDto> repWeight, String exerciseName) {
+    public RoutineExerciseDto(Long id, Integer sequence, List<RepWeightDto> repWeightList, String exerciseName) {
+        this.id = id;
         this.sequence = sequence;
-        this.routineName = routineName;
-        this.repWeight = repWeight;
+        this.repWeightList = repWeightList;
         this.exerciseName = exerciseName;
     }
 }

@@ -17,5 +17,5 @@ public class ClubCreate {
     private String content;
     private String location;
     private String schedule;
-    private List<String> highlights = new ArrayList<>();
+    private String highlight;
 }

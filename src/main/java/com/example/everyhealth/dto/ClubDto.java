@@ -17,6 +17,6 @@ public class ClubDto {
     private String content;
     private String location;
     private String schedule;
-    private List<String> highlights = new ArrayList<>();
+    private String highlight;
     private Long chatRoomId;
 }

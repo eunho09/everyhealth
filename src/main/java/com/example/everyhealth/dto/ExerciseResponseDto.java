@@ -4,10 +4,12 @@ import com.example.everyhealth.domain.Classification;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.RepWeight;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class ExerciseResponseDto {
     private Long id;
     private String name;
