@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ public class RestRoutineController {
     }
 
     @PostMapping("/routineExercise")
-    public ResponseEntity<String> addExercise(@RequestBody RoutineDto dto) {
+    public ResponseEntity<String> addExercise(@RequestBody RoutineAddExerciseDto dto) {
         routineService.addExercise(dto.getRoutineId(), dto.getExerciseInfoList());
 
         return ResponseEntity.ok("RoutineExercise created");
@@ -54,36 +53,9 @@ public class RestRoutineController {
 
     @GetMapping("/member/routines")
     public ResponseEntity<List<RoutineResponseDto>> memberRoutines(@ExtractMemberId Long memberId) {
-        List<Routine> routineList = routineService.fetchByMemberId(memberId);
-        List<RoutineExercise> routineExerciseList = routineExerciseService.fetchByRoutineIds(routineList.stream().map(r -> r.getId()).toList());
+        List<RoutineResponseDto> routineResponseDtos = routineService.fetchRoutinesByMemberId(memberId);
 
-        Map<Long, RoutineExercise> routineExerciseMap = routineExerciseList.stream()
-                .collect(Collectors.toMap(re -> re.getId(), dto -> dto));
-
-        List<RoutineResponseDto> responseDto = routineList.stream()
-                .map(r -> new RoutineResponseDto(
-                        r.getId(),
-                        r.getName(),
-                        r.getRoutineExerciseList().stream()
-                                .map(re -> {
-                                    RoutineExercise fetchRe = routineExerciseMap.get(re.getId());
-                                    return new RoutineExerciseResponseDto(
-                                            fetchRe.getId(),
-                                            fetchRe.getSequence(),
-                                            fetchRe.getRepWeightList().stream()
-                                                    .map(rw -> new RepWeightDto(
-                                                            rw.getId(),
-                                                            rw.getReps(),
-                                                            rw.getWeight()
-                                                    ))
-                                                    .toList(),
-                                            fetchRe.getExercise().getName()
-                                    );
-                                }).toList()
-                ))
-                .toList();
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(routineResponseDtos);
     }
 
 
@@ -99,22 +71,6 @@ public class RestRoutineController {
                                 .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight())).toList(),
                         routineExercise.getExercise().getName()
                 ))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseList);
-    }
-
-    @GetMapping("/routineExercise/{routineId}")
-    public ResponseEntity<List<RoutineExerciseDto>> fetchRoutineExerciseByRoutineId(@PathVariable Long routineId) {
-        List<RoutineExerciseDto> responseList = routineExerciseService.fetchRoutineExerciseByRoutineId(routineId)
-                .stream()
-                .map(routineExercise -> new RoutineExerciseDto(
-                        routineExercise.getSequence(),
-                        routineExercise.getRoutine().getName(),
-                        routineExercise.getExercise().getRepWeightList().stream()
-                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
-                                .toList(),
-                        routineExercise.getExercise().getName()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
@@ -146,4 +102,5 @@ public class RestRoutineController {
         routineExerciseService.updateRepWeight(responseDtoList, routineId);
         return ResponseEntity.ok("update RepWeight");
     }
+
 }

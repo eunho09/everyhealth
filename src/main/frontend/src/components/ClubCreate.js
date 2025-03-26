@@ -10,7 +10,7 @@ const ClubCreate = () => {
         content: '',
         location: '',
         schedule: '',
-        highlights: ['', '', '']
+        highlight: ''
     });
     const [errors, setErrors] = useState({});
 
@@ -20,9 +20,7 @@ const ClubCreate = () => {
         if (!formData.content.trim()) newErrors.content = '클럽 소개를 입력해주세요.';
         if (!formData.location.trim()) newErrors.location = '활동 장소를 입력해주세요.';
         if (!formData.schedule.trim()) newErrors.schedule = '활동 시간을 입력해주세요.';
-
-        const emptyHighlights = formData.highlights.some(h => !h.trim());
-        if (emptyHighlights) newErrors.highlights = '클럽 특징을 모두 입력해주세요.';
+        if (!formData.highlight.trim()) newErrors.highlight = '활동 시간을 입력해주세요.';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -51,18 +49,6 @@ const ClubCreate = () => {
         // 에러 메시지 제거
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const handleHighlightChange = (index, value) => {
-        const newHighlights = [...formData.highlights];
-        newHighlights[index] = value;
-        setFormData(prev => ({
-            ...prev,
-            highlights: newHighlights
-        }));
-        if (errors.highlights) {
-            setErrors(prev => ({ ...prev, highlights: '' }));
         }
     };
 
@@ -126,20 +112,15 @@ const ClubCreate = () => {
                 </div>
 
                 <div className="form-group">
-                    <label className="form-label">클럽 특징 (3가지)</label>
-                    <div className="highlights-container">
-                        {formData.highlights.map((highlight, index) => (
-                            <input
-                                key={index}
-                                type="text"
-                                className="form-input"
-                                value={highlight}
-                                onChange={(e) => handleHighlightChange(index, e.target.value)}
-                                placeholder={`특징 ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-                    {errors.highlights && <p className="error-message">{errors.highlights}</p>}
+                    <label className="form-label">클럽 특징</label>
+                    <input
+                        type="text"
+                        className="form-input"
+                        name="highlight"
+                        onChange={handleChange}
+                        placeholder={`특징`}
+                    />
+                    {errors.highlight && <p className="error-message">{errors.highlight}</p>}
                 </div>
 
                 {errors.submit && <p className="error-message">{errors.submit}</p>}
@@ -151,7 +132,7 @@ const ClubCreate = () => {
                     <button
                         type="button"
                         className="cancel-button"
-                        onClick={() => navigate('/clubs')}
+                        onClick={() => navigate('/club')}
                     >
                         취소
                     </button>

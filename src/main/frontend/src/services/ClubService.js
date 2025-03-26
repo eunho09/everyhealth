@@ -17,7 +17,7 @@ export const clubService = {
             content: formData.content,
             location: formData.location,
             schedule: formData.schedule,
-            highlights: formData.highlights
+            highlight: formData.highlight
         });
 
         return response.data;

@@ -4,6 +4,8 @@ import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.MemberDto;
 import com.example.everyhealth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,10 +40,13 @@ public class MemberService {
         return memberRepository.findIdByFriendId(friendId);
     }
 
-    public Member findByFriendId(Long friendId) {
-        return memberRepository.findByFriendId(friendId);
+    @Cacheable(value = "memberByFriend", key = "#friendId")
+    public MemberDto findByFriendId(Long friendId) {
+        Member friendInfo = memberRepository.findByFriendId(friendId);
+        return new MemberDto(friendInfo.getId(), friendInfo.getName(), friendInfo.getPicture());
     }
 
+    @Cacheable(value = "existsByIdAndFriendId", key = "{#id, #friendId}")
     public boolean existsByIdAndFriendId(Long id, Long friendId) {
         return memberRepository.existsByIdAndFriendId(id, friendId);
     }

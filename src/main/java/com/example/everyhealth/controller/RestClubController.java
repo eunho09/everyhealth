@@ -35,7 +35,7 @@ public class RestClubController {
     @PostMapping("/club")
     public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody ClubCreate clubCreate) {
         Member member = memberService.findById(memberId);
-        Club club = new Club(clubCreate.getTitle(), clubCreate.getContent(), clubCreate.getLocation(), clubCreate.getSchedule(), clubCreate.getHighlights());
+        Club club = new Club(clubCreate.getTitle(), clubCreate.getContent(), clubCreate.getLocation(), clubCreate.getSchedule(), clubCreate.getHighlight());
         clubService.save(club);
 
         ClubMember clubMember = new ClubMember(club, member, true, LocalDateTime.now());
@@ -73,11 +73,11 @@ public class RestClubController {
     public ResponseEntity<List<ClubDto>> clubList(@RequestParam(required = false) String name,
                                                   @RequestParam(required = false) Long isMyClubs,
                                                   @ExtractMemberId Long memberId) {
-
-        Long memberIdToUse = (isMyClubs == null || isMyClubs == 0) ? isMyClubs : memberId;
-        List<ClubDto> clubDtoList = clubService.searchClubByMemberAndName(memberIdToUse, name);
-
-        return ResponseEntity.ok(clubDtoList);
+        if (name == null && isMyClubs == null) {
+            return ResponseEntity.ok(clubService.fetchAll());
+        } else {
+            return ResponseEntity.ok(clubService.cacheSearchByMemberAndName(isMyClubs, name, memberId));
+        }
     }
 
     @DeleteMapping("/club/{id}/leave")

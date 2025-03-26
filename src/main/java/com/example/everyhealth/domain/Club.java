@@ -21,8 +21,7 @@ public class Club {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private ChatRoom chatRoom;
 
-    @ElementCollection
-    private List<String> highlights = new ArrayList<>();
+    private String highlight;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClubMember> clubMemberList = new ArrayList<>();
@@ -30,12 +29,12 @@ public class Club {
     protected Club() {
     }
 
-    public Club(String title, String content, String location, String schedule, List<String> highlights) {
+    public Club(String title, String content, String location, String schedule, String highlight) {
         this.title = title;
         this.content = content;
         this.location = location;
         this.schedule = schedule;
-        this.highlights = highlights;
+        this.highlight = highlight;
     }
 
 

@@ -17,6 +17,7 @@ const ClubListPage = () => {
         const fetchClubList = async () => {
             try {
                 const data = await clubService.findAll();
+                console.log("data", data);
                 setClubs(data);
             } catch (error){
                 console.error(error);

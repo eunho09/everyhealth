@@ -83,29 +83,9 @@ public class RestTodayController {
 
     @GetMapping("/today/{todayId}")
     public ResponseEntity<TodayDto> findById(@PathVariable Long todayId) {
+        TodayDto todayDto = todayService.fetchById(todayId);
 
-        Today today = todayService.findById(todayId);
-        List<TodayExercise> todayExerciseList = todayExerciseService.fetchByTodayId(todayId);
-
-        List<TodayExerciseDto> todayExerciseDtoList = todayExerciseList.stream()
-                .map(todayExercise -> new TodayExerciseDto(
-                        todayExercise.getId(),
-                        todayExercise.getExercise().getName(),
-                        todayExercise.getRepWeightList().stream()
-                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
-                                .toList(),
-                        todayExercise.getSequence()
-                ))
-                .collect(Collectors.toList());
-
-        TodayDto dto = new TodayDto(
-                today.getId(),
-                todayExerciseDtoList,
-                today.getLocalDate(),
-                today.getCheckBox()
-        );
-
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(todayDto);
     }
 
 

@@ -30,32 +30,22 @@ public class RestExerciseController {
     private final RepWeightService repWeightService;
 
     @GetMapping("/exercise/{id}")
-    public ResponseEntity<ExerciseResponseDto> findById(@PathVariable Long id) {
-        Exercise findExercise = exerciseService.fetchById(id);
-        ExerciseResponseDto response = new ExerciseResponseDto(findExercise);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ExerciseResponseDto> fetchById(@PathVariable Long id) {
+        ExerciseResponseDto exerciseResponseDto = exerciseService.fetchOne(id);
+        return ResponseEntity.ok(exerciseResponseDto);
     }
 
 
     @GetMapping("/member/exercises")
     public ResponseEntity<List<ExerciseResponseDto>> findExerciseByMemberId(@ExtractMemberId Long memberId) {
-        List<Exercise> exercises = exerciseService.findExercisesByMemberId(memberId);
-        List<ExerciseResponseDto> response = exercises.stream()
-                .map(ExerciseResponseDto::new)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
+        List<ExerciseResponseDto> exerciseResponseDtos = exerciseService.fetchMemberExercises(memberId);
+        return ResponseEntity.ok(exerciseResponseDtos);
     }
 
     @GetMapping("/exercises")
     public ResponseEntity<List<ExerciseResponseDto>> findAll() {
-        List<Exercise> exercises = exerciseService.fetchAll();
-        List<ExerciseResponseDto> response = exercises.stream()
-                .map(ExerciseResponseDto::new)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
+        List<ExerciseResponseDto> exerciseResponseDtos = exerciseService.fetchAll();
+        return ResponseEntity.ok(exerciseResponseDtos);
     }
 
 

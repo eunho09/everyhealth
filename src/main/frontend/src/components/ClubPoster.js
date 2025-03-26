@@ -52,12 +52,7 @@ const ClubPoster = ({clubData}) => {
                             클럽 특징
                         </h2>
                         <div className="feature-list">
-                            {clubData.highlights.map((highlight, index) => (
-                                <div key={index} className="feature-item">
-                                    <div className="feature-bullet"></div>
-                                    <span>{highlight}</span>
-                                </div>
-                            ))}
+                            <span>{clubData.highlight}</span>
                         </div>
                     </div>
 

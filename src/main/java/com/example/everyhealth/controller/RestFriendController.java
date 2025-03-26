@@ -31,36 +31,17 @@ public class RestFriendController {
 
     @GetMapping("/member/friend/request")
     public ResponseEntity<List<FriendDto>> findByFriendIdAndStatus(@ExtractMemberId Long memberId) {
-        List<Friend> requestFriendList = friendService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
-        List<FriendDto> collect = requestFriendList.stream()
-                .map(f -> new FriendDto(f.getId(),
-                        new MemberDto(f.getMember().getId(),
-                                f.getMember().getName(),
-                                f.getMember().getPicture()),
-                        new MemberDto(f.getFriend().getId(),
-                                f.getFriend().getName(),
-                                f.getFriend().getPicture())))
-                .collect(Collectors.toList());
+        List<FriendDto> response = friendService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
 
-        return ResponseEntity.ok(collect);
+        return ResponseEntity.ok(response);
     }
 
 
     @GetMapping("/member/friend")
     public ResponseEntity<List<FriendDto>> findMyFriend(@ExtractMemberId Long memberId) {
-        List<Friend> friendList = friendService.findMyFriend(memberId);
+        List<FriendDto> response = friendService.findMyFriend(memberId);
 
-        List<FriendDto> collect = friendList.stream()
-                .map(f -> new FriendDto(f.getId(),
-                        new MemberDto(f.getMember().getId(),
-                                f.getMember().getName(),
-                                f.getMember().getPicture()),
-                        new MemberDto(f.getFriend().getId(),
-                                f.getFriend().getName(),
-                                f.getFriend().getPicture())))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(collect);
+        return ResponseEntity.ok(response);
     }
 
     //친구요청을 보냄
@@ -99,6 +80,7 @@ public class RestFriendController {
         List<MemberDto> suggestedFriends = memberService.findSuggestedFriend(memberId);
         return ResponseEntity.ok(suggestedFriends);
     }
+
 
     @GetMapping("/friend/check/{friendId}")
     public ResponseEntity<Boolean> checkFriendShip(@PathVariable Long friendId, @ExtractMemberId Long memberId) {

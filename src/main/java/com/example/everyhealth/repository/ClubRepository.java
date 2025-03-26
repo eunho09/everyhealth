@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ClubRepository extends JpaRepository<Club, Long>, JpaSpecificationExecutor<Club> {
 
@@ -17,4 +19,7 @@ public interface ClubRepository extends JpaRepository<Club, Long>, JpaSpecificat
     @Modifying
     @Query("delete from Club c where c.id =:id")
     void deleteById(@Param("id") Long id);
+
+    @Query("select c from Club c join fetch c.chatRoom")
+    List<Club> fetchAll();
 }

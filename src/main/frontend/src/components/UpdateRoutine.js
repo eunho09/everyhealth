@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
-import { todayService } from "../services/todayService";
+import { routineService } from "../services/routineService";
 
-const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
+const UpdateRoutine = ({ routineId, handleIsEditing }) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [today, setToday] = useState(null);
-    const [todayExerciseList, setTodayExerciseList] = useState([]);
+    const [routine, setRoutine] = useState(null);
+    const [routineExerciseList, setRoutineExerciseList] = useState([]);
 
     // handleSetChange 함수 개선
     const handleSetChange = (exerciseIndex, setIndex, field, value) => {
-        const updatedList = [...todayExerciseList];
-        const numberValue = value ? parseFloat(value) : 0;
+        const updatedList = [...routineExerciseList];
+        const numberValue = value ? parseFloat(value) : null;
         console.log("updatedList", updatedList);
 
         // 특정 운동의 특정 세트를 업데이트
@@ -21,25 +21,25 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
         } else if (field === 'weight') {
             updatedList[exerciseIndex].repWeightList[setIndex].weight = numberValue;
         }
-        setTodayExerciseList(updatedList);
+        setRoutineExerciseList(updatedList);
     };
 
     // 세트 제거 함수 개선
     const removeSet = (exerciseIndex, setIndex) => {
-        const updatedList = [...todayExerciseList];
+        const updatedList = [...routineExerciseList];
         updatedList[exerciseIndex].repWeightList = updatedList[exerciseIndex].repWeightList.filter((_, i) => i !== setIndex);
-        setTodayExerciseList(updatedList);
+        setRoutineExerciseList(updatedList);
     };
 
     // 운동 제거 함수
-    const removeExercise = (exerciseIndex, todayExerciseId) => {
-        handleDeleteExercise(todayExerciseId);
-        setTodayExerciseList(prev => prev.filter((_, i) => i !== exerciseIndex));
+    const removeExercise = (exerciseIndex, routineExerciseId) => {
+        handleDeleteExercise(routineExerciseId);
+        setRoutineExerciseList(prev => prev.filter((_, i) => i !== exerciseIndex));
     };
 
-    const handleDeleteExercise = async (todayExerciseId) => {
+    const handleDeleteExercise = async (routineExerciseId) => {
         try {
-            const data = await todayService.deleteTodayExercise(todayExerciseId);
+            const data = await routineService.deleteRoutineExercise(routineExerciseId);
             console.log(data);
         } catch (error) {
             console.error(error);
@@ -49,10 +49,10 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
     // 드래그 앤 드롭 핸들러 개선
     const onDragEnd = (result) => {
         if (!result.destination) return;
-        const reorderedExercises = Array.from(todayExerciseList);
+        const reorderedExercises = Array.from(routineExerciseList);
         const [movedExercise] = reorderedExercises.splice(result.source.index, 1);
         reorderedExercises.splice(result.destination.index, 0, movedExercise);
-        setTodayExerciseList(reorderedExercises);
+        setRoutineExerciseList(reorderedExercises);
         syncExerciseOrder(reorderedExercises);
     };
 
@@ -62,7 +62,7 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
                 id: exercise.id,
                 sequence: index + 1,
             }));
-            await todayService.updateSequence(todayId, updatedOrder);
+            await routineService.updateSequence(routineId, updatedOrder);
             console.log("순서 업데이트 성공");
         } catch (error) {
             console.error("순서 업데이트 실패:", error);
@@ -71,19 +71,20 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
 
     // 세트 추가 함수 개선
     const addSet = (exerciseIndex) => {
-        const updatedList = [...todayExerciseList];
+        const updatedList = [...routineExerciseList];
         updatedList[exerciseIndex].repWeightList.push({
             reps: 0,
             weight: 0
         });
-        setTodayExerciseList(updatedList);
+        setRoutineExerciseList(updatedList);
     };
 
     // 저장 페이로드 생성 개선
     const createSavePayload = () => {
-        return todayExerciseList.map(exercise => ({
-            id: exercise.id,
-            repWeightList: exercise.repWeightList
+        return routineExerciseList.map(re => ({
+            routineExerciseId: re.routineExerciseId,
+            sequence: re.sequence,
+            repWeightList: re.repWeightList
         }));
     };
 
@@ -91,8 +92,8 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
         try {
             const payload = createSavePayload();
             console.log("저장할 데이터:", payload);
-            const data = await todayService.updateTodayExercise(todayId, payload);
-            onDataChanged();
+            const data = await routineService.updateRoutineExercise(routineId, payload);
+            handleIsEditing();
             console.log("저장 성공:", data);
         } catch (error) {
             console.error(error);
@@ -100,11 +101,12 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
     };
 
     useEffect(() => {
-        const fetchToday = async () => {
+        const fetchRoutine = async () => {
             try {
-                const data = await todayService.findOneTodayById(todayId);
-                setToday(data);
-                setTodayExerciseList(data.todayExercises);
+                const data = await routineService.findRoutineById(routineId);
+                console.log("data", data);
+                setRoutine(data);
+                setRoutineExerciseList(data);
                 console.log("검색 결과:", data);
             } catch (error) {
                 console.error("일지 로드 중 오류 발생:", error);
@@ -112,14 +114,14 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
                 setIsLoading(false);
             }
         };
-        fetchToday();
-    }, [todayId]);
+        fetchRoutine();
+    }, [routineId]);
 
     if (isLoading) {
         return <div>로딩 중...</div>;
     }
 
-    if (!today || !today.todayExercises || today.todayExercises.length === 0) {
+    if (!routineExerciseList || routineExerciseList.length === 0) {
         return <div>일지 데이터를 찾을 수 없습니다.</div>;
     }
 
@@ -141,10 +143,10 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
                                     ref={provided.innerRef}
                                     className="today-exercise-list"
                                 >
-                                    {todayExerciseList.map((todayExercise, exerciseIndex) => (
+                                    {routineExerciseList.map((routineExercise, exerciseIndex) => (
                                         <Draggable
-                                            key={todayExercise.id}
-                                            draggableId={todayExercise.id.toString()}
+                                            key={routineExercise.routineExerciseId}
+                                            draggableId={routineExercise.routineExerciseId.toString()}
                                             index={exerciseIndex}
                                         >
                                             {(provided) => (
@@ -155,7 +157,7 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
                                                     className="today-exercise-item"
                                                 >
                                                     <div className="exercise-header">
-                                                        <span>{todayExercise.exerciseName}</span>
+                                                        <span>{routineExercise.exerciseName}</span>
                                                         <button
                                                             className="small-text-button"
                                                             onClick={() => addSet(exerciseIndex)}
@@ -167,7 +169,7 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
                                                             onClick={() =>
                                                                 removeExercise(
                                                                     exerciseIndex,
-                                                                    todayExercise.id
+                                                                    routineExercise.routineExerciseId
                                                                 )
                                                             }
                                                         >
@@ -175,7 +177,7 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
                                                         </button>
                                                     </div>
                                                     {/* 각 운동별 세트 정보 렌더링 */}
-                                                    {todayExercise.repWeightList && todayExercise.repWeightList.map((repWeight, setIndex) => (
+                                                    {routineExercise.repWeightList && routineExercise.repWeightList.map((repWeight, setIndex) => (
                                                         <div className="row" key={setIndex}>
                                                             <div className="number">
                                                                 {setIndex + 1}
@@ -236,4 +238,4 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
     );
 };
 
-export default UpdateToday;
+export default UpdateRoutine;

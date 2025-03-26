@@ -1,8 +1,10 @@
 package com.example.everyhealth.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class RepWeightDto {
 
     private Long id;

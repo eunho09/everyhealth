@@ -2,12 +2,14 @@ package com.example.everyhealth.dto;
 
 import com.example.everyhealth.domain.CheckBox;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class TodayDto {
 
     private Long id;

@@ -73,7 +73,7 @@ const createRoutes = () => [
         loader: requireAuthToLogin
       },
       {
-        path: '/friend/:friendId',
+        path: '/friendProfile/:friendId',
         element: <FriendProfilePage />,
         loader: requireAuthToLogin
       },
