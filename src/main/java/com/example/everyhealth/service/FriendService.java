@@ -44,12 +44,8 @@ public class FriendService {
         List<Friend> requestFriendList = friendRepository.findByFriendIdAndStatus(friendMemberId, status);
         return requestFriendList.stream()
                 .map(f -> new FriendDto(f.getId(),
-                        new MemberDto(f.getMember().getId(),
-                                f.getMember().getName(),
-                                f.getMember().getPicture()),
-                        new MemberDto(f.getFriend().getId(),
-                                f.getFriend().getName(),
-                                f.getFriend().getPicture())))
+                        new MemberDto(f.getMember()),
+                        new MemberDto(f.getFriend())))
                 .collect(Collectors.toList());
     }
 
@@ -61,12 +57,8 @@ public class FriendService {
 
         return friendList.stream()
                 .map(f -> new FriendDto(f.getId(),
-                        new MemberDto(f.getMember().getId(),
-                                f.getMember().getName(),
-                                f.getMember().getPicture()),
-                        new MemberDto(f.getFriend().getId(),
-                                f.getFriend().getName(),
-                                f.getFriend().getPicture())))
+                        new MemberDto(f.getMember()),
+                        new MemberDto(f.getFriend())))
                 .collect(Collectors.toList());
     }
 

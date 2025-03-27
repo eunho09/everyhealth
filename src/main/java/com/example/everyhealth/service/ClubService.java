@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,16 +39,8 @@ public class ClubService {
         List<Club> clubList = clubRepository.fetchAll();
 
         return clubList.stream()
-                .map(c -> new ClubDto(
-                        c.getId(),
-                        c.getTitle(),
-                        c.getContent(),
-                        c.getLocation(),
-                        c.getSchedule(),
-                        c.getHighlight(),
-                        c.getChatRoom().getId()
-                ))
-                .toList();
+                .map(c -> new ClubDto(c))
+                .collect(Collectors.toList());
     }
 
     public List<Club> findAll(Specification<Club> spec) {
@@ -63,7 +56,7 @@ public class ClubService {
     @Cacheable(value = "clubsByChatRoom", key = "#chatRoomId")
     public ClubDto findByChatRoomId(Long chatRoomId) {
         Club club = clubRepository.findByChatRoomId(chatRoomId);
-        return new ClubDto(club.getId(), club.getTitle(), club.getContent(), club.getLocation(), club.getSchedule(), club.getHighlight(), club.getChatRoom().getId());
+        return new ClubDto(club);
     }
 
     public List<ClubDto> searchClubByMemberAndName(Long memberId, String name) {
@@ -75,15 +68,8 @@ public class ClubService {
         );
 
         return clubList.stream()
-                .map(c -> new ClubDto(
-                        c.getId(),
-                        c.getTitle(),
-                        c.getContent(),
-                        c.getLocation(),
-                        c.getSchedule(),
-                        c.getHighlight(),
-                        c.getChatRoom().getId()))
-                .toList();
+                .map(c -> new ClubDto(c))
+                .collect(Collectors.toList());
     }
 
     public List<ClubDto> cacheSearchByMemberAndName(Long isMyClubs, String name, Long memberId) {

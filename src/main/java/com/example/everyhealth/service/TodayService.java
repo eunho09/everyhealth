@@ -101,18 +101,7 @@ public class TodayService {
         Today today = todayRepository.findByLocalDateAndMemberId(date, memberId);
         List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(today.getId());
 
-        List<TodayExerciseDto> todayExerciseDtoList = todayExerciseList.stream()
-                .map(todayExercise -> new TodayExerciseDto(
-                        todayExercise.getId(),
-                        todayExercise.getExercise().getName(),
-                        todayExercise.getRepWeightList().stream()
-                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
-                                .toList(),
-                        todayExercise.getSequence()
-                ))
-                .collect(Collectors.toList());
-
-        return new TodayDto(today.getId(), todayExerciseDtoList, today.getLocalDate(), today.getCheckBox());
+        return new TodayDto(today, todayExerciseList);
     }
 
     @Transactional
@@ -192,22 +181,6 @@ public class TodayService {
         Today today = todayRepository.findById(todayId).get();
         List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(todayId);
 
-        List<TodayExerciseDto> todayExerciseDtoList = todayExerciseList.stream()
-                .map(todayExercise -> new TodayExerciseDto(
-                        todayExercise.getId(),
-                        todayExercise.getExercise().getName(),
-                        todayExercise.getRepWeightList().stream()
-                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight()))
-                                .toList(),
-                        todayExercise.getSequence()
-                ))
-                .collect(Collectors.toList());
-
-        return new TodayDto(
-                today.getId(),
-                todayExerciseDtoList,
-                today.getLocalDate(),
-                today.getCheckBox()
-        );
+        return new TodayDto(today, todayExerciseList);
     }
 }

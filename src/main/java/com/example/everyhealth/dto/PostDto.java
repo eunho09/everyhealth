@@ -1,5 +1,6 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.Post;
 import lombok.Data;
 
 @Data
@@ -9,9 +10,9 @@ public class PostDto {
     private String text;
     private String imageUrl;
 
-    public PostDto(Long id, String text, String imageUrl) {
-        this.id = id;
-        this.text = text;
-        this.imageUrl = imageUrl;
+    public PostDto(Post post) {
+        this.id = post.getId();
+        this.text = post.getText();
+        this.imageUrl = post.getImageUrl();
     }
 }

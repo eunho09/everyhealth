@@ -40,7 +40,7 @@ public class PostService {
         List<Post> postList = postRepository.findByMemberId(memberId);
 
         return postList.stream()
-                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
+                .map(post -> new PostDto(post))
                 .collect(Collectors.toList());
     }
 

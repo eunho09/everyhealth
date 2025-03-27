@@ -64,13 +64,7 @@ public class RestRoutineController {
 
         List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(routineId);
         List<RoutineExerciseResponseDto> responseList = routineExerciseList.stream()
-                .map(routineExercise -> new RoutineExerciseResponseDto(
-                        routineExercise.getId(),
-                        routineExercise.getSequence(),
-                        routineExercise.getRepWeightList().stream()
-                                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight())).toList(),
-                        routineExercise.getExercise().getName()
-                ))
+                .map(routineExercise -> new RoutineExerciseResponseDto(routineExercise))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);

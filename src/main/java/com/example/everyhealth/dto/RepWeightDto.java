@@ -1,5 +1,6 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.RepWeight;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +12,9 @@ public class RepWeightDto {
     private int reps;
     private double weight;
 
-    public RepWeightDto(Long id, int reps, double weight) {
-        this.id = id;
-        this.reps = reps;
-        this.weight = weight;
+    public RepWeightDto(RepWeight repWeight) {
+        this.id = repWeight.getId();
+        this.reps = repWeight.getReps();
+        this.weight = repWeight.getWeight();
     }
 }
