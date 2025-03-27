@@ -69,30 +69,7 @@ public class RoutineService {
 
         routineRepository.save(routine);
 
-        RoutineDto routineDto = new RoutineDto(
-                routine.getId(),
-                routine.getName(),
-                routine.getRoutineExerciseList().stream()
-                        .map(re -> new RoutineExerciseDto(
-                                re.getId(),
-                                re.getSequence(),
-                                re.getRepWeightList().stream()
-                                        .map(rw -> new RepWeightDto(
-                                                rw.getId(),
-                                                rw.getReps(),
-                                                rw.getWeight()
-                                        ))
-                                        .toList(),
-                                re.getExercise().getName()
-                        ))
-                        .toList(),
-                new MemberDto(
-                        routine.getMember().getId(),
-                        routine.getMember().getName(),
-                        routine.getMember().getPicture()
-                )
-        );
-
+        RoutineDto routineDto = new RoutineDto(routine);
         return routineDto;
     }
 
@@ -105,26 +82,7 @@ public class RoutineService {
                 .collect(Collectors.toMap(re -> re.getId(), dto -> dto));
 
         List<RoutineResponseDto> responseDtoList = routineList.stream()
-                .map(r -> new RoutineResponseDto(
-                        r.getId(),
-                        r.getName(),
-                        r.getRoutineExerciseList().stream()
-                                .map(re -> {
-                                    RoutineExercise fetchRe = routineExerciseMap.get(re.getId());
-                                    return new RoutineExerciseResponseDto(
-                                            fetchRe.getId(),
-                                            fetchRe.getSequence(),
-                                            fetchRe.getRepWeightList().stream()
-                                                    .map(rw -> new RepWeightDto(
-                                                            rw.getId(),
-                                                            rw.getReps(),
-                                                            rw.getWeight()
-                                                    ))
-                                                    .collect(Collectors.toList()),
-                                            fetchRe.getExercise().getName()
-                                    );
-                                }).collect(Collectors.toList())
-                ))
+                .map(r -> new RoutineResponseDto(r, routineExerciseMap))
                 .collect(Collectors.toList());
 
         return responseDtoList;

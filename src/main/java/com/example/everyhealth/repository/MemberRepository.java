@@ -16,7 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m from Member m where m.loginId=:loginId")
     Member findByLoginId(@Param("loginId") String loginId);
 
-    @Query("SELECT new com.example.everyhealth.dto.MemberDto(m.id, m.name, m.picture) " +
+    @Query("SELECT new com.example.everyhealth.dto.MemberDto(m) " +
             "FROM Member m " +
             "WHERE m.id NOT IN :memberId " +
             "AND m.id NOT IN (SELECT f.friend.id FROM Friend f WHERE f.member.id = :memberId) " +

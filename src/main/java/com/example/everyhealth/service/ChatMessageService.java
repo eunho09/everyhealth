@@ -6,6 +6,7 @@ import com.example.everyhealth.domain.ChatRoom;
 import com.example.everyhealth.domain.ClubMember;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ChatMessageResponseDto;
+import com.example.everyhealth.dto.ChatMessageSaveDto;
 import com.example.everyhealth.dto.MemberChatResponseDto;
 import com.example.everyhealth.repository.ChatMessageRepository;
 import com.example.everyhealth.repository.ChatRoomRepository;
@@ -35,7 +36,7 @@ public class ChatMessageService {
     private final ClubMemberRepository clubMemberRepository;
 
     @Transactional
-    public ChatMessageResponseDto saveMessage(String message, Long chatRoomId, Long memberId) {
+    public ChatMessageSaveDto saveMessage(String message, Long chatRoomId, Long memberId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).get();
         ClubMember clubMember = clubMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId);
 
@@ -44,9 +45,9 @@ public class ChatMessageService {
         ChatMessage chatMessage = new ChatMessage(cleanMessage, clubMember, chatRoom);
         ChatMessage saveMessage = chatMessageRepository.save(chatMessage);
 
-        MemberChatResponseDto memberChatResponseDto = new MemberChatResponseDto(clubMember.getMember().getId(), clubMember.getMember().getName(), clubMember.getMember().getPicture());
+        MemberChatResponseDto memberChatResponseDto = new MemberChatResponseDto(clubMember);
 
-        return new ChatMessageResponseDto(cleanMessage, saveMessage.getId(), memberChatResponseDto, chatMessage.getCreatedDate());
+        return new ChatMessageSaveDto(cleanMessage, saveMessage.getId(), memberChatResponseDto, chatMessage.getCreatedDate());
     }
 
     public List<ChatMessage> findByRecentMessage(Long roomId, int limit) {

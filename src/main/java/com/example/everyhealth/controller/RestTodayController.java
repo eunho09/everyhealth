@@ -52,29 +52,8 @@ public class RestTodayController {
                 .collect(Collectors.toMap(te -> te.getId(), dto -> dto));
 
         List<TodayDto> responseList = todays.stream()
-                .map(t -> {
-                    return new TodayDto(
-                            t.getId(),
-                            t.getTodayExercises().stream().map(
-                                    te -> {
-                                        TodayExercise fetchTe = todayExerciseMap.get(te.getId());
-                                        return new TodayExerciseDto(
-                                                fetchTe.getId(),
-                                                fetchTe.getExercise().getName(),
-                                                fetchTe.getRepWeightList().stream()
-                                                        .map(rw -> new RepWeightDto(
-                                                                rw.getId(),
-                                                                rw.getReps(),
-                                                                rw.getWeight()
-                                                        )).toList(),
-                                                te.getSequence()
-                                        );
-                                    }
-                            ).toList(),
-                            t.getLocalDate(),
-                            t.getCheckBox()
-                    );
-                }).toList();
+                .map(t -> new TodayDto(t, todayExerciseMap))
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
     }

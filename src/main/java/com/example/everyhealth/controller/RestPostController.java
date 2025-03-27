@@ -55,7 +55,7 @@ public class RestPostController {
         List<Post> postList = postService.findRecent(limit);
 
         List<PostDto> postDtoList = postList.stream()
-                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
+                .map(post -> new PostDto(post))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(postDtoList);
@@ -66,7 +66,7 @@ public class RestPostController {
         List<Post> postList = postService.findByLtPostId(limit, postId);
 
         List<PostDto> postDtoList = postList.stream()
-                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
+                .map(post -> new PostDto(post))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(postDtoList);
@@ -91,7 +91,7 @@ public class RestPostController {
         List<Post> postList = postService.findByFriendId(friendId);
 
         List<PostDto> postDtoList = postList.stream()
-                .map(post -> new PostDto(post.getId(), post.getText(), post.getImageUrl()))
+                .map(post -> new PostDto(post))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(postDtoList);

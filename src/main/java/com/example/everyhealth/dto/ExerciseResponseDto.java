@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +23,8 @@ public class ExerciseResponseDto {
         this.name = exercise.getName();
         this.memo = exercise.getMemo();
         this.repWeightList = exercise.getRepWeightList().stream()
-                .map(rw -> new RepWeightDto(rw.getId(), rw.getReps(), rw.getWeight())).toList();
+                .map(rw -> new RepWeightDto(rw))
+                .collect(Collectors.toList());
         this.classification = exercise.getClassification();
     }
 }

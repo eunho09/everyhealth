@@ -43,7 +43,7 @@ public class MemberService {
     @Cacheable(value = "memberByFriend", key = "#friendId")
     public MemberDto findByFriendId(Long friendId) {
         Member friendInfo = memberRepository.findByFriendId(friendId);
-        return new MemberDto(friendInfo.getId(), friendInfo.getName(), friendInfo.getPicture());
+        return new MemberDto(friendInfo);
     }
 
     @Cacheable(value = "existsByIdAndFriendId", key = "{#id, #friendId}")

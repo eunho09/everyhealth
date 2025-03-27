@@ -1,5 +1,6 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.ChatMessage;
 import com.example.everyhealth.domain.Member;
 import lombok.Data;
 
@@ -12,10 +13,10 @@ public class ChatMessageResponseDto {
     private LocalDateTime createdDate;
     private MemberChatResponseDto member;
 
-    public ChatMessageResponseDto(String message, Long messageId, MemberChatResponseDto member, LocalDateTime createdDate) {
-        this.message = message;
-        this.messageId = messageId;
-        this.member = member;
-        this.createdDate = createdDate;
+    public ChatMessageResponseDto(ChatMessage chatMessage) {
+        this.message = chatMessage.getMessage();
+        this.messageId = chatMessage.getId();
+        this.member = new MemberChatResponseDto(chatMessage.getClubMember());
+        this.createdDate = chatMessage.getCreatedDate();
     }
 }

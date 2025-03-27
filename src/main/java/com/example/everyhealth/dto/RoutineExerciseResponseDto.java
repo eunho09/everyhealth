@@ -1,8 +1,10 @@
 package com.example.everyhealth.dto;
 
+import com.example.everyhealth.domain.RoutineExercise;
 import lombok.Data;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class RoutineExerciseResponseDto {
@@ -12,10 +14,12 @@ public class RoutineExerciseResponseDto {
     private List<RepWeightDto> repWeightList;
     private String exerciseName;
 
-    public RoutineExerciseResponseDto(Long routineExerciseId, Integer sequence, List<RepWeightDto> repWeightList, String exerciseName) {
-        this.routineExerciseId = routineExerciseId;
-        this.sequence = sequence;
-        this.repWeightList = repWeightList;
-        this.exerciseName = exerciseName;
+    public RoutineExerciseResponseDto(RoutineExercise routineExercise) {
+        this.routineExerciseId = routineExercise.getId();
+        this.sequence = routineExercise.getSequence();
+        this.repWeightList = routineExercise.getRepWeightList().stream()
+                .map(rw -> new RepWeightDto(rw))
+                .collect(Collectors.toList());
+        this.exerciseName = routineExercise.getExercise().getName();
     }
 }
