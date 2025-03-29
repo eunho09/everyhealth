@@ -35,7 +35,7 @@ public class InitTestConfig {
 //        loadRoutineTestData();
 //        loadTodayTestData();
 //        loadMessageTestData();
-        loadMemberTestData();
+//        loadMemberTestData();
     }
 
     private void loadMemberTestData(){
@@ -46,27 +46,22 @@ public class InitTestConfig {
         }
     }
 
-/*    public void loadExerciseTestData(){
+    public void loadExerciseTestData(){
         Member member = new Member("test", "test", MemberRole.USER, "google", "picture");
         memberService.save(member);
 
         for (int i = 1; i <= 20; i++) {
-            List<ArrayList<Integer>> repWeights = new ArrayList<>();
-            ArrayList<Integer> repweight1 = new ArrayList<>(List.of(10, 5));
-            ArrayList<Integer> repweight2 = new ArrayList<>(List.of(10, 5));
-            ArrayList<Integer> repweight3 = new ArrayList<>(List.of(10, 5));
 
-            repWeights.add(repweight1);
-            repWeights.add(repweight2);
-            repWeights.add(repweight3);
-
-            Exercise exercise = new Exercise("name" + i, member, "memo" + i, repWeights, Classification.ABS);
+            Exercise exercise = new Exercise("name" + i, member, "memo" + i, Classification.ABS);
+            new RepWeight(i, i, exercise);
+            new RepWeight(i * 2 , i * 2, exercise);
+            new RepWeight(i * 3, i * 3, exercise);
 
             exerciseService.save(exercise);
         }
     }
 
-    public void loadRoutineTestData(){
+/*    public void loadRoutineTestData(){
         Member member = new Member("test", "test", MemberRole.USER, "google", "picture");
         memberService.save(member);
 
