@@ -89,6 +89,7 @@ public class RestLoginController {
         }
 
         loginInfo.setCheck(check);
+        loginInfo.setExpiresIn(accessTokenExpireTime);
 
         return ResponseEntity.ok().body(loginInfo);
     }

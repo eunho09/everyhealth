@@ -1,4 +1,5 @@
-import React from 'react';
+// App.js
+import React, { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider, redirect } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import CalenderLogPage from './pages/CalenderLogPage';
@@ -16,99 +17,115 @@ import ClubPage from "./pages/ClubPage";
 import ClubCreate from "./components/ClubCreate";
 import ChatRoom from "./components/ChatRoom";
 
-export const requireAuthToLogin = async () => {
-  const isAuthenticated = localStorage.getItem('auth_state') === 'true';
-  if (!isAuthenticated) {
-    return redirect('/login');
-  }
-  return null;
-};
+function AppWithRouter() {
+  const { user, isLoading } = useAuth();
 
-export const requireAuthToRoot = async () => {
-  const isAuthenticated = localStorage.getItem('auth_state') === 'true';
-  if (isAuthenticated) {
-    return redirect('/');
-  }
-  return null;
-};
+  const requireAuthToLogin = () => {
+    if (isLoading) {
+      return null;
+    }
 
-const createRoutes = () => [
-  {
-    path: '/',
-    element: <Root />,
-    children: [
+    if (!user) {
+      return redirect('/login');
+    }
+    return null;
+  };
+
+  const requireAuthToRoot = () => {
+    if (isLoading) {
+      return null;
+    }
+
+    if (user) {
+      return redirect('/');
+    }
+    return null;
+  };
+
+
+  const router = useMemo(() => {
+    return createBrowserRouter([
       {
-        index: true,
-        element: <CalenderLogPage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/post',
-        element: <PostPage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/post/upload',
-        element: <PostUpload />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/exercise',
-        element: <ExercisePage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/routine',
-        element: <RoutinePage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/profile',
-        element: <ProfilePage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/friend',
-        element: <FriendRequestPage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/friendProfile/:friendId',
-        element: <FriendProfilePage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/club',
-        element: <ClubPage />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/club/create',
-        element: <ClubCreate />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/chat/:roomId',
-        element: <ChatRoom />,
-        loader: requireAuthToLogin
-      },
-      {
-        path: '/login',
-        element: <LoginPage />,
-        loader: requireAuthToRoot
+        path: '/',
+        element: <Root />,
+        children: [
+          {
+            index: true,
+            element: <CalenderLogPage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/post',
+            element: <PostPage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/post/upload',
+            element: <PostUpload />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/exercise',
+            element: <ExercisePage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/routine',
+            element: <RoutinePage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/profile',
+            element: <ProfilePage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/friend',
+            element: <FriendRequestPage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/friendProfile/:friendId',
+            element: <FriendProfilePage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/club',
+            element: <ClubPage />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/club/create',
+            element: <ClubCreate />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/chat/:roomId',
+            element: <ChatRoom />,
+            loader: requireAuthToLogin
+          },
+          {
+            path: '/login',
+            element: <LoginPage />,
+            loader: requireAuthToRoot
+          }
+        ]
       }
-    ]
-  }
-];
+    ]);
+  }, [user, isLoading]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+
+  return <RouterProvider router={router} />;
+}
 
 function App() {
-
-  const router = createBrowserRouter(createRoutes());
-
   return (
       <AuthProvider>
-        <RouterProvider router={router} />
+        <AppWithRouter />
       </AuthProvider>
   );
 }
