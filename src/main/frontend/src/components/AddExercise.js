@@ -1,74 +1,77 @@
 import React, {useEffect, useState} from "react"
 import Plus from "./Plus";
 import "../styles/Modal.css"
-import axios from "axios";
 import { TiDeleteOutline } from "react-icons/ti";
 import {IoIosArrowBack} from "react-icons/io";
 import {exerciseService} from "../services/exerciseService";
 
-const AddExercise = () => {
+const AddExercise = ({fetchExercise, classification}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [exerciseName, setExerciseName] = useState('');
-    const [note, setNote] = useState('');
-    const [sets, setSets] = useState([{reps:'', weight:''}]);
-    const [selectBox, setSelectBox] = useState({});
-    const [selectClassification, setSelectClassification] = useState();
-
+    const [classificationBox, setClassificationBox] = useState(null);
+    const [exerciseData, setExerciseData] = useState({
+        name: '',
+        note: '',
+        repWeights: [{reps:'', weight:''}],
+        classification: ''
+    });
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
+    useEffect(() => {
+        const fetchClassificationBox = async () => {
+            const defaultKey = "가슴";
+            if (classification[defaultKey]) {
+                setExerciseData(prev => ({...prev, classification: classification[defaultKey]}));
+            } else if (Object.keys(classification).length > 0) {
+                const firstKey = Object.keys(classification)[0];
+                setExerciseData(prev => ({...prev, classification: classification[firstKey]}));
+            }
+            setClassificationBox(classification);
+        }
+
+        fetchClassificationBox();
+    }, [])
+
     const handleSave = async (e) => {
         await handleAddExercise(e);
-        window.location.reload();
         closeModal();
+        fetchExercise();
     };
 
     const handleAddExercise = async (e) => {
         e.preventDefault();
 
         try {
-            const data = await exerciseService.saveExercise(exerciseName, note, sets, selectClassification);
+             await exerciseService.saveExercise(exerciseData.name, exerciseData.note, exerciseData.repWeights, exerciseData.classification);
         } catch (error){
             console.error(error);
         }
     }
 
     const handleSetChange = (index, field, value) => {
-        const updatedSets = sets.map((set, i) =>
+        const updatedSets = exerciseData.repWeights.map((set, i) =>
             i === index ? { ...set, [field]: value } : set
         );
-        setSets(updatedSets);
+
+        setExerciseData(prev => ({...prev, repWeights: updatedSets}))
     };
 
     const addSet = () => {
-        setSets([...sets, { reps: '', weight: '' }]);
+        setExerciseData(prev => ({...prev, repWeights: [...prev.repWeights, {reps: '', weight: ''}]}))
     };
 
     const removeSet = (index) => {
-        const updatedSets = sets.filter((_, i) => i !== index);
-        setSets(updatedSets);
-    }
+        setExerciseData(prev => ({
+            ...prev,
+            repWeights: prev.repWeights.filter((_, i) => i !== index)
+        }));
+    };
 
-    useEffect(() => {
-        const fetchSelectBox = async () => {
-            const data = await exerciseService.getClassification();
-            const defaultKey = "가슴";
-            if (data[defaultKey]) {
-                setSelectClassification(data[defaultKey]);
-            } else if (Object.keys(data).length > 0) {
-                const firstKey = Object.keys(data)[0];
-                setSelectClassification(data[firstKey]);
-            }
-            setSelectBox(data);
-        }
-
-        fetchSelectBox();
-    }, [])
-
-    const handleSelect = (e) => {
-        setSelectClassification(e.target.value);
-    }
+    const handleChange = (e) => {
+        const {id, value} = e.target;
+        setExerciseData(prev => ({...prev, [id]: value}))
+    };
 
     return (
         <>
@@ -86,17 +89,19 @@ const AddExercise = () => {
                             <input
                                 type="text"
                                 placeholder="운동명"
-                                value={exerciseName}
-                                onChange={(e) => setExerciseName(e.target.value)}
+                                id="name"
+                                value={exerciseData.name}
+                                onChange={handleChange}
                             />
                             <textarea
                                 placeholder="메모"
-                                value={note}
+                                id="note"
+                                value={exerciseData.note}
                                 rows="3"
-                                onChange={(e) => setNote(e.target.value)}
+                                onChange={handleChange}
                             />
-                            <select onChange={handleSelect} value={selectClassification}>
-                                {Object.entries(selectBox).map(([key, value]) => (
+                            <select onChange={handleChange} value={exerciseData.classification} id="classification">
+                                {Object.entries(classificationBox).map(([key, value]) => (
                                     <option key={key} value={value}>
                                         {key}
                                     </option>
@@ -104,14 +109,14 @@ const AddExercise = () => {
                             </select>
                         </div>
                         <h3>세트</h3>
-                        {sets.map((set, index) => (
+                        {exerciseData.repWeights.map((repWeight, index) => (
                             <div className="row" key={index}>
                                 <div className="number">{index + 1}</div>
                                 <input
                                     className="small-input"
                                     type="number"
                                     placeholder={`반복 횟수 (Set ${index + 1})`}
-                                    value={set.reps}
+                                    value={repWeight.reps}
                                     onChange={(e) =>
                                         handleSetChange(index, 'reps', e.target.value)
                                     }
@@ -120,7 +125,7 @@ const AddExercise = () => {
                                     className="small-input"
                                     type="number"
                                     placeholder={`무게 (Set ${index + 1})`}
-                                    value={set.weight}
+                                    value={repWeight.weight}
                                     onChange={(e) =>
                                         handleSetChange(index, 'weight', e.target.value)
                                     }

@@ -67,7 +67,7 @@ public class RestExerciseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(exercise.getName() + "을 저장했습니다.");
     }
 
-    @PutMapping("/exercise/{id}")
+    @PatchMapping("/exercise/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody ExerciseDto dto) {
         exerciseService.update(id, dto);
         return ResponseEntity.ok("운동을 수정했습니다.");

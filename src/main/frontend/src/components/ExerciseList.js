@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import axios from 'axios';
 import "../styles/Modal.css";
 import "../styles/ExerciseList.css";
@@ -7,11 +7,18 @@ import { IoIosArrowBack } from "react-icons/io";
 import {exerciseService} from "../services/exerciseService";
 
 
-const ExerciseList = () => {
-    const [exercises, setExercises] = useState([]);
+const ExerciseList = ({exercises, classification, fetchExercise}) => {
     const [selectedExercise, setSelectedExercise] = useState(null);
     const [isModalOpen, setModelOpen] = useState(false);
-    const [selectBox, setSelectBox] = useState({});
+    const [classificationBox, setClassificationBox] = useState({});
+
+    useEffect(() => {
+        const fetchClassificationBox = async () => {
+            setClassificationBox(classification);
+        }
+
+        fetchClassificationBox();
+    }, [])
 
     const openModal = (exercise) => {
         setSelectedExercise(exercise);
@@ -29,22 +36,9 @@ const ExerciseList = () => {
         setModelOpen(false);
     };
 
-    useEffect(() => {
-        const fetchExercise = async () => {
-            try {
-                const data = await exerciseService.findExerciseByMemberId();
-                console.log(data);
-                setExercises(data);
-            } catch (error){
-                console.error(error);
-            }
-        }
-
-        fetchExercise();
-    }, []);
-
-    const handleExerciseChange = (field, value) => {
-        setSelectedExercise((prev) => ({ ...prev, [field]: value }));
+    const handleChange = (e) => {
+        const {id, value} = e.target;
+        setSelectedExercise((prev) => ({ ...prev, [id]: value }));
     };
 
     const handleSetChange = (index, field, value) => {
@@ -65,44 +59,22 @@ const ExerciseList = () => {
         }));
     };
 
-
-    useEffect(() => {
-        console.log(selectedExercise);
-    }, [selectedExercise])
-
     const handleUpdateExercise = async (id) => {
         try {
-            const data = await exerciseService.updateExercise(id, selectedExercise);
-            window.location.reload();
-            console.log(data)
+            await exerciseService.updateExercise(id, selectedExercise);
+            fetchExercise();
         } catch (error) {
             console.error(error);
         }
     }
 
     const addSet = () => {
-        setSelectedExercise((prev) => ({
-            ...prev,
-            repWeightList: [...prev.repWeightList, { reps: '', weight: '' }]
-        }));
+        setSelectedExercise((prev) => ({...prev, repWeightList: [...prev.repWeightList, { reps: '', weight: '' }]}));
     };
 
     const removeSet = (index) => {
-        setSelectedExercise((prev) => ({
-            ...prev,
-            repWeightList: prev.repWeightList.filter((_, i) => i !== index)
-        }));
+        setSelectedExercise((prev) => ({...prev, repWeightList: prev.repWeightList.filter((_, i) => i !== index)}));
     };
-
-    useEffect(() => {
-        const fetchSelectBox = async () => {
-            const data = await exerciseService.getClassification();
-            console.log(data);
-            setSelectBox(data);
-        }
-
-        fetchSelectBox();
-    }, [])
 
     return (
         <div className="exercise-list">
@@ -142,18 +114,20 @@ const ExerciseList = () => {
                             <h2 className="title">수정</h2>
                             <input
                                 type="text"
+                                id="name"
                                 placeholder="운동명"
                                 value={selectedExercise.name || ''}
-                                onChange={(e) => handleExerciseChange('name', e.target.value)}
+                                onChange={handleChange}
                             />
                             <textarea
                                 placeholder="메모"
+                                id="memo"
                                 value={selectedExercise.memo || ''}
                                 rows="3"
-                                onChange={(e) => handleExerciseChange('memo', e.target.value)}
+                                onChange={handleChange}
                             />
-                            <select onChange={(e) => handleExerciseChange("classification", e.target.value)} value={selectedExercise.classification || ''}>
-                                {Object.entries(selectBox).map(([key, value]) => (
+                            <select onChange={handleChange} value={selectedExercise.classification || ''} id="classification">
+                                {Object.entries(classificationBox).map(([key, value]) => (
                                     <option key={key} value={value}>
                                         {key}
                                     </option>
