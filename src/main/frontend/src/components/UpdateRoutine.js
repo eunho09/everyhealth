@@ -2,14 +2,28 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
+import { FaRegTrashAlt } from "react-icons/fa";
 import { routineService } from "../services/routineService";
 
-const UpdateRoutine = ({ routineId, handleIsEditing }) => {
+const UpdateRoutine = ({ routines, routineId, editClose, fetchRoutines }) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [routine, setRoutine] = useState(null);
     const [routineExerciseList, setRoutineExerciseList] = useState([]);
 
-    // handleSetChange 함수 개선
+    useEffect(() => {
+        const fetchRoutine = () => {
+            try {
+                const findRoutine = routines.find((routine) => routine.routineId === routineId);
+                setRoutineExerciseList(findRoutine.routineExerciseDtoList);
+            } catch (error) {
+                console.error("일지 로드 중 오류 발생:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchRoutine();
+    }, []);
+
     const handleSetChange = (exerciseIndex, setIndex, field, value) => {
         const updatedList = [...routineExerciseList];
         const numberValue = value ? parseFloat(value) : null;
@@ -24,29 +38,25 @@ const UpdateRoutine = ({ routineId, handleIsEditing }) => {
         setRoutineExerciseList(updatedList);
     };
 
-    // 세트 제거 함수 개선
     const removeSet = (exerciseIndex, setIndex) => {
         const updatedList = [...routineExerciseList];
         updatedList[exerciseIndex].repWeightList = updatedList[exerciseIndex].repWeightList.filter((_, i) => i !== setIndex);
         setRoutineExerciseList(updatedList);
     };
 
-    // 운동 제거 함수
-    const removeExercise = (exerciseIndex, routineExerciseId) => {
-        handleDeleteExercise(routineExerciseId);
-        setRoutineExerciseList(prev => prev.filter((_, i) => i !== exerciseIndex));
-    };
-
-    const handleDeleteExercise = async (routineExerciseId) => {
+    const handleDeleteExercise = async (exerciseIndex, routineExerciseId) => {
         try {
-            const data = await routineService.deleteRoutineExercise(routineExerciseId);
-            console.log(data);
+            await routineService.deleteRoutineExercise(routineExerciseId);
+            setRoutineExerciseList(prev => prev.filter((_, i) => i !== exerciseIndex));
+            if (routineExerciseList.length <= 0){
+                editClose();
+            }
+            await fetchRoutines();
         } catch (error) {
             console.error(error);
         }
     };
 
-    // 드래그 앤 드롭 핸들러 개선
     const onDragEnd = (result) => {
         if (!result.destination) return;
         const reorderedExercises = Array.from(routineExerciseList);
@@ -59,17 +69,16 @@ const UpdateRoutine = ({ routineId, handleIsEditing }) => {
     const syncExerciseOrder = async (updatedList) => {
         try {
             const updatedOrder = updatedList.map((exercise, index) => ({
-                id: exercise.id,
+                routineExerciseId: exercise.routineExerciseId,
                 sequence: index + 1,
             }));
             await routineService.updateSequence(routineId, updatedOrder);
-            console.log("순서 업데이트 성공");
+            await fetchRoutines();
         } catch (error) {
             console.error("순서 업데이트 실패:", error);
         }
     };
 
-    // 세트 추가 함수 개선
     const addSet = (exerciseIndex) => {
         const updatedList = [...routineExerciseList];
         updatedList[exerciseIndex].repWeightList.push({
@@ -79,7 +88,6 @@ const UpdateRoutine = ({ routineId, handleIsEditing }) => {
         setRoutineExerciseList(updatedList);
     };
 
-    // 저장 페이로드 생성 개선
     const createSavePayload = () => {
         return routineExerciseList.map(re => ({
             routineExerciseId: re.routineExerciseId,
@@ -91,38 +99,21 @@ const UpdateRoutine = ({ routineId, handleIsEditing }) => {
     const save = async () => {
         try {
             const payload = createSavePayload();
-            console.log("저장할 데이터:", payload);
-            const data = await routineService.updateRoutineExercise(routineId, payload);
-            handleIsEditing();
-            console.log("저장 성공:", data);
+            await routineService.updateRoutineExercise(routineId, payload);
+            editClose();
+            await fetchRoutines();
         } catch (error) {
             console.error(error);
         }
     };
 
-    useEffect(() => {
-        const fetchRoutine = async () => {
-            try {
-                const data = await routineService.findRoutineById(routineId);
-                console.log("data", data);
-                setRoutine(data);
-                setRoutineExerciseList(data);
-                console.log("검색 결과:", data);
-            } catch (error) {
-                console.error("일지 로드 중 오류 발생:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchRoutine();
-    }, [routineId]);
-
     if (isLoading) {
-        return <div>로딩 중...</div>;
+        return null;
     }
 
     if (!routineExerciseList || routineExerciseList.length === 0) {
-        return <div>일지 데이터를 찾을 수 없습니다.</div>;
+        editClose();
+        return null;
     }
 
     return (
@@ -130,7 +121,7 @@ const UpdateRoutine = ({ routineId, handleIsEditing }) => {
             <div className="modal-overlay">
                 <div className="modal-content">
                     <div className="button-position">
-                        <button className="back-button rotate-right" onClick={() => handleIsEditing(false)}>
+                        <button className="back-button rotate-right" onClick={() => editClose(false)}>
                             <IoIosArrowBack />
                         </button>
                     </div>
@@ -167,13 +158,13 @@ const UpdateRoutine = ({ routineId, handleIsEditing }) => {
                                                         <button
                                                             className="small-text-button"
                                                             onClick={() =>
-                                                                removeExercise(
+                                                                handleDeleteExercise(
                                                                     exerciseIndex,
                                                                     routineExercise.routineExerciseId
                                                                 )
                                                             }
                                                         >
-                                                            삭제
+                                                            <FaRegTrashAlt/>
                                                         </button>
                                                     </div>
                                                     {/* 각 운동별 세트 정보 렌더링 */}

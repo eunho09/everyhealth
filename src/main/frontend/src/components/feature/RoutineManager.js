@@ -1,123 +1,28 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState} from 'react';
 import RoutineList from '../RoutineList';
 import AddRoutineExercise from '../AddRoutineExercise';
 import UpdateRoutine from "../UpdateRoutine";
-import {exerciseService} from "../../services/exerciseService";
-import {routineService} from "../../services/routineService";
 
-const RoutineManager = () => {
-    const [routines, setRoutines] = useState([]);
-    const [exercises, setExercises] = useState([]);
+const RoutineManager = ({routines, fetchRoutines}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRoutineId, setSelectedRoutineId] = useState(null);
-    const [checkedList, setCheckedList] = useState([]);
-    const [sequence, setSequence] = useState(1);
-    const [toggleState, setToggleState] = useState({}); // 토글 상태 관리
+
     const [isEditing, setIsEditing] = useState(false);
-
-    // 루틴 데이터 로드
-    useEffect(() => {
-        // 비동기 함수 정의
-        const fetchRoutineData = async () => {
-            try {
-                const data = await routineService.findRoutineByMemberId();
-                setRoutines(data);
-                console.log(data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        // 비동기 함수 호출
-        fetchRoutineData();
-    }, []);
-
-        // 추가할 운동 데이터 로드
-        const fetchExercises = async () => {
-            try {
-                const data = await exerciseService.findExerciseByMemberId();
-                setExercises(data);
-            } catch (error) {
-                console.error("운동 데이터 로드 중 오류 발생:", error);
-            }
-        };
 
 
     const openModal = (routineId) => {
         setSelectedRoutineId(routineId);
-        initSequence(routineId)
         setIsModalOpen(true);
-        setCheckedList([]);
     };
 
-    const closeModal = (routineId) => {
-        initSequence(routineId);
+    const closeModal = () => {
         setIsModalOpen(false);
-        setCheckedList([]);
     };
 
-    const getSequence = (routineId) => {
-        console.log("routineId : " + routineId)
-        const routine = routines.find((r) => r.routineId === routineId);
-        const lastSequence = routine.routineExerciseDtoList.length > 0
-            ? Math.max(...routine.routineExerciseDtoList.map((e) => e.sequence))
-            : 0;
-
-        return lastSequence;
-    }
-
-    const initSequence = (routineId) => {
-
-        const findSequence = getSequence(routineId);
-
-        setSequence(findSequence + 1);
-        console.log("initSequence : " + findSequence)
-    }
-
-    const lastSequence = (routineId) => {
-        const findSequence = getSequence(routineId);
-        return findSequence + 1
-    };
-
-
-    // 토글 상태 변경 핸들러
-    const toggleExercises = (routineId) => {
-        setToggleState((prevState) => ({
-            ...prevState,
-            [routineId]: !prevState[routineId], // 토글 상태 변경
-        }));
-    };
-
-
-    const saveExercises = async (routineId) => {
-        console.log("routine Id" + routineId);
-        checkedList.map((id, value) => {
-            console.log("id : " + id, " / value : " + value);
-        })
-
-        try {
-            await routineService.addRoutineExercise(routineId, checkedList);
-
-            const data = await routineService.findRoutineById();
-            setRoutines(data);
-
-            closeModal(routineId);
-        } catch (error) {
-            setRoutines([]); // 실패 시 빈 배열로 초기화
-            console.error(error);
-        }
-
-        window.location.reload();
-    };
-
-    useEffect(() => {
-        console.log(checkedList);
-    },[checkedList])
 
     const editingOpen = (routineId) => {
         setSelectedRoutineId(routineId);
         setIsEditing(true);
-        console.log(routineId);
     }
 
     const editingClose = () => {
@@ -129,29 +34,24 @@ const RoutineManager = () => {
             <h2>루틴 목록</h2>
             <RoutineList
                 routines={routines}
-                toggleState={toggleState}
-                onToggle={toggleExercises}
                 open={openModal}
                 edit={editingOpen}
+                fetchRoutines={fetchRoutines}
             />
             {isModalOpen && (
                 <AddRoutineExercise
+                    routines={routines}
                     routineId={selectedRoutineId}
-                    exercises={exercises}
-                    checkedList={checkedList}
-                    setCheckedList={setCheckedList}
-                    sequence={sequence}
-                    setSequence={setSequence}
-                    lastSequence={lastSequence}
+                    fetchRoutines={fetchRoutines}
                     onClose={closeModal}
-                    onSave={saveExercises}
-                    fetchExercises={fetchExercises}
                 />
             )}
             {isEditing && (
                 <UpdateRoutine
+                    routines={routines}
                     routineId={selectedRoutineId}
-                    handleIsEditing={editingClose}
+                    fetchRoutines={fetchRoutines}
+                    editClose={editingClose}
                 />
             )}
         </div>
