@@ -167,7 +167,6 @@ export const AuthProvider = ({ children }) => {
     const handleAuthError = () => {
       console.log("인증 오류 이벤트 감지 - 로그아웃");
 
-      // 타이머 정리
       if (expirationTimer.current) {
         clearTimeout(expirationTimer.current);
         expirationTimer.current = null;
