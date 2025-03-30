@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import axios from "axios";
+import React, { useState } from 'react';
 import Plus from "./Plus";
 import { IoIosArrowBack } from "react-icons/io";
 import "../styles/Modal.css";
 import {routineService} from "../services/routineService";
 
-const AddRoutine = () => {
-
+const AddRoutine = ({fetchRoutines}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState('');
 
@@ -18,11 +16,11 @@ const AddRoutine = () => {
         setIsModalOpen(false);
     };
 
-
-    const save = () => {
-        saveRoutine();
+    const save = async () => {
+        await saveRoutine();
+        setName('');
         setIsModalOpen(false);
-        window.location.reload();
+        await fetchRoutines();
     };
 
     const saveRoutine = async () => {
@@ -30,6 +28,7 @@ const AddRoutine = () => {
             await routineService.save(name)
         } catch (error){
             console.error(error);
+            throw error;
         }
     }
 

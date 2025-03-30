@@ -113,6 +113,7 @@ public class RoutineExerciseService {
     }
 
     @Transactional
+    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
     public void deleteById(Long routineExerciseId) {
         routineExerciseRepository.deleteById(routineExerciseId);
     }

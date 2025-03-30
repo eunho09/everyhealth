@@ -38,5 +38,10 @@ export const routineService = {
     updateRoutineExercise: async (routineId, updateList) => {
         const response = await api.patch(`/api/routineExercise/update/${routineId}`, updateList);
         return response.data;
+    },
+
+    deleteRoutineById: async (id) => {
+        const response = await api.delete(`/api/routine/${id}`);
+        return response.data;
     }
 }

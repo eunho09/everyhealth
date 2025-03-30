@@ -1,8 +1,30 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import { IoIosArrowBack } from "react-icons/io";
 import "../styles/Modal.css";
+import {exerciseService} from "../services/exerciseService";
+import {routineService} from "../services/routineService";
 
-const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList, onClose, onSave, sequence, setSequence, lastSequence, fetchExercises }) => {
+const AddRoutineExercise = ({ routines, routineId, fetchRoutines, onClose}) => {
+
+    const [exercises, setExercises] = useState([]);
+    const [checkedList, setCheckedList] = useState([]);
+    const [sequence, setSequence] = useState(1);
+
+    useEffect(() => {
+        const fetchExerciseByMember = async () => {
+            try {
+                const data = await exerciseService.findExerciseByMemberId();
+                setExercises(data);
+            } catch (error){
+                console.error(error);
+                throw error;
+            }
+        }
+
+        fetchExerciseByMember();
+        initSequence(routineId);
+    }, [])
+
     const checkHandler = async (exerciseId, isChecked) => {
         if (isChecked) {
             setCheckedList((prev) => [
@@ -24,9 +46,38 @@ const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList,
         }
     };
 
-    useEffect(() => {
-        fetchExercises();
-    }, [])
+    const getSequence = (routineId) => {
+        console.log("routineId : " + routineId)
+        const routine = routines.find((r) => r.routineId === routineId);
+        const lastSequence = routine.routineExerciseDtoList.length > 0
+            ? Math.max(...routine.routineExerciseDtoList.map((e) => e.sequence))
+            : 0;
+
+        return lastSequence;
+    }
+
+    const initSequence = (routineId) => {
+        const findSequence = getSequence(routineId);
+
+        setSequence(findSequence + 1);
+    }
+
+    const lastSequence = (routineId) => {
+        const findSequence = getSequence(routineId);
+        return findSequence + 1
+    };
+
+
+    const addRoutineExercises = async (routineId) => {
+        try {
+            await routineService.addRoutineExercise(routineId, checkedList);
+            await fetchRoutines();
+            onClose();
+        } catch (error) {
+            console.error(error);
+        }
+
+    };
 
     return (
         <div className="modal-overlay">
@@ -48,7 +99,7 @@ const AddRoutineExercise = ({ routineId, exercises, checkedList, setCheckedList,
                         </div>
                     ))}
                 </div>
-                <button onClick={() => onSave(routineId)}>저장</button>
+                <button onClick={() => addRoutineExercises(routineId)}>저장</button>
             </div>
         </div>
     );
