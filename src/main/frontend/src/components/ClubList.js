@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import ClubPoster from '../components/ClubPoster';
 import '../styles/ClubList.css';
-import axios from "axios";
-import api from "../services/api";
+import { FaSearch } from "react-icons/fa";
 import {clubService} from "../services/ClubService";
 
 const ClubListPage = () => {
@@ -17,7 +16,6 @@ const ClubListPage = () => {
         const fetchClubList = async () => {
             try {
                 const data = await clubService.findAll();
-                console.log("data", data);
                 setClubs(data);
             } catch (error){
                 console.error(error);
@@ -72,7 +70,7 @@ const ClubListPage = () => {
                         <option value="1">나의 클럽</option>
                     </select>
                     <button onClick={fetchSearch}>
-                        검색
+                        <FaSearch/>
                     </button>
                 </div>
 

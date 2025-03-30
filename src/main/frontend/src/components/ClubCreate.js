@@ -32,8 +32,8 @@ const ClubCreate = () => {
         if (!validateForm()) return;
 
         try {
-            const data = clubService.save(formData);
-            navigate('/club');
+            await clubService.save(formData);
+            window.location.href = "/club";
         } catch (error) {
             console.error('Error creating club:', error);
             setErrors({ submit: '클럽 생성 중 오류가 발생했습니다.' });
@@ -46,7 +46,7 @@ const ClubCreate = () => {
             ...prev,
             [name]: value
         }));
-        // 에러 메시지 제거
+
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
