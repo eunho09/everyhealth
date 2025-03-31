@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {todayService} from "../services/todayService";
 
-const WorkoutCheckbox =  ({onDataChanged, todayId }) => {
+const WorkoutCheckbox =  ({ fetchMonthData, todayId, month, todayData, year }) => {
     const [isChecked, setIsChecked] = useState(false);
 
-    // Load initial checkbox state
     useEffect(() => {
-        const fetchCheckboxState = async () => {
+        const fetchCheckboxState = () => {
             try {
-                const data = await todayService.findOneTodayById(todayId);
-                setIsChecked(data.checkBox === 'True');
+                setIsChecked(todayData.checkBox === 'True');
             } catch (error) {
                 console.error('Error fetching checkbox state:', error);
             }
@@ -25,8 +23,7 @@ const WorkoutCheckbox =  ({onDataChanged, todayId }) => {
 
         try {
             await todayService.updateCheckbox(todayId, checked);
-
-            onDataChanged();
+            await fetchMonthData(year, month)
         } catch (error) {
             console.error('Error updating checkbox:', error);
             setIsChecked(!checked);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styled from 'styled-components';
@@ -178,7 +178,8 @@ const WorkoutCalendar = ({date, handleDateChange, workoutDates, fetchMonthData})
     const handleActiveStartDateChange = ({ activeStartDate }) => {
         if (activeStartDate) {
             const month = activeStartDate.getMonth() + 1;
-            fetchMonthData(month);
+            const year = activeStartDate.getFullYear();
+            fetchMonthData(year, month);
         }
     };
 
@@ -195,7 +196,7 @@ const WorkoutCalendar = ({date, handleDateChange, workoutDates, fetchMonthData})
                     next2Label={null} // +1년 & +10년 이동 버튼 숨기기
                     prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
                     tileContent={tileContent}
-                    onActiveStartDateChange={handleActiveStartDateChange}  // 추가된 부분
+                    onActiveStartDateChange={handleActiveStartDateChange}  // month 버튼 handler
                  />
             </CalendarStyled>
         </>
