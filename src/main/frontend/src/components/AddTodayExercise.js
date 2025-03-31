@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import "../styles/AddTodayExercise.css"
 import {IoIosArrowBack} from "react-icons/io";
+import {todayService} from "../services/todayService";
 
-const AddTodayExercise = ({onDataChanged, handleModel, exercises, checkList, setCheckList, checkHandler, routines, handleSaveTodayExercise, formattedDate, month, fetchMonthData}) => {
+const AddTodayExercise = ({handleModel, exercises, checkList, setCheckList, checkHandler, routines, handleSaveTodayExercise, dateFormat, month, year, hasToday, fetchMonthData}) => {
 
     const [activeTab, setActiveTab] = useState("exercises"); // "exercises" 또는 "routines"
 
@@ -10,13 +11,31 @@ const AddTodayExercise = ({onDataChanged, handleModel, exercises, checkList, set
         setActiveTab(tab);
     };
 
-    const save = () => {
-        handleSaveTodayExercise(formattedDate);
-        fetchMonthData(month)
-        onDataChanged();
-        handleModel(false);
-        setCheckList([]);
+    const save = async () => {
+        try {
+            await handleSaveToday(dateFormat);
+            await handleSaveTodayExercise(dateFormat);
+            await fetchMonthData(year, month);
+            handleModel(false);
+            setCheckList([]);
+        } catch (e) {
+            console.error(e);
+        }
     }
+
+    const handleSaveToday = async (dateFormat) => {
+        try {
+            if (!hasToday(dateFormat)){
+                await todayService.saveToday(dateFormat);
+
+            } else {
+                console.log(`${dateFormat} 데이터가 이미 존재합니다.`);
+            }
+
+        } catch (e) {
+            console.error("데이터 저장 실패:", e);
+        }
+    };
 
     return (
         <div className="modal-overlay">

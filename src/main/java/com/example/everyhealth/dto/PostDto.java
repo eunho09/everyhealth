@@ -2,8 +2,10 @@ package com.example.everyhealth.dto;
 
 import com.example.everyhealth.domain.Post;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class PostDto {
 
     private Long id;

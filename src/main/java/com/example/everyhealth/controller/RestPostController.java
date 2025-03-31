@@ -81,7 +81,6 @@ public class RestPostController {
     }
 
     @GetMapping("/images/{fileName}")
-    @Cacheable(value = "images", key = "#fileName")
     public Resource downloadImage(@PathVariable String fileName) throws MalformedURLException {
         return new UrlResource("file:" + fileStore.getFullName(fileName));
     }

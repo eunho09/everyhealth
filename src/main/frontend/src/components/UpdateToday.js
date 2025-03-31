@@ -5,17 +5,34 @@ import { TiDeleteOutline } from "react-icons/ti";
 import axios from "axios";
 import {todayService} from "../services/todayService";
 
-const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
+const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEditing }) => {
     const [today, setToday] = useState(null);
-    const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+    const [isLoading, setIsLoading] = useState(true);
     const [todayExerciseList, setTodayExerciseList] = useState([]);
     const [repWeightList, setRepWeightList] = useState([]);
 
+    useEffect(() => {
+        const fetchToday = async () => {
+            try {
+                const data = await todayService.findOneTodayById(todayId);
+                setToday(data);
+                setTodayExerciseList(data.todayExercises);
+                setRepWeightList(
+                    data.todayExercises.map((exercise) => exercise.repWeightList)
+                );
+            } catch (error) {
+                console.error("루틴 로드 중 오류 발생:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchToday();
+    }, [todayId]);
+
+
     const handleSetChange = (exerciseIndex, setIndex, field, value) => {
-        // 상태를 복사하여 변경 작업
-        const updatedSets = [...repWeightList]; // repWeight 배열 복사
-        console.log("updatedSets", updatedSets)
-        console.log("exerciseIndex", exerciseIndex)
+        const updatedSets = [...repWeightList];
         const numberValue = value ? parseFloat(value) : null;
 
         if (field === 'reps') {
@@ -43,14 +60,13 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
 
         // 해당 운동의 세트 정보 삭제
         const updatedRepWeight = repWeightList.filter((_, i) => i !== exerciseIndex);
-        console.log("exerciseIndex", exerciseIndex);
         setRepWeightList(updatedRepWeight);
     };
 
     const handleDeleteRoutineExercise = async (todayExerciseId) => {
         try {
-            const data = await todayService.deleteTodayExercise(todayExerciseId);
-            console.log(data);
+            await todayService.deleteTodayExercise(todayExerciseId);
+            await handleGetTodayData(dateFormat);
         } catch (error) {
             console.error(error);
         }
@@ -71,7 +87,6 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
         reorderedRepWeight.splice(result.destination.index, 0, movedRep);
         setRepWeightList(reorderedRepWeight);
 
-        // 순서가 변경된 데이터를 서버에 동기화
         syncExerciseOrder(reorderedExercises);
     };
 
@@ -81,8 +96,8 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
                 id: exercise.id,
                 sequence: index + 1,
             }));
-            const data = await todayService.updateSequence(todayId, updatedOrder);
-            console.log(data);
+            await todayService.updateSequence(todayId, updatedOrder);
+            await handleGetTodayData(dateFormat);
         } catch (error) {
             console.error(error);
         }
@@ -100,57 +115,39 @@ const UpdateToday = ({ onDataChanged, todayId, handleIsEditing }) => {
     const createSavePayload = () => {
         return todayExerciseList.map((exercise, index) => ({
             id: exercise.id,
-            repWeightList: repWeightList[index], // 해당 운동의 세트 정보
+            repWeightList: repWeightList[index],
         }));
     };
 
 
-    //일지에 운동 추가
     const save = async () => {
         try {
             const payload = createSavePayload();
-            console.log("저장할 데이터:", payload);
-
-            // 서버로 POST 요청
-            const data = await todayService.updateTodayExercise(todayId, payload);
-
-            onDataChanged();
-            console.log("저장 성공:", data);
+            await todayService.updateTodayExercise(todayId, payload);
+            await handleGetTodayData(dateFormat);
+            handleIsEditing(false);
         } catch (error) {
             console.error(error);
         }
     };
 
-    useEffect(() => {
-        const fetchToday = async () => {
+    const handleGetTodayData = async (dateFormat) => {
+        if (hasToday(dateFormat)) {
             try {
-                const data = await todayService.findOneTodayById(todayId);
-                setToday(data);
-                setTodayExerciseList(data.todayExercises);
-                setRepWeightList(
-                    data.todayExercises.map((exercise) => exercise.repWeightList)
-                );
-                console.log("검색 결과:", data);
-            } catch (error) {
-                console.error("루틴 로드 중 오류 발생:", error);
-            } finally {
-                setIsLoading(false); // 로딩 상태 종료
+                const data = await todayService.getTodayDate(dateFormat);
+                setTodayData(data);
+            } catch (e) {
+                console.error("날짜 데이터 가져오기 실패:", e);
             }
-        };
-
-        fetchToday(); // 비동기 함수 호출
-    }, [todayId]);
-
-    useEffect(() => {
-        console.log(repWeightList);
-    }, [repWeightList]);
+        }
+    }
 
     if (isLoading) {
-        return <div>로딩 중...</div>; // 로딩 메시지 표시
+        return <div>로딩 중...</div>;
     }
 
     if (!today || !today.todayExercises) {
-        return <div>오늘의 운동 데이터를 찾을 수 없습니다.</div>; // 데이터 없음 처리
+        return <div>오늘의 운동 데이터를 찾을 수 없습니다.</div>;
     }
 
     return (

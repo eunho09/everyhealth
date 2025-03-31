@@ -49,15 +49,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     if (accessor.getUser() != null) {
-                        log.info("All headers: {}", accessor.getMessageHeaders());
                         Authentication auth = (Authentication) accessor.getUser();
                         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-                        log.info("userDetails: {}", userDetails);
                         Long memberId = userDetails.getMember().getId();
 
-                        // WebSocket 세션에 memberId 저장
                         accessor.getSessionAttributes().put("memberId", memberId);
-                        log.info("Member ID set in session: {}", memberId);
                     }
                 }
 
