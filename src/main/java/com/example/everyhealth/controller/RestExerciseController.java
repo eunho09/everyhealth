@@ -2,6 +2,7 @@ package com.example.everyhealth.controller;
 
 import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.Exercise;
+import com.example.everyhealth.domain.ExerciseUpdateDto;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.dto.ExerciseCreateDto;
@@ -12,9 +13,12 @@ import com.example.everyhealth.service.ExerciseService;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RepWeightService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,7 +54,16 @@ public class RestExerciseController {
 
 
     @PostMapping("/exercise")
-    public ResponseEntity<String> save(@ExtractMemberId Long memberId, @RequestBody ExerciseCreateDto dto) {
+    public ResponseEntity<String> save(@ExtractMemberId Long memberId,
+                                       @Valid @RequestBody ExerciseCreateDto dto,
+                                       BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors.toString());
+        }
         Member findMember = memberService.findById(memberId);
 
         Exercise exercise = new Exercise(dto.getName(),
@@ -68,7 +81,16 @@ public class RestExerciseController {
     }
 
     @PatchMapping("/exercise/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody ExerciseDto dto) {
+    public ResponseEntity<String> update(@PathVariable Long id,
+                                         @Valid @RequestBody ExerciseUpdateDto dto,
+                                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors.toString());
+        }
         exerciseService.update(id, dto);
         return ResponseEntity.ok("운동을 수정했습니다.");
     }

@@ -16,10 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,7 +35,16 @@ public class RestClubController {
     private final ClubMemberService clubMemberService;
 
     @PostMapping("/club")
-    public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody ClubCreate clubCreate) {
+    public ResponseEntity<String> save(@ExtractMemberId Long memberId,
+                                     @RequestBody ClubCreate clubCreate,
+                                     BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors.toString());
+        }
         Member member = memberService.findById(memberId);
         Club club = new Club(clubCreate.getTitle(), clubCreate.getContent(), clubCreate.getLocation(), clubCreate.getSchedule(), clubCreate.getHighlight());
         clubService.save(club);
@@ -44,7 +55,7 @@ public class RestClubController {
         ChatRoom chatRoom = new ChatRoom(clubCreate.getTitle(), club);
         chatRoomService.save(chatRoom);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(club.getTitle() + "를 생성했습니다.");
     }
 
     @PostMapping("/club/{id}/join")

@@ -10,6 +10,8 @@ import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.FileStore;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,6 +19,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Slf4j
+@Validated
 public class RestPostController {
 
     private final MemberService memberService;
@@ -38,8 +42,8 @@ public class RestPostController {
 
     @PostMapping("/post")
     public ResponseEntity<Void> save(@ExtractMemberId Long memberId,
-                                     @RequestPart MultipartFile file,
-                                     @RequestPart String text ) throws IOException {
+                                     @RequestPart @NotNull MultipartFile file,
+                                     @RequestPart @NotBlank String text ) throws IOException {
 
         Member member = memberService.findById(memberId);
         UploadFile uploadFile = fileStore.storeFile(file);

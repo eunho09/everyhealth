@@ -1,6 +1,7 @@
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Exercise;
+import com.example.everyhealth.domain.ExerciseUpdateDto;
 import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.dto.ExerciseDto;
 import com.example.everyhealth.dto.ExerciseResponseDto;
@@ -42,7 +43,7 @@ public class ExerciseService {
     @Transactional
     @CachePut(value = "exercises", key = "#id")
     @CacheEvict(value = {"exercisesByMember", "exerciseAll"}, allEntries = true)
-    public void update(Long id, ExerciseDto dto) {
+    public void update(Long id, ExerciseUpdateDto dto) {
         Exercise exercise = fetchById(id);
         if (dto.getName() != null) {
             exercise.setName(dto.getName());

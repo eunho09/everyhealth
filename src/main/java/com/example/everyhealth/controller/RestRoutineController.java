@@ -9,10 +9,15 @@ import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RepWeightService;
 import com.example.everyhealth.service.RoutineExerciseService;
 import com.example.everyhealth.service.RoutineService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api")
+@Validated
 public class RestRoutineController {
 
     private final RoutineService routineService;
@@ -34,8 +40,7 @@ public class RestRoutineController {
 
     @PostMapping("/routine")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId,
-                                     @RequestParam String name) {
-
+                                       @RequestParam @NotBlank(message = "이름을 필수로 입력하세요") String name) {
         Member findMember = memberService.findById(memberId);
         Routine routine = new Routine(name, findMember);
         routineService.save(routine);

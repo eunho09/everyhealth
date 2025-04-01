@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,16 @@ public class RestCommentController {
 
 
     @PostMapping("/comment")
-    public ResponseEntity<Void> save(@ExtractMemberId Long memberId, @RequestBody SaveComment dto) {
+    public ResponseEntity<String> save(@ExtractMemberId Long memberId,
+                                     @RequestBody SaveComment dto,
+                                     BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors.toString());
+        }
         Member member = memberService.findById(memberId);
         Post post = postService.findById(dto.getPostId());
         Comment comment = new Comment(dto.getText(), post, member);
