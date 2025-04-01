@@ -90,11 +90,11 @@ api.interceptors.response.use(
             }
         }
 
-        // 500 에러 등 다른 상태 코드 처리
+/*        // 500 에러 등 다른 상태 코드 처리
         if (error.response && error.response.status === 500) {
             console.error('서버 오류 발생:', error.response.data);
             alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-        }
+        }*/
 
         return Promise.reject(error);
     }
