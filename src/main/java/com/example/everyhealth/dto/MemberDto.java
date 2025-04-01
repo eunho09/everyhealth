@@ -3,8 +3,10 @@ package com.example.everyhealth.dto;
 import com.example.everyhealth.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class MemberDto {
 
     private Long id;

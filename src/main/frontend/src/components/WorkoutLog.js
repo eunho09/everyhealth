@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/WorkoutLog.css';
 import { TiPlus } from "react-icons/ti";
-import {CgArrowsExchange} from "react-icons/cg";
+import { FaRegEdit } from "react-icons/fa";
 import {routineService} from "../services/routineService";
 import AddTodayExercise from "./AddTodayExercise";
 import WorkoutCheckbox from "./WorkoutCheckbox";
@@ -74,7 +74,7 @@ const WorkoutLog = ({month, year, dateFormat, hasToday, todayData, fetchMonthDat
                 <TiPlus/>
             </button>
             <button onClick={() => handleIsEditing(true)}>
-                <CgArrowsExchange/>
+                <FaRegEdit/>
             </button>
             {todayData?.todayExercises?.length > 0 ? (
                 <div>

@@ -3,17 +3,19 @@ import {memberService} from "../services/memberService";
 import {postService} from "../services/postService";
 import {FaRegImages} from "react-icons/fa";
 import SharedCalendarLogManager from "./SharedCalendarLogManager";
+import {friendService} from "../services/friendService";
 
 const FriendProfile = ({friendId}) => {
     const [activeTab, setActiveTab] = useState('posts');
     const [friendProfile, setFriendProfile] = useState(null);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isFriend, setIsFriend] = useState(false);
 
     useEffect(() => {
         const fetchFriendData = async () => {
             try {
-                // 친구 정보와 친구의 게시물 가져오기
+
                 const [profileRes, postsRes] = await Promise.all([
                     memberService.findFriendById(friendId),
                     postService.findFriendPosts(friendId)
@@ -29,10 +31,22 @@ const FriendProfile = ({friendId}) => {
         };
 
         fetchFriendData();
+        checkFriendship();
     }, [friendId]);
 
+
+    const checkFriendship = async () => {
+        try {
+            const data = await friendService.checkFriendShip(friendId);
+            setIsFriend(data);
+        } catch (error) {
+            console.error("친구 관계 확인 실패:", error);
+            setIsFriend(false);
+        }
+    };
+
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return null;
     }
 
     return (
@@ -80,7 +94,10 @@ const FriendProfile = ({friendId}) => {
             <div className="profile-content">
                 {activeTab === 'calendar' ? (
                     <div className="calendar-container">
-                        <SharedCalendarLogManager friendId={friendId} />
+                        <SharedCalendarLogManager
+                            friendId={friendId}
+                            isFriend={isFriend}
+                        />
                     </div>
                 ) : (
                     <div className="posts-grid">

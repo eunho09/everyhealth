@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
-import axios from "axios";
+import { FaRegTrashAlt } from "react-icons/fa";
 import {todayService} from "../services/todayService";
 
 const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEditing }) => {
@@ -143,7 +143,7 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
     }
 
     if (isLoading) {
-        return <div>로딩 중...</div>;
+        return null;
     }
 
     if (!today || !today.todayExercises) {
@@ -198,7 +198,7 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
                                                                 )
                                                             }
                                                         >
-                                                            삭제
+                                                            <FaRegTrashAlt/>
                                                         </button>
                                                     </div>
                                                     {repWeightList[exerciseIndex]?.map((repWeight, index) => (

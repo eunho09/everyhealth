@@ -1,9 +1,8 @@
 import React from 'react';
 
 const SharedWorkoutLog = ({date, todayData}) => {
-
-    const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }); // 한국 시간으로 포멧팅
-    const formattedDate = formatter.format(date); // YYYY-MM-DD 형식 반환
+    const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' });
+    const formattedDate = formatter.format(date);
 
     return (
         <div className="workout-log">
@@ -15,9 +14,9 @@ const SharedWorkoutLog = ({date, todayData}) => {
                             <li key={index}>
                                 <div>{todayExercise.exerciseName}</div>
                                 <ul className="set-list">
-                                    {todayExercise.repWeight.map((set, setIndex) => (
+                                    {todayExercise.repWeightList.map((repWeight, setIndex) => (
                                         <li key={setIndex}>
-                                            {setIndex + 1}세트: {set[0]}회 {set[1] !== 0 && `${set[1]}kg`}
+                                            {setIndex + 1}세트: {repWeight.reps}회 {repWeight.weight !== 0 && `${repWeight.weight}kg`}
                                         </li>
                                     ))}
                                 </ul>

@@ -6,55 +6,25 @@ import WorkoutCalendar from "./WorkoutCalendar";
 import SharedWorkoutLog from "./SharedWorkoutLog";
 import moment from "moment/moment";
 
-const SharedCalendarLogManager = ({ friendId }) => {
+const SharedCalendarLogManager = ({ isFriend, friendId }) => {
     const [date, setDate] = useState(new Date());
     const [monthData, setMonthData] = useState([]);
     const [todayData, setTodayData] = useState();
-    const [isFriend, setIsFriend] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const checkFriendship = async () => {
-            try {
-                setIsLoading(true);
-                const data = await friendService.checkFriendShip(friendId);
-                setIsFriend(data);
+        const initializeData = async () => {
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
 
-                if (!data) {
-                    console.log("접근 권한이 없습니다.");
-                }
-            } catch (error) {
-                console.error("친구 관계 확인 실패:", error);
-                setIsFriend(false);
-            } finally {
-                setIsLoading(false);
+            if (isFriend) {
+                await fetchMonthData(year, month);
             }
         };
 
-        checkFriendship();
-    }, [friendId, navigate]);
+        initializeData();
+    }, []);
 
-    const fetchMonthData = useCallback(async (year, month) => {
-        if (!isFriend) return;
-
-        try {
-            const targetMonth = month || date.getMonth() + 1;
-            const targetYear = month || date.getFullYear();
-            const data = await sharedTodayService.findByFriendAndMonth(friendId, targetYear, targetMonth);
-            setMonthData(data);
-        } catch (e) {
-            console.error("월 데이터 가져오기 실패:", e);
-        }
-    }, [date, friendId, isFriend]);
-
-    useEffect(() => {
-        if (isFriend) {
-            const month = date.getMonth() + 1;
-            const year = date.getFullYear() + 1;
-            fetchMonthData(year, month);
-        }
-    }, [fetchMonthData, isFriend]);
 
 
     useEffect(() => {
@@ -74,6 +44,19 @@ const SharedCalendarLogManager = ({ friendId }) => {
         }
     }, [date, monthData]);
 
+
+
+    const fetchMonthData = async (year, month) => {
+        if (!isFriend) return;
+
+        try {
+            const data = await sharedTodayService.findByFriendAndMonth(friendId, year, month);
+            setMonthData(data);
+        } catch (e) {
+            console.error("월 데이터 가져오기 실패:", e);
+        }
+    };
+
     const hasToday = (dateFormat) => {
         return monthData.find(data => data.localDate === dateFormat);
     };
@@ -81,10 +64,6 @@ const SharedCalendarLogManager = ({ friendId }) => {
     const handleDateChange = (newDate) => {
         setDate(newDate);
     };
-
-    if (isLoading) {
-        return <div>로딩 중...</div>;
-    }
 
     if (!isFriend) {
         return (
