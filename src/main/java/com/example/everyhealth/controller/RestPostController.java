@@ -87,11 +87,7 @@ public class RestPostController {
 
     @GetMapping("/posts/friend/{friendId}")
     public ResponseEntity<List<PostDto>> findByFriendId(@PathVariable Long friendId) {
-        List<Post> postList = postService.findByFriendId(friendId);
-
-        List<PostDto> postDtoList = postList.stream()
-                .map(post -> new PostDto(post))
-                .collect(Collectors.toList());
+        List<PostDto> postDtoList = postService.findByMemberId(friendId);
 
         return ResponseEntity.ok(postDtoList);
     }

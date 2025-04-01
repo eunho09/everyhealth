@@ -110,8 +110,8 @@ const ProfilePage = () => {
                 ) : (
                     <div className="friends-list">
                         {friends.map(friend => (
-                            <a key={friend.id} href={`/friendProfile/${friend.id}`}>
-                                <div key={friend.id} className="friend-item">
+                            <a key={friend.friend.id} href={`/friendProfile/${friend.friend.id}`}>
+                                <div key={friend.friend.id} className="friend-item">
                                     <div className="friend-avatar">
                                         {friend.friend.picture ? (
                                             <img src={friend.friend.picture} alt={friend.friend.name}/>
