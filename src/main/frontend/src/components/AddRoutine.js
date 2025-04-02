@@ -7,6 +7,16 @@ import {routineService} from "../services/routineService";
 const AddRoutine = ({fetchRoutines}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState('');
+    const [errors, setErrors] = useState({name: ""});
+
+    const validation = () => {
+        if (!name.trim()){
+            setErrors({name : '루틴 이름을 입력해주세요.'});
+            return false;
+        }
+
+        return true;
+    }
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -14,9 +24,15 @@ const AddRoutine = ({fetchRoutines}) => {
 
     const closeModal = () => {
         setIsModalOpen(false);
+        setErrors({});
     };
 
     const save = async () => {
+        if (!validation()){
+            console.log("에러");
+            return;
+        }
+
         await saveRoutine();
         setName('');
         setIsModalOpen(false);
@@ -48,8 +64,13 @@ const AddRoutine = ({fetchRoutines}) => {
                             type="text"
                             placeholder="루틴명"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => {
+                                setName(e.target.value)
+                                setErrors(prev => ({...prev, name: ''}))
+                            }
+                            }
                         />
+                        {errors.name && <p className="error-message">{errors.name}</p>}
                         <button onClick={() => save()}>저장</button>
                     </div>
                 </div>

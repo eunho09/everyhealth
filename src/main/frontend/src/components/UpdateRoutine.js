@@ -8,6 +8,7 @@ import { routineService } from "../services/routineService";
 const UpdateRoutine = ({ routines, routineId, editClose, fetchRoutines }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [routineExerciseList, setRoutineExerciseList] = useState([]);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchRoutine = () => {
@@ -24,12 +25,28 @@ const UpdateRoutine = ({ routines, routineId, editClose, fetchRoutines }) => {
         fetchRoutine();
     }, []);
 
+    const validation = () => {
+        const newErrors = {};
+
+        routineExerciseList.forEach((exercise) => {
+            if (exercise.repWeightList) {
+                exercise.repWeightList.forEach((repWeight) => {
+                    if (repWeight.reps <= 0) {
+                        newErrors.reps = "반복 횟수는 정확히 입력해주세요.";
+                    }
+                });
+            }
+        });
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    }
+
     const handleSetChange = (exerciseIndex, setIndex, field, value) => {
         const updatedList = [...routineExerciseList];
         const numberValue = value ? parseFloat(value) : null;
-        console.log("updatedList", updatedList);
 
-        // 특정 운동의 특정 세트를 업데이트
         if (field === 'reps') {
             updatedList[exerciseIndex].repWeightList[setIndex].reps = numberValue;
         } else if (field === 'weight') {
@@ -97,6 +114,10 @@ const UpdateRoutine = ({ routines, routineId, editClose, fetchRoutines }) => {
     };
 
     const save = async () => {
+        if (!validation()){
+            return;
+        }
+
         try {
             const payload = createSavePayload();
             await routineService.updateRoutineExercise(routineId, payload);
@@ -121,7 +142,10 @@ const UpdateRoutine = ({ routines, routineId, editClose, fetchRoutines }) => {
             <div className="modal-overlay">
                 <div className="modal-content">
                     <div className="button-position">
-                        <button className="back-button rotate-right" onClick={() => editClose(false)}>
+                        <button className="back-button rotate-right" onClick={() => {
+                            editClose(false)
+                            setErrors({});
+                        }}>
                             <IoIosArrowBack />
                         </button>
                     </div>
@@ -176,15 +200,19 @@ const UpdateRoutine = ({ routines, routineId, editClose, fetchRoutines }) => {
                                                             <input
                                                                 className="small-input"
                                                                 type="number"
+                                                                id="reps"
                                                                 placeholder="반복 횟수"
                                                                 value={repWeight.reps}
                                                                 onChange={(e) =>
-                                                                    handleSetChange(
-                                                                        exerciseIndex,
-                                                                        setIndex,
-                                                                        "reps",
-                                                                        e.target.value
-                                                                    )
+                                                                    {
+                                                                        handleSetChange(
+                                                                            exerciseIndex,
+                                                                            setIndex,
+                                                                            "reps",
+                                                                            e.target.value
+                                                                        )
+                                                                        setErrors(prev => ({...prev, reps: ''}))
+                                                                    }
                                                                 }
                                                             />
                                                             <input
@@ -220,6 +248,7 @@ const UpdateRoutine = ({ routines, routineId, editClose, fetchRoutines }) => {
                             )}
                         </Droppable>
                     </DragDropContext>
+                    {errors.reps && <p className="error-message">{errors.reps}</p>}
                     <button onClick={() => save()}>
                         저장
                     </button>

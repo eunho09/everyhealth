@@ -14,9 +14,7 @@ const AddExercise = ({fetchExercise, classification}) => {
         repWeights: [{reps:'', weight:''}],
         classification: ''
     });
-
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchClassificationBox = async () => {
@@ -33,11 +31,41 @@ const AddExercise = ({fetchExercise, classification}) => {
         fetchClassificationBox();
     }, [])
 
+    const validation = () => {
+        const newErrors = {};
+        if (!exerciseData.name.trim()) newErrors.name = "운동 이름을 입력해주세요.";
+        if (exerciseData.repWeights.map(repWeight => {
+            if (repWeight.reps <= 0){
+                newErrors.reps = "반복 횟수를 정확히 입력해주세요.";
+            }
+        }))
+        if (exerciseData.repWeights.length <= 0) newErrors.repWeights = "운동 세트를 입력해주세요."
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    }
+
     const handleSave = async (e) => {
+        if (!validation()){
+            return;
+        }
         await handleAddExercise(e);
+        setExerciseData({
+            name: '',
+            note: '',
+            repWeights: [{reps:'', weight:''}],
+            classification: classification["가슴"]
+        });
         closeModal();
         fetchExercise();
     };
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setErrors({});
+    }
 
     const handleAddExercise = async (e) => {
         e.preventDefault();
@@ -71,6 +99,10 @@ const AddExercise = ({fetchExercise, classification}) => {
     const handleChange = (e) => {
         const {id, value} = e.target;
         setExerciseData(prev => ({...prev, [id]: value}))
+
+        if (errors[id]){
+            setErrors(prev => ({...prev, [id]: ''}))
+        }
     };
 
     return (
@@ -93,6 +125,7 @@ const AddExercise = ({fetchExercise, classification}) => {
                                 value={exerciseData.name}
                                 onChange={handleChange}
                             />
+                            {errors.name && <p className="error-message">{errors.name}</p>}
                             <textarea
                                 placeholder="메모"
                                 id="note"
@@ -118,7 +151,10 @@ const AddExercise = ({fetchExercise, classification}) => {
                                     placeholder={`반복 횟수 (Set ${index + 1})`}
                                     value={repWeight.reps}
                                     onChange={(e) =>
-                                        handleSetChange(index, 'reps', e.target.value)
+                                        {
+                                            handleSetChange(index, 'reps', e.target.value)
+                                            setErrors(prev => ({...prev, reps: ''}))
+                                        }
                                     }
                                 />
                                 <input
@@ -133,8 +169,11 @@ const AddExercise = ({fetchExercise, classification}) => {
                                 <button className="small-button" onClick={() => removeSet(index)}>
                                     <TiDeleteOutline/>
                                 </button>
+
                             </div>
                         ))}
+                        {errors.reps && <p className="error-message">{errors.reps}</p>}
+                        {errors.repWeights && <p className="error-message">{errors.repWeights}</p>}
                         <button onClick={addSet}>세트 추가</button>
                         <button onClick={handleSave}>저장</button>
                     </div>

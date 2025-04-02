@@ -10,6 +10,7 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
     const [isLoading, setIsLoading] = useState(true);
     const [todayExerciseList, setTodayExerciseList] = useState([]);
     const [repWeightList, setRepWeightList] = useState([]);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchToday = async () => {
@@ -29,6 +30,22 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
 
         fetchToday();
     }, [todayId]);
+
+    const validation = () => {
+        const newErrors = {};
+
+        todayExerciseList.forEach(todayExercise => {
+            todayExercise.repWeightList.forEach(repWeight => {
+                if (repWeight.reps <= 0){
+                    newErrors.reps = "반복 횟수를 정확히 입력해주세요";
+                }
+            })
+        })
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    }
 
 
     const handleSetChange = (exerciseIndex, setIndex, field, value) => {
@@ -121,6 +138,10 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
 
 
     const save = async () => {
+        if (!validation()){
+            return;
+        }
+
         try {
             const payload = createSavePayload();
             await todayService.updateTodayExercise(todayId, payload);
@@ -147,7 +168,7 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
     }
 
     if (!today || !today.todayExercises) {
-        return <div>오늘의 운동 데이터를 찾을 수 없습니다.</div>;
+        return null;
     }
 
     return (
@@ -155,14 +176,17 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
             <div className="modal-overlay">
                 <div className="modal-content">
                     <div className="button-position">
-                        <button className="back-button rotate-right" onClick={() => handleIsEditing(false)}>
-                            <IoIosArrowBack />
+                        <button className="back-button rotate-right" onClick={() => {
+                            handleIsEditing(false)
+                            setErrors({});
+                        }}>
+                            <IoIosArrowBack/>
                         </button>
                     </div>
                     <h3>수정</h3>
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Droppable droppableId="todayExerciseList">
-                            {(provided = { innerRef: null, droppableProps: {}, placeholder: null }) => (
+                            {(provided = {innerRef: null, droppableProps: {}, placeholder: null}) => (
                                 <div
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
@@ -213,13 +237,15 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
                                                                     index + 1
                                                                 })`}
                                                                 value={repWeight.reps}
-                                                                onChange={(e) =>
+                                                                onChange={(e) => {
                                                                     handleSetChange(
                                                                         exerciseIndex,
                                                                         index,
                                                                         "reps",
                                                                         e.target.value
                                                                     )
+                                                                    setErrors(prev => ({...prev, reps: ''}))
+                                                                }
                                                                 }
                                                             />
                                                             <input
@@ -244,7 +270,7 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
                                                                     removeSet(exerciseIndex, index)
                                                                 }
                                                             >
-                                                                <TiDeleteOutline />
+                                                                <TiDeleteOutline/>
                                                             </button>
                                                         </div>
                                                     ))}
@@ -257,6 +283,7 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
                             )}
                         </Droppable>
                     </DragDropContext>
+                    {errors.reps && <p className="error-message">{errors.reps}</p>}
                     <button onClick={() => save()}>
                         저장
                     </button>

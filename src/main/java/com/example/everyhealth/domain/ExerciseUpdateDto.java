@@ -15,8 +15,6 @@ public class ExerciseUpdateDto {
 
     @NotBlank
     private String name;
-
-    @NotBlank
     private String memo;
 
     @NotNull

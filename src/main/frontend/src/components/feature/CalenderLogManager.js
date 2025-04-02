@@ -30,18 +30,20 @@ const CalenderLogManager = () => {
                     setTodayData(data);
                 } catch (e) {
                     console.error("날짜 데이터 가져오기 실패:", e);
+                    setSelectTodayId(undefined);
+                    setTodayData(undefined);
                 }
             };
 
             fetchTodayDateByLocalDate();
         } else {
             setTodayData(undefined);
+            setSelectTodayId(undefined);
         }
     }, [date, monthData]);
 
     const fetchMonthData = async (year, month) => {
         try {
-            console.log(date);
             const data = await todayService.getTodayByMonth(year, month);
             setMonthData(data);
         } catch (e) {
@@ -54,6 +56,8 @@ const CalenderLogManager = () => {
         setMonth(newDate.getMonth() + 1);
         setYear(newDate.getFullYear());
         setDateFormat(moment(newDate).format("YYYY-MM-DD"));
+
+        setIsEditing(false);
     };
 
     const hasToday = (dateFormat) => {
@@ -62,6 +66,10 @@ const CalenderLogManager = () => {
 
     const handleIsEditing = (boolean) => {
         setIsEditing(boolean);
+
+        if (!boolean && !hasToday(dateFormat)) {
+            setSelectTodayId(undefined);
+        }
     };
 
     return (
@@ -81,7 +89,7 @@ const CalenderLogManager = () => {
                 fetchMonthData={fetchMonthData}
                 handleIsEditing={handleIsEditing}
             />
-            {isEditing && (
+            {isEditing && selectTodayId && (
                 <UpdateToday
                     hasToday={hasToday}
                     setTodayData={setTodayData}
