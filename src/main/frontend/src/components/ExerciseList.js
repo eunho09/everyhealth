@@ -11,6 +11,7 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
     const [selectedExercise, setSelectedExercise] = useState(null);
     const [isModalOpen, setModelOpen] = useState(false);
     const [classificationBox, setClassificationBox] = useState({});
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchClassificationBox = async () => {
@@ -20,12 +21,32 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
         fetchClassificationBox();
     }, [])
 
+    const validation = () => {
+        const newErrors = {};
+        if (!selectedExercise.name.trim()) newErrors.name = "운동 이름을 입력해주세요.";
+        if (selectedExercise.repWeightList.map(repWeight => {
+            if (repWeight.reps <= 0){
+                newErrors.reps = "반복 횟수를 정확히 입력해주세요.";
+            }
+        }))
+            if (selectedExercise.repWeightList.length <= 0) newErrors.repWeights = "운동 세트를 입력해주세요."
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    }
+
+
     const openModal = (exercise) => {
         setSelectedExercise(exercise);
         setModelOpen(true);
     };
 
     const saveAndCloseModal = async (id) => {
+        console.log(selectedExercise);
+        if (!validation()){
+            return;
+        }
         await handleUpdateExercise(id);
         setSelectedExercise(null);
         setModelOpen(false);
@@ -34,11 +55,16 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
     const closeModal = async () => {
         setSelectedExercise(null);
         setModelOpen(false);
+        setErrors({});
     };
 
     const handleChange = (e) => {
         const {id, value} = e.target;
         setSelectedExercise((prev) => ({ ...prev, [id]: value }));
+
+        if (errors[id]){
+            setErrors(prev => ({...prev, [id]: ''}))
+        }
     };
 
     const handleSetChange = (index, field, value) => {
@@ -107,7 +133,7 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
             {isModalOpen && selectedExercise && (
                 <div>
                     <div className="modal-overlay">
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-content">
                             <div className="button-position">
                                 <button className="back-button rotate-right" onClick={closeModal}><IoIosArrowBack/></button>
                             </div>
@@ -119,6 +145,7 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
                                 value={selectedExercise.name || ''}
                                 onChange={handleChange}
                             />
+                            {errors.name && <p className="error-message">{errors.name}</p>}
                             <textarea
                                 placeholder="메모"
                                 id="memo"
@@ -141,7 +168,10 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
                                         type="number"
                                         placeholder="반복 횟수"
                                         value={set.reps}
-                                        onChange={(e) => handleSetChange(index, "reps", e.target.value)}
+                                        onChange={(e) => {
+                                            handleSetChange(index, "reps", e.target.value)
+                                            setErrors(prev => ({...prev, reps: ''}))
+                                        }}
                                     />
                                     <input
                                         type="number"
@@ -154,6 +184,8 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
                                     </button>
                                 </div>
                             ))}
+                            {errors.reps && <p className="error-message">{errors.reps}</p>}
+                            {errors.repWeights && <p className="error-message">{errors.repWeights}</p>}
                             <button onClick={addSet}>세트 추가</button>
                             <button onClick={() => saveAndCloseModal(selectedExercise.id)}>저장</button>
                         </div>
