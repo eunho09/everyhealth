@@ -30,6 +30,11 @@ public class RestTodayController {
     @PostMapping("/today")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId, @RequestParam LocalDate date) {
         Member member = memberService.findById(memberId);
+
+        if (todayService.existsByMemberIdAndDate(memberId, date)) {
+            return ResponseEntity.badRequest().body("이미 해당 날짜에 데이터가 존재합니다.");
+        }
+
         Today today = new Today(date, member);
         todayService.save(today);
 
@@ -123,8 +128,20 @@ public class RestTodayController {
 
     @DeleteMapping("/todayExercise/{id}")
     public ResponseEntity<String> deleteTodayExercise(@PathVariable Long id) {
-        repWeightService.deleteByTodayExerciseId(id);
-        todayExerciseService.deleteById(id);
+        TodayExercise todayExercise = todayExerciseService.findById(id);
+
+        if (todayExercise != null) {
+            Today today = todayExercise.getToday();
+            repWeightService.deleteByTodayExerciseId(id);
+            todayExerciseService.deleteById(id);
+
+            if (today != null && today.getTodayExercises().size() <= 0){
+                todayService.delete(today);
+
+                return ResponseEntity.ok("delete today and todayExercise");
+            }
+        }
+
         return ResponseEntity.ok("delete todayExercise");
     }
 

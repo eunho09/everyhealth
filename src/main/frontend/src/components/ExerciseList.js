@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import axios from 'axios';
+import React, { useEffect, useState} from 'react';
 import "../styles/Modal.css";
 import "../styles/ExerciseList.css";
+import { FaRegTrashAlt } from "react-icons/fa";
 import { TiDeleteOutline } from "react-icons/ti";
 import { IoIosArrowBack } from "react-icons/io";
 import {exerciseService} from "../services/exerciseService";
@@ -43,7 +43,6 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
     };
 
     const saveAndCloseModal = async (id) => {
-        console.log(selectedExercise);
         if (!validation()){
             return;
         }
@@ -52,7 +51,7 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
         setModelOpen(false);
     }
 
-    const closeModal = async () => {
+    const closeModal = () => {
         setSelectedExercise(null);
         setModelOpen(false);
         setErrors({});
@@ -102,6 +101,16 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
         setSelectedExercise((prev) => ({...prev, repWeightList: prev.repWeightList.filter((_, i) => i !== index)}));
     };
 
+    const deleteExercise = async (id) => {
+        try {
+            await exerciseService.deleteById(id);
+            closeModal();
+            await fetchExercise();
+        } catch(e){
+            console.error(e);
+        }
+    }
+
     return (
         <div className="exercise-list">
             {/* 부위별로 운동 그룹화 */}
@@ -135,9 +144,13 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
                     <div className="modal-overlay">
                         <div className="modal-content">
                             <div className="button-position">
-                                <button className="back-button rotate-right" onClick={closeModal}><IoIosArrowBack/></button>
+                                <button className="back-button rotate-right" onClick={closeModal}><IoIosArrowBack/>
+                                </button>
                             </div>
                             <h2 className="title">수정</h2>
+                            <button onClick={() => deleteExercise(selectedExercise.id)}>
+                                <FaRegTrashAlt/>
+                            </button>
                             <input
                                 type="text"
                                 id="name"
@@ -153,7 +166,8 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
                                 rows="3"
                                 onChange={handleChange}
                             />
-                            <select onChange={handleChange} value={selectedExercise.classification || ''} id="classification">
+                            <select onChange={handleChange} value={selectedExercise.classification || ''}
+                                    id="classification">
                                 {Object.entries(classificationBox).map(([key, value]) => (
                                     <option key={key} value={value}>
                                         {key}
@@ -180,7 +194,7 @@ const ExerciseList = ({exercises, classification, fetchExercise}) => {
                                         onChange={(e) => handleSetChange(index, "weight", e.target.value)}
                                     />
                                     <button className="small-button" onClick={() => removeSet(index)}>
-                                        <TiDeleteOutline />
+                                        <TiDeleteOutline/>
                                     </button>
                                 </div>
                             ))}

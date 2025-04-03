@@ -48,6 +48,7 @@ public class TodayService {
     }
 
     @Transactional
+    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
     public void delete(Today today) {
         todayRepository.delete(today);
     }
@@ -182,5 +183,9 @@ public class TodayService {
         List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(todayId);
 
         return new TodayDto(today, todayExerciseList);
+    }
+
+    public Boolean existsByMemberIdAndDate(Long memberId, LocalDate date) {
+        return todayRepository.existsByMemberIdAndDate(memberId, date);
     }
 }

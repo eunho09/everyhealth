@@ -27,5 +27,8 @@ public interface TodayRepository extends JpaRepository<Today, Long> {
 
     @Query("select t from Today t join fetch t.todayExercises te where t.member.id=:memberId")
     List<Today> fetchByMemberId(@Param("memberId") Long memberId);
+
+    @Query("select exists (select 1 from Today t where t.member.id=:memberId and t.localDate =:date)")
+    Boolean existsByMemberIdAndDate(@Param("memberId") Long memberId, @Param("date") LocalDate date);
 }
 

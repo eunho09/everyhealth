@@ -5,7 +5,7 @@ import { TiDeleteOutline } from "react-icons/ti";
 import { FaRegTrashAlt } from "react-icons/fa";
 import {todayService} from "../services/todayService";
 
-const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEditing }) => {
+const UpdateToday = ({year, month, dateFormat, hasToday, setTodayData, todayId, handleIsEditing, fetchMonthData }) => {
     const [today, setToday] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [todayExerciseList, setTodayExerciseList] = useState([]);
@@ -83,6 +83,7 @@ const UpdateToday = ({ dateFormat, hasToday, setTodayData, todayId, handleIsEdit
     const handleDeleteRoutineExercise = async (todayExerciseId) => {
         try {
             await todayService.deleteTodayExercise(todayExerciseId);
+            await fetchMonthData(year, month);
             await handleGetTodayData(dateFormat);
         } catch (error) {
             console.error(error);

@@ -91,9 +91,12 @@ const CalenderLogManager = () => {
             />
             {isEditing && selectTodayId && (
                 <UpdateToday
+                    year={year}
+                    month={month}
                     hasToday={hasToday}
                     setTodayData={setTodayData}
                     dateFormat={dateFormat}
+                    fetchMonthData={fetchMonthData}
                     todayId={selectTodayId}
                     handleIsEditing={handleIsEditing}
                 />
