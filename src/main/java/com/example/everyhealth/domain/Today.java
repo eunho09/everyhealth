@@ -16,7 +16,7 @@ public class Today {
     private Long id;
 
     @OneToMany(mappedBy = "today", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TodayExercise> todayExercises = new ArrayList<>(); //운동기록 n개
+    private List<TodayExercise> todayExercises = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

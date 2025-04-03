@@ -32,5 +32,10 @@ export const exerciseService = {
     getClassification: async () => {
         const response = await api.get("/api/enum/classification")
         return response.data;
+    },
+
+    deleteById: async (id) => {
+        const response = await api.delete(`/api/exercise/${id}`);
+        return response.data;
     }
 }
