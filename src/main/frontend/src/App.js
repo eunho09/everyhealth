@@ -44,7 +44,7 @@ function AppWithRouter() {
 
 
   const router = useMemo(() => {
-    return createBrowserRouter([
+    return createBrowserRobuter([
       {
         path: '/',
         element: <Root />,

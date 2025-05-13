@@ -1,0 +1,56 @@
+name: spring CI/CD
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'src/main/frontend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle except for test
+        run: ./gradlew build -x test
+        env:
+          SPRING_PROFILES_ACTIVE: ${{secrets.SPRING_PROFILES_ACTIVE}}
+          DATABASE_URL: ${{secrets.DATABASE_URL}}
+          DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME}}
+          DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+          GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+          GOOGLE_REDIRECT_URL: ${{secrets.GOOGLE_REDIRECT_URL}}
+          FILE_DIR: ${{secrets.FILE_DIR}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
+          REDIS_URL: ${{secrets.REDIS_URL}}
+          CORS_ALLOW_URL: ${{secrets.CORS_ALLOW_URL}}
+
+      - name: Upload JAR file
+        uses: actions/upload-artifact@v2
+        with:
+          name: application
+          path: build/libs/*.jar
+
+  deloy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Jar file
+        uses: actions/download-artifact@v2
+        with:
+          name: application
+
+      - name: Set JAR filename
+        run: echo "JAR_FILE=$(find . -name "*.jar" | grep -v plain)" >> $GITHUB_ENV
+

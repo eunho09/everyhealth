@@ -8,7 +8,7 @@ export const setRefreshTokenFunction = (fn) => {
 };
 
 const api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: process.env.REACT_API_BASEURL,
     withCredentials: true,
 });
 
