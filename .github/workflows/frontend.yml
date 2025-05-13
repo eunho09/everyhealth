@@ -1,0 +1,35 @@
+name: React CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/main/frontend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Build React app
+        run: |
+          cd src/main/frontend
+          npm ci
+          cat > .env << EOF
+          REACT_API_BASEURL=${{secrets.REACT_API_BASEURL}}
+          REACT_GOOGLE_LOGIN_URL=${{REACT_GOOGLE_LOGIN_URL}}
+          EOF
+          npm run build
+
+      - name: Upload frontend build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend-build
+          path: src/main/frontend/build
