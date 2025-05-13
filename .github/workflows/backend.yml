@@ -5,6 +5,7 @@ on:
       - master
     paths-ignore:
       - 'src/main/frontend/**'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -42,12 +43,12 @@ jobs:
           name: application
           path: build/libs/*.jar
 
-  deloy:
+  deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download Jar file
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: application
 

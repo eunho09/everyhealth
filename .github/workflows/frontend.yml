@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'src/main/frontend/**'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,7 +25,7 @@ jobs:
           npm ci
           cat > .env << EOF
           REACT_API_BASEURL=${{secrets.REACT_API_BASEURL}}
-          REACT_GOOGLE_LOGIN_URL=${{REACT_GOOGLE_LOGIN_URL}}
+          REACT_GOOGLE_LOGIN_URL=${{secrets.REACT_GOOGLE_LOGIN_URL}}
           EOF
           npm run build
 
