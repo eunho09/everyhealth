@@ -2,7 +2,7 @@ name: spring CI/CD
 on:
   push:
     branches:
-      - main
+      - master
     paths-ignore:
       - 'src/main/frontend/**'
 
