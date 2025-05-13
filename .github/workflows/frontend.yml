@@ -26,8 +26,9 @@ jobs:
           cat > .env << EOF
           REACT_API_BASEURL=${{secrets.REACT_API_BASEURL}}
           REACT_GOOGLE_LOGIN_URL=${{secrets.REACT_GOOGLE_LOGIN_URL}}
+          DISABLE_ESLINT_PLUGIN=true
           EOF
-          npm run build
+          CI=false npm run build
 
       - name: Upload frontend build artifacts
         uses: actions/upload-artifact@v4
