@@ -55,3 +55,11 @@ jobs:
       - name: Set JAR filename
         run: echo "JAR_FILE=$(find . -name "*.jar" | grep -v plain)" >> $GITHUB_ENV
 
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "${{ env.JAR_FILE }}"
+          target: "/home/ubuntu"
