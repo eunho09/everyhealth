@@ -4,9 +4,11 @@ import "../styles/Login.css";
 function Login() {
 
     const handleGoogleLogin = () => {
-        const baseUrl = window.location.hostname;
-        // window.location.href = `http://${baseUrl}:8080/oauth2/authorization/google`;
-        window.location.href = process.env.REACT_GOOGLE_LOGIN_URL;
+        if (process.env.ENV === "dev"){
+            window.location.href = process.env.REACT_GOOGLE_LOGIN_URL;
+        }
+
+        window.location.href = window.env?.REACT_GOOGLE_LOGIN_URL;
     }
 
     return (

@@ -7,8 +7,16 @@ export const setRefreshTokenFunction = (fn) => {
     refreshTokenFunction = fn;
 };
 
+const getBaseUrl = () => {
+    if (process.env.ENV === 'dev') {
+        return process.env.REACT_API_BASEURL;
+    }
+
+    return window.env?.REACT_API_BASEURL;
+}
+
 const api = axios.create({
-    baseURL: process.env.REACT_API_BASEURL,
+    baseURL: getBaseUrl(),
     withCredentials: true,
 });
 
