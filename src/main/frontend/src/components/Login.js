@@ -4,7 +4,7 @@ import "../styles/Login.css";
 function Login() {
 
     const handleGoogleLogin = () => {
-        if (process.env.NODE_ENV === "dev") {
+        if (process.env.REACT_APP_ENV === "dev") {
             console.log(process.env.REACT_APP_GOOGLE_LOGIN_URL + "LOGIN_URL");
             window.location.href = process.env.REACT_APP_GOOGLE_LOGIN_URL;
             return;
