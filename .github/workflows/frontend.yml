@@ -8,6 +8,10 @@ on:
       - 'src/main/frontend/**'
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,7 +37,7 @@ jobs:
       - name: Upload frontend build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build
+          name: frontend-build
           path: src/main/frontend/build
 
   deploy:
@@ -43,14 +47,22 @@ jobs:
       - name: Download build
         uses: actions/download-artifact@v4
         with:
-          name: build
-          path: build
+          name: frontend-build
+          path: frontend-build
 
-      - name: Configure AWS credentials
+      - name: Debug GitHub Context
+        run: |
+          echo "GitHub Repository: ${{ github.repository }}"
+          echo "GitHub Ref: ${{ github.ref }}"
+          echo "GitHub Actor: ${{ github.actor }}"
+
+      - name: Configure AWS credentials with debug
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-s3-cloudfront-role
           aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHubActionsSession
+          mask-aws-account-id: false
 
       - name: Deploy to S3
         run: |
@@ -58,4 +70,8 @@ jobs:
 
       - name: Invalidate CloudFront cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+            aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          else
+            echo "CloudFront distribution ID not set, skipping invalidation"
+          fi
