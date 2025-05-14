@@ -9,9 +9,11 @@ export const setRefreshTokenFunction = (fn) => {
 
 const getBaseUrl = () => {
     if (process.env.ENV === 'dev') {
+        console.log(process.env.REACT_API_BASEURL + "BASEURL");
         return process.env.REACT_API_BASEURL;
     }
 
+    console.log(window.env?.REACT_API_BASEURL + "BASEURL");
     return window.env?.REACT_API_BASEURL;
 }
 
