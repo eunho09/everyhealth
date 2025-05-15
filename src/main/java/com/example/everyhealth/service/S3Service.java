@@ -30,7 +30,7 @@ public class S3Service {
         }
 
         try {
-            String key = generateUniqueFileName(file.getOriginalFilename());
+            String key = "images/" + generateUniqueFileName(file.getOriginalFilename());
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
