@@ -85,7 +85,7 @@ public class RestProdPostController {
         return ResponseEntity.ok(postList);
     }
 
-    @GetMapping("/images/{fileName}")
+    @GetMapping("/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable String fileName) throws MalformedURLException {
         byte[] data = s3Service.downloadFile(fileName);
         ByteArrayResource resource = new ByteArrayResource(data);
