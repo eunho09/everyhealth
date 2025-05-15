@@ -42,6 +42,19 @@ spring:
       host: ${REDIS_URL}
       port: 6379
 
+  cloud:
+    aws:
+      region:
+        static: ${AWS_REGION}
+      s3:
+        endpoint: ${AWS_S3_ENDPOINT}
+      credentials:
+        instance-profile: true
+app:
+  aws:
+    s3:
+      bucket: ${AWS_BUCKET_NAME}
+
 logging:
   level:
     org.springframework.security: DEBUG

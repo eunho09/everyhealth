@@ -5,19 +5,19 @@ import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Post;
 import com.example.everyhealth.domain.UploadFile;
 import com.example.everyhealth.dto.PostDto;
-import com.example.everyhealth.dto.UploadPostDto;
-import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.FileStore;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
+import com.example.everyhealth.service.S3Service;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,12 +34,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 @Slf4j
 @Validated
-@Profile("default")
-public class RestPostController {
+@Profile("prod")
+public class RestProdPostController {
 
     private final MemberService memberService;
     private final PostService postService;
-    private final FileStore fileStore;
+    private final S3Service s3Service;
 
 
     @PostMapping("/post")
@@ -48,9 +48,8 @@ public class RestPostController {
                                      @RequestPart @NotBlank String text ) throws IOException {
 
         Member member = memberService.findById(memberId);
-        UploadFile uploadFile = fileStore.storeFile(file);
-        String storeFileName = uploadFile.getStoreFileName();
-        Post post = new Post(text, storeFileName, member);
+        String uniqueName = s3Service.uploadFile(file);
+        Post post = new Post(text, uniqueName, member);
 
         postService.save(post);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -87,8 +86,15 @@ public class RestPostController {
     }
 
     @GetMapping("/images/{fileName}")
-    public Resource downloadImage(@PathVariable String fileName) throws MalformedURLException {
-        return new UrlResource("file:" + fileStore.getFullName(fileName));
+    public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable String fileName) throws MalformedURLException {
+        byte[] data = s3Service.downloadFile(fileName);
+        ByteArrayResource resource = new ByteArrayResource(data);
+
+        return ResponseEntity
+                .ok()
+                .contentLength(data.length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
     }
 
     @GetMapping("/posts/friend/{friendId}")
