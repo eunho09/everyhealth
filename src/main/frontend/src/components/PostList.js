@@ -182,7 +182,7 @@ const PostList = () => {
                                 style={{paddingBottom: `${aspectRatio}%`}}
                             >
                                 <img
-                                    src={`/api/images/${post.imageUrl}`}
+                                    src={`/${post.imageUrl}`}
                                     alt="포스트 이미지"
                                     className="post-image"
                                 />
