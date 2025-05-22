@@ -46,7 +46,6 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 
-
 file:
   dir: ${FILE_DIR}
 
@@ -55,10 +54,15 @@ cors:
 
 jwt:
   secret: ${JWT_SECRET}
-  access-token-expire-time: 30 # minutes
-  refresh-token-expire-time: 7 # days
+  access-token-expire-time: ${JWT_ACCESS_TOKEN_EXPIRE_TIME} # minutes
+  refresh-token-expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME} # days
 
 server:
+  servlet:
+    session:
+      cookie:
+        same-site: strict
+
   error:
     include-stacktrace: never
     include-message: always
