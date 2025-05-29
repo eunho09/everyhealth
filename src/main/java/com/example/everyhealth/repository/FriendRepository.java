@@ -2,7 +2,6 @@ package com.example.everyhealth.repository;
 
 import com.example.everyhealth.domain.Friend;
 import com.example.everyhealth.domain.FriendShip;
-import com.example.everyhealth.dto.MemberDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,5 +22,8 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     Friend findByMemberIdAndFriendIdAndStatus(@Param("memberId") Long memberId, @Param("friendMemberId") Long friendMemberId, @Param("status") FriendShip status);
 
     @Query("select f from Friend f where f.friend.id=:friendId and f.member.id=:memberId and f.status=com.example.everyhealth.domain.FriendShip.ACCEPT")
-    Friend checkFriendShip(@Param("friendId") Long friendId, @Param("memberId") Long memberId);
+    Friend checkAcceptFriendShip(@Param("friendId") Long friendId, @Param("memberId") Long memberId);
+
+    @Query("select f.status from Friend f where f.member.id=:memberId and f.friend.id=:friendId")
+    FriendShip checkFriendShip(@Param("memberId") Long memberId, @Param("friendId") Long friendId);
 }

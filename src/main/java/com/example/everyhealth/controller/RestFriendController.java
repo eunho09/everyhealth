@@ -1,15 +1,12 @@
 package com.example.everyhealth.controller;
 
 import com.example.everyhealth.aop.ExtractMemberId;
-import com.example.everyhealth.domain.Friend;
 import com.example.everyhealth.domain.FriendShip;
-import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.FriendDto;
 import com.example.everyhealth.dto.MemberDto;
-import com.example.everyhealth.security.JwtTokenGenerator;
-import com.example.everyhealth.service.FriendService;
+import com.example.everyhealth.service.FriendBusinessService;
+import com.example.everyhealth.service.FriendDataService;
 import com.example.everyhealth.service.MemberService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -26,12 +22,13 @@ import java.util.stream.Collectors;
 public class RestFriendController {
 
     private final MemberService memberService;
-    private final FriendService friendService;
+    private final FriendDataService friendDataService;
+    private final FriendBusinessService friendBusinessService;
 
 
     @GetMapping("/member/friend/request")
     public ResponseEntity<List<FriendDto>> findByFriendIdAndStatus(@ExtractMemberId Long memberId) {
-        List<FriendDto> response = friendService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
+        List<FriendDto> response = friendDataService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
 
         return ResponseEntity.ok(response);
     }
@@ -39,21 +36,15 @@ public class RestFriendController {
 
     @GetMapping("/member/friend")
     public ResponseEntity<List<FriendDto>> findMyFriend(@ExtractMemberId Long memberId) {
-        List<FriendDto> response = friendService.findMyFriend(memberId);
+        List<FriendDto> response = friendDataService.findMyFriend(memberId);
 
         return ResponseEntity.ok(response);
     }
 
-    //친구요청을 보냄
+    //친구 요청을 보냄
     @PostMapping("/friend/request/{friendMemberId}")
     public ResponseEntity<String> requestFriendShip(@ExtractMemberId Long memberId ,@PathVariable Long friendMemberId) {
-        Member member = memberService.findById(memberId);
-        Friend friend = new Friend(member);
-
-        Member friendMember = memberService.findById(friendMemberId);
-        friend.setFriend(friendMember);
-        friend.setStatus(FriendShip.REQUEST);
-        friendService.save(friend);
+        friendBusinessService.sendRequestFriend(memberId, friendMemberId);
 
         return ResponseEntity.ok("친구 요청");
     }
@@ -61,7 +52,7 @@ public class RestFriendController {
     //요청이 온 회원을 친구로 수락
     @PostMapping("/friend/accept/{memberId}")
     public ResponseEntity<String> acceptFriendShip(@ExtractMemberId Long friendMemberId, @PathVariable Long memberId) {
-        friendService.selectRequest(memberId, friendMemberId, FriendShip.ACCEPT);
+        friendBusinessService.requestAcceptFriend(memberId, friendMemberId);
 
         return ResponseEntity.ok("친구 수락");
     }
@@ -69,7 +60,7 @@ public class RestFriendController {
     //요청이 온 회원을 친구거절
     @PostMapping("/friend/cancel/{friendMemberId}")
     public ResponseEntity<String> cancelFriendShip(@ExtractMemberId Long memberId, @PathVariable Long friendMemberId) {
-        friendService.selectRequest(memberId, friendMemberId, FriendShip.CANCEL);
+        friendBusinessService.acceptCancelFriend(memberId, friendMemberId);
 
         return ResponseEntity.ok("친구 거절");
     }
@@ -83,8 +74,8 @@ public class RestFriendController {
 
 
     @GetMapping("/friend/check/{friendId}")
-    public ResponseEntity<Boolean> checkFriendShip(@PathVariable Long friendId, @ExtractMemberId Long memberId) {
-        boolean b = friendService.checkFriendShip(friendId, memberId);
+    public ResponseEntity<Boolean> checkAcceptFriendShip(@PathVariable Long friendId, @ExtractMemberId Long memberId) {
+        boolean b = friendDataService.checkAcceptFriendShip(friendId, memberId);
         return ResponseEntity.ok(b);
     }
 }

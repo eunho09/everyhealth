@@ -2,6 +2,8 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.MemberDto;
+import com.example.everyhealth.exception.ErrorCode;
+import com.example.everyhealth.exception.MemberException;
 import com.example.everyhealth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -47,7 +49,11 @@ public class MemberService {
     }
 
     @Cacheable(value = "existsByIdAndFriendId", key = "{#id, #friendId}")
-    public boolean existsByIdAndFriendId(Long id, Long friendId) {
-        return memberRepository.existsByIdAndFriendId(id, friendId);
+    public void existsByIdAndFriendId(Long id, Long friendId) {
+        boolean exists = memberRepository.existsByIdAndFriendId(id, friendId);
+
+        if (!exists){
+            throw new MemberException(ErrorCode.MEMBER_NOT_FRIEND, id, friendId);
+        }
     }
 }

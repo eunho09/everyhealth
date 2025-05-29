@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -23,9 +21,9 @@ public class InitTestConfig {
     private final RoutineService routineService;
     private final RoutineExerciseService routineExerciseService;
     private final TodayService todayService;
-    private final TodayExerciseService todayExerciseService;
+    private final TodayExerciseDataService todayExerciseDataService;
     private final ChatMessageService chatMessageService;
-    private final ClubService clubService;
+    private final ClubDataService clubDataService;
     private final ChatRoomService chatRoomService;
     private final ClubMemberService clubMemberService;
 

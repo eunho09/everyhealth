@@ -22,22 +22,15 @@ import java.util.stream.Collectors;
 public class RestTodayController {
 
     private final TodayService todayService;
-    private final TodayExerciseService todayExerciseService;
+    private final TodayExerciseDataService todayExerciseDataService;
     private final MemberService memberService;
-    private final RepWeightService repWeightService;
+    private final TodayExerciseBusinessService todayExerciseBusinessService;
 
 
     @PostMapping("/today")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId, @RequestParam LocalDate date) {
         Member member = memberService.findById(memberId);
-
-        if (todayService.existsByMemberIdAndDate(memberId, date)) {
-            return ResponseEntity.badRequest().body("이미 해당 날짜에 데이터가 존재합니다.");
-        }
-
-        Today today = new Today(date, member);
-        todayService.save(today);
-
+        todayService.createToday(memberId, date, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(date + "의 Today를 생성했습니다.");
     }
 
@@ -51,7 +44,7 @@ public class RestTodayController {
     @GetMapping("/member/todays")
     public ResponseEntity<List<TodayDto>> memberTodays(@ExtractMemberId Long memberId) {
         List<Today> todays = todayService.fetchMemberId(memberId);
-        List<TodayExercise> todayExercises = todayExerciseService.fetchByTodayIdIn(todays.stream().map(t -> t.getId()).toList());
+        List<TodayExercise> todayExercises = todayExerciseDataService.fetchByTodayIdIn(todays.stream().map(t -> t.getId()).toList());
 
         Map<Long, TodayExercise> todayExerciseMap = todayExercises.stream()
                 .collect(Collectors.toMap(te -> te.getId(), dto -> dto));
@@ -87,10 +80,7 @@ public class RestTodayController {
             @PathVariable Long friendId,
             @PathVariable int year,
             @PathVariable int month) {
-        boolean exists = memberService.existsByIdAndFriendId(memberId, friendId);
-        if (!exists) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        memberService.existsByIdAndFriendId(memberId, friendId);
 
         List<TodayDateDto> todayList = todayService.findByYearAndMonth(year, month, friendId);
 
@@ -110,11 +100,7 @@ public class RestTodayController {
             @PathVariable LocalDate date,
             @PathVariable Long friendId) {
 
-        boolean exists = memberService.existsByIdAndFriendId(memberId, friendId);
-        if (!exists) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-
+        memberService.existsByIdAndFriendId(memberId, friendId);
         TodayDto todayDto = todayService.fetchByLocalDate(date, friendId);
         return ResponseEntity.ok(todayDto);
     }
@@ -128,21 +114,8 @@ public class RestTodayController {
 
     @DeleteMapping("/todayExercise/{id}")
     public ResponseEntity<String> deleteTodayExercise(@PathVariable Long id) {
-        TodayExercise todayExercise = todayExerciseService.findById(id);
-
-        if (todayExercise != null) {
-            Today today = todayExercise.getToday();
-            repWeightService.deleteByTodayExerciseId(id);
-            todayExerciseService.deleteById(id);
-
-            if (today != null && today.getTodayExercises().size() <= 0){
-                todayService.delete(today);
-
-                return ResponseEntity.ok("delete today and todayExercise");
-            }
-        }
-
-        return ResponseEntity.ok("delete todayExercise");
+        String resultMessage = todayExerciseBusinessService.deleteTodayExercise(id);
+        return ResponseEntity.ok(resultMessage);
     }
 
     @PatchMapping("/todayExercise/updateSequence/{todayId}")

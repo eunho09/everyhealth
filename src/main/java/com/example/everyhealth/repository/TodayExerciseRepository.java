@@ -28,6 +28,9 @@ public interface TodayExerciseRepository extends JpaRepository<TodayExercise, Lo
             "order by te.sequence asc ")
     List<TodayExercise> fetchByTodayIdIn(@Param("todayIds") List<Long> todayIds);
 
+    @Query("select te from TodayExercise te where te.today.id=:todayId")
+    List<TodayExercise> findByTodayId(@Param("todayId") Long todayId);
+
     @Modifying
     @Query("delete from TodayExercise te where te.id =:todayExerciseId")
     void deleteById(@Param("todayExerciseId") Long todayExerciseId);

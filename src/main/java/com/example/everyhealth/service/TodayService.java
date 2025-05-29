@@ -2,6 +2,8 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.*;
+import com.example.everyhealth.exception.ErrorCode;
+import com.example.everyhealth.exception.TodayException;
 import com.example.everyhealth.repository.ExerciseRepository;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
 import com.example.everyhealth.repository.TodayExerciseRepository;
@@ -33,6 +35,15 @@ public class TodayService {
     public Long save(Today today) {
         todayRepository.save(today);
         return today.getId();
+    }
+
+    public void createToday(Long memberId, LocalDate date, Member member) {
+        if (todayRepository.existsByMemberIdAndDate(memberId, date)){
+            throw new TodayException(ErrorCode.TODAY_DUPLICATE_BY_DATE, date);
+        }
+
+        Today today = new Today(date, member);
+        save(today);
     }
 
     public Today findById(Long id) {

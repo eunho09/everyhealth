@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TodayExerciseService {
+public class TodayExerciseDataService {
 
     private final TodayExerciseRepository todayExerciseRepository;
 
@@ -36,12 +36,12 @@ public class TodayExerciseService {
         todayExerciseRepository.delete(todayExercise);
     }
 
-    public List<TodayExercise> fetchByTodayId(Long todayId) {
-        return todayExerciseRepository.fetchByTodayId(todayId);
-    }
-
     public List<TodayExercise> fetchByTodayIdIn(List<Long> todayIds) {
         return todayExerciseRepository.fetchByTodayIdIn(todayIds);
+    }
+
+    public List<TodayExercise> findByTodayId(Long todayId){
+        return todayExerciseRepository.findByTodayId(todayId);
     }
 
     @Transactional

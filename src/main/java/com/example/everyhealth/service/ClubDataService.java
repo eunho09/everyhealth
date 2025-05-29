@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ClubService {
+public class ClubDataService {
 
     private final ClubRepository clubRepository;
 

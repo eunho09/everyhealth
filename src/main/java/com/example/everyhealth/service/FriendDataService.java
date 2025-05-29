@@ -2,7 +2,6 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.Friend;
 import com.example.everyhealth.domain.FriendShip;
-import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.FriendDto;
 import com.example.everyhealth.dto.MemberDto;
 import com.example.everyhealth.repository.FriendRepository;
@@ -19,9 +18,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class FriendService {
+public class FriendDataService {
 
     private final FriendRepository friendRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     @CacheEvict(value = {"friendShipCheck", "friendByAccept", "friendByMember"}, allEntries = true)
@@ -70,8 +70,12 @@ public class FriendService {
     }
 
     @Cacheable(value = "friendShipCheck", key = "#memberId")
-    public boolean checkFriendShip(Long friendId, Long memberId) {
-        Friend friend = friendRepository.checkFriendShip(friendId, memberId);
+    public boolean checkAcceptFriendShip(Long friendId, Long memberId) {
+        Friend friend = friendRepository.checkAcceptFriendShip(friendId, memberId);
         return friend != null;
+    }
+
+    public FriendShip chekFriendShip(Long memberId, Long friendId) {
+        return friendRepository.checkFriendShip(memberId, friendId);
     }
 }

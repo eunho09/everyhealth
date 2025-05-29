@@ -1,16 +1,12 @@
 package com.example.everyhealth.controller;
 
 import com.example.everyhealth.aop.ExtractMemberId;
-import com.example.everyhealth.domain.ChatRoom;
 import com.example.everyhealth.domain.Club;
 import com.example.everyhealth.domain.ClubMember;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ClubCreate;
 import com.example.everyhealth.dto.ClubDto;
-import com.example.everyhealth.service.ChatRoomService;
-import com.example.everyhealth.service.ClubMemberService;
-import com.example.everyhealth.service.ClubService;
-import com.example.everyhealth.service.MemberService;
+import com.example.everyhealth.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,10 +25,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RestClubController {
 
-    private final ClubService clubService;
-    private final ChatRoomService chatRoomService;
+    private final ClubDataService clubDataService;
     private final MemberService memberService;
     private final ClubMemberService clubMemberService;
+    private final ClubBusinessService clubBusinessService;
 
     @PostMapping("/club")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId,
@@ -45,15 +41,8 @@ public class RestClubController {
 
             return ResponseEntity.badRequest().body(errors.toString());
         }
-        Member member = memberService.findById(memberId);
-        Club club = new Club(clubCreate.getTitle(), clubCreate.getContent(), clubCreate.getLocation(), clubCreate.getSchedule(), clubCreate.getHighlight());
-        clubService.save(club);
 
-        ClubMember clubMember = new ClubMember(club, member, true, LocalDateTime.now());
-        clubMemberService.save(clubMember);
-
-        ChatRoom chatRoom = new ChatRoom(clubCreate.getTitle(), club);
-        chatRoomService.save(chatRoom);
+        Club club = clubBusinessService.createClub(memberId, clubCreate);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(club.getTitle() + "를 생성했습니다.");
     }
@@ -65,7 +54,7 @@ public class RestClubController {
 
         if (!exists) {
             Member member = memberService.findById(memberId);
-            Club club = clubService.findById(id);
+            Club club = clubDataService.findById(id);
 
             ClubMember clubMember = new ClubMember(club, member, false, LocalDateTime.now());
             clubMemberService.save(clubMember);
@@ -76,7 +65,7 @@ public class RestClubController {
 
     @GetMapping("/club/chatRoom/{id}")
     public ResponseEntity<ClubDto> findByChatRoomId(@PathVariable Long id) {
-        ClubDto clubDto = clubService.findByChatRoomId(id);
+        ClubDto clubDto = clubDataService.findByChatRoomId(id);
         return ResponseEntity.ok().body(clubDto);
     }
 
@@ -85,9 +74,9 @@ public class RestClubController {
                                                   @RequestParam(required = false) Long isMyClubs,
                                                   @ExtractMemberId Long memberId) {
         if (name == null && isMyClubs == null) {
-            return ResponseEntity.ok(clubService.fetchAll());
+            return ResponseEntity.ok(clubDataService.fetchAll());
         } else {
-            return ResponseEntity.ok(clubService.cacheSearchByMemberAndName(isMyClubs, name, memberId));
+            return ResponseEntity.ok(clubDataService.cacheSearchByMemberAndName(isMyClubs, name, memberId));
         }
     }
 
@@ -97,7 +86,7 @@ public class RestClubController {
 
         if (clubMember.isAdmin()){
             clubMemberService.deleteByClubId(id);
-            clubService.deleteById(id);
+            clubDataService.deleteById(id);
         }
 
         clubMemberService.delete(clubMember);
