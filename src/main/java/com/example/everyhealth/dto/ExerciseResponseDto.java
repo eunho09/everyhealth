@@ -22,9 +22,7 @@ public class ExerciseResponseDto {
         this.id = exercise.getId();
         this.name = exercise.getName();
         this.memo = exercise.getMemo();
-        this.repWeightList = exercise.getRepWeightList().stream()
-                .map(rw -> new RepWeightDto(rw))
-                .collect(Collectors.toList());
+        this.repWeightList = DtoConverter.convertRepWeights(exercise.getRepWeightList());
         this.classification = exercise.getClassification();
     }
 }

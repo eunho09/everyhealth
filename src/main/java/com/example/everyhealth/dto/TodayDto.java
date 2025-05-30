@@ -35,9 +35,7 @@ public class TodayDto {
 
     public TodayDto(Today today, List<TodayExercise> todayExercise) {
         this.id = today.getId();
-        this.todayExercises = todayExercise.stream()
-                .map(te -> new TodayExerciseDto(te))
-                .collect(Collectors.toList());
+        this.todayExercises = DtoConverter.convertList(todayExercise, TodayExerciseDto::new);
         this.localDate = today.getLocalDate();
         this.checkBox = today.getCheckBox();
     }

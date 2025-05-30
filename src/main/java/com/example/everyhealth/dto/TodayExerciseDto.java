@@ -20,9 +20,7 @@ public class TodayExerciseDto {
     public TodayExerciseDto(TodayExercise todayExercise) {
         this.id = todayExercise.getId();
         this.exerciseName = todayExercise.getExercise().getName();
-        this.repWeightList = todayExercise.getRepWeightList().stream()
-                .map(rw -> new RepWeightDto(rw))
-                .collect(Collectors.toList());
+        this.repWeightList = DtoConverter.convertRepWeights(todayExercise.getRepWeightList());
         this.sequence = todayExercise.getSequence();
     }
 }

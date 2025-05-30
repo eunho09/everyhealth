@@ -17,9 +17,7 @@ public class RoutineDto {
     public RoutineDto(Routine routine) {
         this.id = routine.getId();
         this.name = routine.getName();
-        this.routineExercises = routine.getRoutineExerciseList().stream()
-                .map(re -> new RoutineExerciseDto(re))
-                .collect(Collectors.toList());
+        this.routineExercises = DtoConverter.convertList(routine.getRoutineExerciseList(), RoutineExerciseDto::new);
         this.member = new MemberDto(routine.getMember());
     }
 }
