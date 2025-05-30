@@ -1,5 +1,6 @@
 package com.example.everyhealth.service;
 
+import com.example.everyhealth.aop.ClearTodayCache;
 import com.example.everyhealth.domain.TodayExercise;
 import com.example.everyhealth.repository.TodayExerciseRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class TodayExerciseDataService {
     }
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public void deleteById(Long id) {
         todayExerciseRepository.deleteById(id);
     }

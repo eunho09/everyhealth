@@ -1,5 +1,6 @@
 package com.example.everyhealth.service;
 
+import com.example.everyhealth.aop.ClearRoutineCache;
 import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.RoutineExerciseSequence;
@@ -52,7 +53,7 @@ public class RoutineExerciseService {
     }
 
     @Transactional
-    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
+    @ClearRoutineCache
     public void updateSequence(List<RoutineExerciseSequence> routineExerciseSequence, Long routineId) {
         List<RoutineExercise> findRoutineExercise = routineExerciseRepository.findByRoutineId(routineId);
         for (RoutineExercise routineExercise : findRoutineExercise){
@@ -65,7 +66,7 @@ public class RoutineExerciseService {
     }
 
     @Transactional
-    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
+    @ClearRoutineCache
     public void updateRepWeight(List<RoutineExerciseUpdateDto> responseDtoList, Long routineId) {
         List<RoutineExercise> findRoutineExercise = routineExerciseRepository.findByRoutineId(routineId);
 
@@ -113,13 +114,13 @@ public class RoutineExerciseService {
     }
 
     @Transactional
-    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
+    @ClearRoutineCache
     public void deleteById(Long routineExerciseId) {
         routineExerciseRepository.deleteById(routineExerciseId);
     }
 
     @Transactional
-    @CacheEvict(value = {"routines","allRoutines", "routinesByMember"}, allEntries = true)
+    @ClearRoutineCache
     public void deleteByRoutineId(Long routineId) {
         routineExerciseRepository.deleteByRoutineId(routineId);
     }

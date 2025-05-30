@@ -1,5 +1,6 @@
 package com.example.everyhealth.service;
 
+import com.example.everyhealth.aop.ClearTodayCache;
 import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.exception.ErrorCode;
@@ -31,7 +32,7 @@ public class TodayService {
     private final ExerciseRepository exerciseRepository;
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public Long save(Today today) {
         todayRepository.save(today);
         return today.getId();
@@ -60,13 +61,13 @@ public class TodayService {
     }
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public void delete(Today today) {
         todayRepository.delete(today);
     }
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public void addTodayExercise(List<TodayExerciseRequest> todayExerciseRequests, LocalDate date, Long memberId) {
         Today today = todayRepository.fetchWithTodayExercises(date, memberId);
 
@@ -118,7 +119,7 @@ public class TodayService {
     }
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public void updateTodayExercise(List<UpdateTodayExerciseDto> updateDtoList, Long todayId) {
         List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(todayId);
 
@@ -158,7 +159,7 @@ public class TodayService {
     }
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public void updateSequence(List<UpdateSeqTodayExercise> updateSeqTodayExerciseList, Long todayId) {
         Today today = todayRepository.fetchByIdWithTodayExercises(todayId);
 
@@ -179,7 +180,7 @@ public class TodayService {
     }
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public void updateCheckbox(boolean checked, Long todayId) {
         Today today = todayRepository.findById(todayId).get();
         if (checked){

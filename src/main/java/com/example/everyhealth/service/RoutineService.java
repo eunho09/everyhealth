@@ -1,5 +1,6 @@
 package com.example.everyhealth.service;
 
+import com.example.everyhealth.aop.ClearRoutineCache;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.domain.Routine;
@@ -89,7 +90,7 @@ public class RoutineService {
     }
 
     @Transactional
-    @CacheEvict(value = {"routines", "allRoutines", "routinesByMember"}, allEntries = true)
+    @ClearRoutineCache
     public void deleteById(Long routineId) {
         routineRepository.deleteById(routineId);
     }

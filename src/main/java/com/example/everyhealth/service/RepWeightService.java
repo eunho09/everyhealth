@@ -1,5 +1,6 @@
 package com.example.everyhealth.service;
 
+import com.example.everyhealth.aop.ClearTodayCache;
 import com.example.everyhealth.repository.RepWeightRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,7 +30,7 @@ public class RepWeightService {
     }
 
     @Transactional
-    @CacheEvict(value = {"todays", "todayByLocalDate", "todayByYearAndMonth"}, allEntries = true)
+    @ClearTodayCache
     public void deleteByTodayExerciseId(Long todayExerciseId){
         repWeightRepository.deleteByTodayExerciseId(todayExerciseId);
     }
