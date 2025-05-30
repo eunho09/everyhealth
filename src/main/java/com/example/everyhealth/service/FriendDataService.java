@@ -64,9 +64,11 @@ public class FriendDataService {
 
     @Transactional
     @CacheEvict(value = {"friendShipCheck", "friendByAccept", "friendByMember", "memberByFriend", "existsByIdAndFriendId"}, allEntries = true)
-    public void selectRequest(Long memberId, Long friendMemberId, FriendShip friendShip) {
+    public Long selectRequest(Long memberId, Long friendMemberId, FriendShip friendShip) {
         Friend friend = friendRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, FriendShip.REQUEST);
         friend.setStatus(friendShip);
+
+        return friend.getId();
     }
 
     @Cacheable(value = "friendShipCheck", key = "#memberId")

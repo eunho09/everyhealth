@@ -37,13 +37,14 @@ public class TodayService {
         return today.getId();
     }
 
-    public void createToday(Long memberId, LocalDate date, Member member) {
-        if (todayRepository.existsByMemberIdAndDate(memberId, date)){
+    @Transactional
+    public Long createToday(Member member, LocalDate date) {
+        if (todayRepository.existsByMemberIdAndDate(member.getId(), date)){
             throw new TodayException(ErrorCode.TODAY_DUPLICATE_BY_DATE, date);
         }
 
         Today today = new Today(date, member);
-        save(today);
+        return save(today);
     }
 
     public Today findById(Long id) {

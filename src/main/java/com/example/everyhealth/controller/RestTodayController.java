@@ -30,7 +30,7 @@ public class RestTodayController {
     @PostMapping("/today")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId, @RequestParam LocalDate date) {
         Member member = memberService.findById(memberId);
-        todayService.createToday(memberId, date, member);
+        todayService.createToday(member, date);
         return ResponseEntity.status(HttpStatus.CREATED).body(date + "의 Today를 생성했습니다.");
     }
 

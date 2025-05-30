@@ -18,7 +18,7 @@ public class FriendBusinessService {
     private final MemberService memberService;
 
     @Transactional
-    public void sendRequestFriend(Long memberId, Long friendMemberId){
+    public Long sendRequestFriend(Long memberId, Long friendMemberId){
         validateId(memberId, friendMemberId);
 
         FriendShip friendShip = friendDataService.chekFriendShip(memberId, friendMemberId);
@@ -36,33 +36,35 @@ public class FriendBusinessService {
         friend.setFriend(friendMember);
         friend.setStatus(FriendShip.REQUEST);
         friendDataService.save(friend);
+
+        return friend.getId();
     }
 
     @Transactional
-    public void requestAcceptFriend(Long memberId, Long friendMemberId) {
+    public Long requestAcceptFriend(Long memberId, Long friendMemberId) {
         validateId(memberId, friendMemberId);
         FriendShip friendShip = friendDataService.chekFriendShip(memberId, friendMemberId);
         if (friendShip == FriendShip.ACCEPT){
             throw new FriendException(ErrorCode.FRIEND_ALREADY_ACCEPT);
         }
 
-        if (friendShip == FriendShip.CANCEL){
+        if (friendShip == FriendShip.CANCEL || friendShip == null){
             throw new FriendException(ErrorCode.FRIEND_NOT_REQUEST);
         }
 
-        friendDataService.selectRequest(memberId, friendMemberId, FriendShip.ACCEPT);
+        return friendDataService.selectRequest(memberId, friendMemberId, FriendShip.ACCEPT);
     }
 
     @Transactional
-    public void acceptCancelFriend(Long memberId, Long friendMemberId) {
+    public Long acceptCancelFriend(Long memberId, Long friendMemberId) {
         validateId(memberId, friendMemberId);
         FriendShip friendShip = friendDataService.chekFriendShip(memberId, friendMemberId);
 
-        if (friendShip == FriendShip.REQUEST || friendShip == FriendShip.CANCEL){
-            throw new FriendException(ErrorCode.FRIEND_NOT_FRIENDSHIP_ING);
+        if (friendShip != FriendShip.REQUEST){
+            throw new FriendException(ErrorCode.FRIEND_NOT_ACCEPT);
         }
 
-        friendDataService.selectRequest(memberId, friendMemberId, FriendShip.CANCEL);
+        return friendDataService.selectRequest(memberId, friendMemberId, FriendShip.CANCEL);
     }
 
     private static void validateId(Long memberId, Long friendMemberId) {
