@@ -13,8 +13,16 @@ const PostUpload = () => {
     const fileInputRef = useRef(null);
 
     const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        handleFile(selectedFile);
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")){
+            alert("이미지 파일만 업로드 가능합니다.");
+            e.target.value = '';
+            return;
+        }
+
+        handleFile(file);
     };
 
     const handleFile = (selectedFile) => {
@@ -60,7 +68,7 @@ const PostUpload = () => {
         try {
             const data = await postService.save(formData);
             alert('업로드 성공!');
-            // Reset form
+
             setFile(null);
             setPreview(null);
             setText('');

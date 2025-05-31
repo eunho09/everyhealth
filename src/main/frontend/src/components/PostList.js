@@ -159,6 +159,15 @@ const PostList = () => {
         }
     };
 
+    const getImageUrl = (imageUrl) => {
+        if (process.env.REACT_APP_ENV === "dev"){
+            console.log(process.env.REACT_APP_IMAGE_URL);
+            return `${process.env.REACT_APP_IMAGE_URL}${imageUrl}`;
+        } else {
+            return `/${imageUrl}`;
+        }
+    }
+
     return (
         <div className="post-container">
             <div className="post-feed">
@@ -182,7 +191,7 @@ const PostList = () => {
                                 style={{paddingBottom: `${aspectRatio}%`}}
                             >
                                 <img
-                                    src={`/${post.imageUrl}`}
+                                    src={getImageUrl(post.imageUrl)}
                                     alt="포스트 이미지"
                                     className="post-image"
                                 />
