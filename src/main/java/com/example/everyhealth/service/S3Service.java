@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Service
 @Profile("prod")
-public class S3Service {
+public class S3Service implements FileStorageService {
 
     private final S3Client s3Client;
     private final String bucketName;
@@ -24,9 +24,14 @@ public class S3Service {
         this.bucketName = bucketName;
     }
 
+    @Override
     public String uploadFile(MultipartFile file){
         if (file.isEmpty()){
             return null;
+        }
+
+        if (!isValid(file.getOriginalFilename())){
+            throw new RuntimeException("파일 확장자가 일치하지 않습니다.");
         }
 
         try {
@@ -59,11 +64,13 @@ public class S3Service {
         }
     }
 
-    private String generateUniqueFileName(String originalFilename) {
-        return UUID.randomUUID().toString() + "." + extractExt(originalFilename);
+    @Override
+    public String generateUniqueFileName(String originalFilename) {
+        return UUID.randomUUID() + "." + extractExt(originalFilename);
     }
 
-    private String extractExt(String originName) {
+    @Override
+    public String extractExt(String originName) {
         int i = originName.lastIndexOf(".");
         return originName.substring(i + 1);
     }

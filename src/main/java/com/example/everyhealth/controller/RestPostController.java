@@ -3,10 +3,8 @@ package com.example.everyhealth.controller;
 import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Post;
-import com.example.everyhealth.domain.UploadFile;
 import com.example.everyhealth.dto.PostDto;
-import com.example.everyhealth.dto.UploadPostDto;
-import com.example.everyhealth.security.JwtTokenGenerator;
+import com.example.everyhealth.service.FileStorageService;
 import com.example.everyhealth.service.FileStore;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
@@ -14,10 +12,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,12 +33,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 @Slf4j
 @Validated
-@Profile("default")
 public class RestPostController {
 
     private final MemberService memberService;
     private final PostService postService;
-    private final FileStore fileStore;
+    private final FileStorageService fileStorageService;
 
 
     @PostMapping("/post")
@@ -48,9 +46,8 @@ public class RestPostController {
                                      @RequestPart @NotBlank String text ) throws IOException {
 
         Member member = memberService.findById(memberId);
-        UploadFile uploadFile = fileStore.storeFile(file);
-        String storeFileName = uploadFile.getStoreFileName();
-        Post post = new Post(text, storeFileName, member);
+        String uniqueFileName = fileStorageService.uploadFile(file);
+        Post post = new Post(text, uniqueFileName, member);
 
         postService.save(post);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -87,8 +84,20 @@ public class RestPostController {
     }
 
     @GetMapping("/images/{fileName}")
-    public Resource downloadImage(@PathVariable String fileName) throws MalformedURLException {
-        return new UrlResource("file:" + fileStore.getFullName(fileName));
+    public Resource viewImage(@PathVariable String fileName) throws MalformedURLException {
+        return (Resource) fileStorageService.downloadFile(fileName);
+    }
+
+    @GetMapping("/{fileName}")
+    public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable String fileName) throws MalformedURLException {
+        byte[] data = (byte[]) fileStorageService.downloadFile(fileName);
+        ByteArrayResource resource = new ByteArrayResource(data);
+
+        return ResponseEntity
+                .ok()
+                .contentLength(data.length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
     }
 
     @GetMapping("/posts/friend/{friendId}")
