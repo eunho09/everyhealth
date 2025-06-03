@@ -66,3 +66,16 @@ server:
   error:
     include-stacktrace: never
     include-message: always
+
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    enabled: true
+  packages-to-scan: com.example.everyhealth.controller
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json

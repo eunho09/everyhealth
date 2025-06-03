@@ -6,6 +6,8 @@ import com.example.everyhealth.dto.ChatMessageResponseDto;
 import com.example.everyhealth.dto.ChatMessageSaveDto;
 import com.example.everyhealth.dto.MemberChatResponseDto;
 import com.example.everyhealth.service.ChatMessageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +27,14 @@ import java.util.stream.Collectors;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "채팅 관리")
 public class RestChatController {
 
     private final ChatMessageService chatMessageService;
 
     @MessageMapping("/chat/rooms/{roomId}/send")
     @SendTo("/topic/public/rooms/{roomId}")
+    @Operation(summary = "채팅 보내기")
     public ResponseEntity<ChatMessageSaveDto> sendMessage(@DestinationVariable Long roomId, @Payload String message, SimpMessageHeaderAccessor headerAccessor) {
         Long memberId = (Long) headerAccessor.getSessionAttributes().get("memberId");
 
@@ -40,6 +44,7 @@ public class RestChatController {
     }
 
     @GetMapping("/api/rooms/{roomId}/recentMessage")
+    @Operation(summary = "최근순 채팅 내역")
     public ResponseEntity<List<ChatMessageResponseDto>> recentMessage(@RequestParam(defaultValue = "10") int limit, @PathVariable Long roomId) {
         List<ChatMessage> byRecentMessage = chatMessageService.findByRecentMessage(roomId, limit);
         List<ChatMessageResponseDto> chatMessageList = byRecentMessage.stream()
@@ -50,6 +55,7 @@ public class RestChatController {
     }
 
     @GetMapping("/api/rooms/{roomId}/olderMessage")
+    @Operation(summary = "오래된순 채팅 내역")
     public ResponseEntity<List<ChatMessageResponseDto>> olderMessage(
             @PathVariable Long roomId,
             @RequestParam(defaultValue = "10") int limit,

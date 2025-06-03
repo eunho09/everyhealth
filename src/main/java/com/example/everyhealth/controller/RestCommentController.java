@@ -10,6 +10,8 @@ import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.CommentService;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api")
+@Tag(name = "댓글 관리")
 public class RestCommentController {
 
     private final PostService postService;
@@ -32,6 +35,7 @@ public class RestCommentController {
 
 
     @PostMapping("/comment")
+    @Operation(summary = "댓글 저장")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId,
                                      @RequestBody SaveComment dto,
                                      BindingResult bindingResult) {
@@ -51,6 +55,7 @@ public class RestCommentController {
     }
 
     @GetMapping("/comment/{postId}")
+    @Operation(summary = "포스트 ID로 댓글 조회")
     public ResponseEntity<List<CommentDto>> findByPostId(@PathVariable Long postId) {
         List<CommentDto> commentDtoList = commentService.findByPostId(postId);
 

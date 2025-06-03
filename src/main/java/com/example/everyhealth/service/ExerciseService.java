@@ -3,7 +3,6 @@ package com.example.everyhealth.service;
 import com.example.everyhealth.domain.Exercise;
 import com.example.everyhealth.domain.ExerciseUpdateDto;
 import com.example.everyhealth.domain.RepWeight;
-import com.example.everyhealth.dto.ExerciseDto;
 import com.example.everyhealth.dto.ExerciseResponseDto;
 import com.example.everyhealth.repository.ExerciseRepository;
 import jakarta.persistence.EntityNotFoundException;

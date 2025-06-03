@@ -8,6 +8,8 @@ import com.example.everyhealth.service.FileStorageService;
 import com.example.everyhealth.service.FileStore;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 @Slf4j
 @Validated
+@Tag(name = "포스트 관리")
 public class RestPostController {
 
     private final MemberService memberService;
@@ -41,6 +44,7 @@ public class RestPostController {
 
 
     @PostMapping("/post")
+    @Operation(summary = "포스트 저장")
     public ResponseEntity<Void> save(@ExtractMemberId Long memberId,
                                      @RequestPart @NotNull MultipartFile file,
                                      @RequestPart @NotBlank String text ) throws IOException {
@@ -54,6 +58,7 @@ public class RestPostController {
     }
 
     @GetMapping("/posts")
+    @Operation(summary = "모든 포스트 조회")
     public ResponseEntity<List<PostDto>> findAll(@RequestParam(defaultValue = "10") int limit) {
         List<Post> postList = postService.findRecent(limit);
 
@@ -65,6 +70,7 @@ public class RestPostController {
     }
 
     @GetMapping("/posts/scroll")
+    @Operation(summary = "스크롤 조회")
     public ResponseEntity<List<PostDto>> scroll(@RequestParam(defaultValue = "10") int limit, @RequestParam Long postId) {
         List<Post> postList = postService.findByLtPostId(limit, postId);
 
@@ -77,6 +83,7 @@ public class RestPostController {
 
 
     @GetMapping("/member/posts")
+    @Operation(summary = "나의 포스트 조회")
     public ResponseEntity<List<PostDto>> findMemberPost(@ExtractMemberId Long memberId) {
         List<PostDto> postList = postService.findByMemberId(memberId);
 
@@ -84,11 +91,13 @@ public class RestPostController {
     }
 
     @GetMapping("/images/{fileName}")
+    @Operation(summary = "이미지 조회")
     public Resource viewImage(@PathVariable String fileName) throws MalformedURLException {
         return (Resource) fileStorageService.downloadFile(fileName);
     }
 
     @GetMapping("/{fileName}")
+    @Operation(summary = "이미지 저장")
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable String fileName) throws MalformedURLException {
         byte[] data = (byte[]) fileStorageService.downloadFile(fileName);
         ByteArrayResource resource = new ByteArrayResource(data);
@@ -101,6 +110,7 @@ public class RestPostController {
     }
 
     @GetMapping("/posts/friend/{friendId}")
+    @Operation(summary = "친구의 포스트 조회")
     public ResponseEntity<List<PostDto>> findByFriendId(@PathVariable Long friendId) {
         List<PostDto> postDtoList = postService.findByMemberId(friendId);
 

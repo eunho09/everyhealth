@@ -4,6 +4,8 @@ import com.example.everyhealth.aop.ExtractMemberId;
 import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.service.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Slf4j
+@Tag(name = "오늘 관리")
 public class RestTodayController {
 
     private final TodayService todayService;
@@ -28,6 +31,7 @@ public class RestTodayController {
 
 
     @PostMapping("/today")
+    @Operation(summary = "오늘 저장")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId, @RequestParam LocalDate date) {
         Member member = memberService.findById(memberId);
         todayService.createToday(member, date);
@@ -35,6 +39,7 @@ public class RestTodayController {
     }
 
     @PostMapping("/todayExercise/{date}")
+    @Operation(summary = "오늘의 운동 추가")
     public ResponseEntity<String> addTodayExercise(@ExtractMemberId Long memberId ,@RequestBody List<TodayExerciseRequest> dto, @PathVariable LocalDate date) {
         todayService.addTodayExercise(dto, date, memberId);
 
@@ -42,6 +47,7 @@ public class RestTodayController {
     }
 
     @GetMapping("/member/todays")
+    @Operation(summary = "나의 오늘 조회")
     public ResponseEntity<List<TodayDto>> memberTodays(@ExtractMemberId Long memberId) {
         List<Today> todays = todayService.fetchMemberId(memberId);
         List<TodayExercise> todayExercises = todayExerciseDataService.fetchByTodayIdIn(todays.stream().map(t -> t.getId()).toList());
@@ -59,6 +65,7 @@ public class RestTodayController {
 
 
     @GetMapping("/today/{todayId}")
+    @Operation(summary = "오늘 조회")
     public ResponseEntity<TodayDto> findById(@PathVariable Long todayId) {
         TodayDto todayDto = todayService.fetchById(todayId);
 
@@ -67,6 +74,7 @@ public class RestTodayController {
 
 
     @GetMapping("/today/yearAndMonth/{year}/{month}")
+    @Operation(summary = "년/월로 나의 오늘 조회")
     public ResponseEntity<List<TodayDateDto>> findByYearAndMonth(@ExtractMemberId Long memberId,
                                                                  @PathVariable int year,
                                                                  @PathVariable int month) {
@@ -75,6 +83,7 @@ public class RestTodayController {
     }
 
     @GetMapping("/today/friend/{friendId}/yearAndMonth/{year}/{month}")
+    @Operation(summary = "년/월, 친구상태로 친구의 오늘 조회")
     public ResponseEntity<List<TodayDateDto>> findByFriendAndMonth(
             @ExtractMemberId Long memberId,
             @PathVariable Long friendId,
@@ -89,12 +98,14 @@ public class RestTodayController {
 
 
     @GetMapping("/today/date/{date}")
+    @Operation(summary = "날짜로 오늘 조회")
     public ResponseEntity<TodayDto> fetchByLocalDate(@ExtractMemberId Long memberId, @PathVariable LocalDate date) {
         TodayDto todayDto = todayService.fetchByLocalDate(date, memberId);
         return ResponseEntity.ok(todayDto);
     }
 
     @GetMapping("/today/friend/{friendId}/date/{date}")
+    @Operation(summary = "날짜와 친구의 상태로 친구의 오늘")
     public ResponseEntity<TodayDto> fetchByLocalDateAndFriendId(
             @ExtractMemberId Long memberId,
             @PathVariable LocalDate date,
@@ -107,18 +118,21 @@ public class RestTodayController {
 
 
     @PatchMapping("/todayExercise/{todayId}")
+    @Operation(summary = "오늘의 운동 업데이트")
     public ResponseEntity<String> updateTodayExercise(@RequestBody List<UpdateTodayExerciseDto> dto, @PathVariable Long todayId) {
         todayService.updateTodayExercise(dto, todayId);
         return ResponseEntity.ok("update TodayExercise");
     }
 
     @DeleteMapping("/todayExercise/{id}")
+    @Operation(summary = "오늘의 운동 삭제")
     public ResponseEntity<String> deleteTodayExercise(@PathVariable Long id) {
         String resultMessage = todayExerciseBusinessService.deleteTodayExercise(id);
         return ResponseEntity.ok(resultMessage);
     }
 
     @PatchMapping("/todayExercise/updateSequence/{todayId}")
+    @Operation(summary = "오늘의 운동 순서 업데이트")
     public ResponseEntity<String> updateSequence(@RequestBody List<UpdateSeqTodayExercise> todayExerciseList, @PathVariable Long todayId) {
         todayService.updateSequence(todayExerciseList, todayId);
 
@@ -126,6 +140,7 @@ public class RestTodayController {
     }
 
     @PostMapping("/today/checkbox/{todayId}")
+    @Operation(summary = "오늘의 완료 상태 업데이트")
     public ResponseEntity<String> checkbox(@PathVariable Long todayId, @RequestParam boolean checked) {
         todayService.updateCheckbox(checked, todayId);
 

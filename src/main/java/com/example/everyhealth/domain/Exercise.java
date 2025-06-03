@@ -1,6 +1,5 @@
 package com.example.everyhealth.domain;
 
-import com.example.everyhealth.dto.ExerciseDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -42,13 +41,6 @@ public class Exercise {
     }
 
     protected Exercise() {
-    }
-
-    public void update(ExerciseDto dto) {
-        this.name = dto.getName();
-        this.memo = dto.getMemo();
-//        this.repWeight = dto.getRepWeight();
-        this.classification = dto.getClassification();
     }
 
     public void setName(String name) {

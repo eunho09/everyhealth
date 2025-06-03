@@ -9,6 +9,8 @@ import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RepWeightService;
 import com.example.everyhealth.service.RoutineExerciseService;
 import com.example.everyhealth.service.RoutineService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequestMapping("/api")
 @Validated
+@Tag(name = "루틴 관리")
 public class RestRoutineController {
 
     private final RoutineService routineService;
@@ -39,6 +42,7 @@ public class RestRoutineController {
 
 
     @PostMapping("/routine")
+    @Operation(summary = "루틴 저장")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId,
                                        @RequestParam @NotBlank(message = "이름을 필수로 입력하세요") String name) {
         Member findMember = memberService.findById(memberId);
@@ -49,6 +53,7 @@ public class RestRoutineController {
     }
 
     @PostMapping("/routineExercise")
+    @Operation(summary = "루틴의 운동 추가")
     public ResponseEntity<String> addExercise(@RequestBody RoutineAddExerciseDto dto) {
         routineService.addExercise(dto.getRoutineId(), dto.getExerciseInfoList());
 
@@ -57,6 +62,7 @@ public class RestRoutineController {
 
 
     @GetMapping("/member/routines")
+    @Operation(summary = "나의 루틴 조회")
     public ResponseEntity<List<RoutineResponseDto>> memberRoutines(@ExtractMemberId Long memberId) {
         List<RoutineResponseDto> routineResponseDtos = routineService.fetchRoutinesByMemberId(memberId);
 
@@ -65,6 +71,7 @@ public class RestRoutineController {
 
 
     @GetMapping("/routine/{routineId}")
+    @Operation(summary = "루틴 조회")
     public ResponseEntity<List<RoutineExerciseResponseDto>> findOne(@PathVariable Long routineId) {
 
         List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(routineId);
@@ -76,6 +83,7 @@ public class RestRoutineController {
     }
 
     @DeleteMapping("/routine/{id}")
+    @Operation(summary = "루틴 삭제")
     public ResponseEntity<Void> deleteRoutine(@PathVariable Long id) {
         repWeightService.deleteByRoutineId(id);
         routineExerciseService.deleteByRoutineId(id);
@@ -84,6 +92,7 @@ public class RestRoutineController {
     }
 
     @DeleteMapping("/routineExercise/{id}")
+    @Operation(summary = "루틴의 운동 삭제")
     public ResponseEntity<Void> deleteRoutineExercise(@PathVariable Long id) {
         repWeightService.deleteByRoutineExerciseId(id);
         routineExerciseService.deleteById(id);
@@ -91,12 +100,14 @@ public class RestRoutineController {
     }
 
     @PatchMapping("/routineExercise/updateSequence/{routineId}")
+    @Operation(summary = "루틴의 운동 순서 업데이트")
     public ResponseEntity<String> updateSequence(@PathVariable Long routineId, @RequestBody List<RoutineExerciseSequence> routineExerciseSequence) {
         routineExerciseService.updateSequence(routineExerciseSequence, routineId);
         return ResponseEntity.ok("update sequence");
     }
 
     @PatchMapping("/routineExercise/update/{routineId}")
+    @Operation(summary = "루틴의 운동 업데이트")
     public ResponseEntity<String> updateRepWeight(@PathVariable Long routineId, @RequestBody List<RoutineExerciseUpdateDto> responseDtoList) {
         routineExerciseService.updateRepWeight(responseDtoList, routineId);
         return ResponseEntity.ok("update RepWeight");

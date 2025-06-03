@@ -76,3 +76,7 @@ server:
   error:
     include-stacktrace: never
     include-message: always
+
+springdoc:
+  swagger-ui:
+    enabled: false

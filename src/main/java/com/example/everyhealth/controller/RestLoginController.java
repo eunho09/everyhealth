@@ -8,6 +8,8 @@ import com.example.everyhealth.dto.LoginInfo;
 import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.MemberService;
 import com.example.everyhealth.service.RefreshTokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +32,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "로그인 관리")
 public class RestLoginController {
 
     private final JwtTokenGenerator jwtTokenGenerator;
@@ -42,6 +45,7 @@ public class RestLoginController {
     private Long refreshTokenExpireTime;
 
     @PostMapping("/api/logout")
+    @Operation(summary = "로그아웃")
     public ResponseEntity<Void> logout(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -69,6 +73,7 @@ public class RestLoginController {
     }
 
     @GetMapping("/api/login/check")
+    @Operation(summary = "로그인 상태 체크")
     public ResponseEntity<LoginInfo> loginCheck(HttpServletRequest request) {
         boolean check = false;
         LoginInfo loginInfo = new LoginInfo();
@@ -95,6 +100,7 @@ public class RestLoginController {
     }
 
     @PostMapping("/api/token/refresh")
+    @Operation(summary = "리프레쉬 토큰으로 로그인")
     public ResponseEntity<String> refreshToken(
             @CookieValue(name = "refresh_token") String refreshToken,
             HttpServletResponse response) {
