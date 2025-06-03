@@ -44,10 +44,6 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
-    public Optional<RefreshToken> findByMemberId(Long memberId) {
-        return refreshTokenRepository.findByMemberId(memberId);
-    }
-
     @Transactional
     public void verifyExpiration(RefreshToken token) {
         if (token.isExpired()) {

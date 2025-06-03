@@ -6,6 +6,7 @@ import com.example.everyhealth.dto.FriendDto;
 import com.example.everyhealth.dto.MemberDto;
 import com.example.everyhealth.repository.FriendRepository;
 import com.example.everyhealth.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,7 +32,7 @@ public class FriendDataService {
     }
 
     public Friend findById(Long id) {
-        return friendRepository.findById(id).get();
+        return friendRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 친구가 존재하지 않습니다. ID : " + id));
     }
 
     public List<Friend> findAll() {

@@ -9,6 +9,7 @@ import com.example.everyhealth.repository.ExerciseRepository;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
 import com.example.everyhealth.repository.TodayExerciseRepository;
 import com.example.everyhealth.repository.TodayRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -49,7 +50,7 @@ public class TodayService {
     }
 
     public Today findById(Long id) {
-        return todayRepository.findById(id).get();
+        return todayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 오늘이 존재하지 않습니다. ID : " + id));
     }
 
     public List<Today> findAll() {

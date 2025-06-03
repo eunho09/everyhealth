@@ -9,6 +9,7 @@ import com.example.everyhealth.dto.*;
 import com.example.everyhealth.repository.ExerciseRepository;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
 import com.example.everyhealth.repository.RoutineRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -40,7 +41,7 @@ public class RoutineService {
     }
 
     public Routine findById(Long id) {
-        return routineRepository.findById(id).get();
+        return routineRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다. ID : " + id));
     }
 
     public List<Routine> findAll() {

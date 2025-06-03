@@ -2,6 +2,7 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.ChatRoom;
 import com.example.everyhealth.repository.ChatRoomRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -26,7 +27,7 @@ public class ChatRoomService {
     }
 
     public ChatRoom findById(Long id) {
-        return chatRoomRepository.findById(id).get();
+        return chatRoomRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("채팅방이 존재하지 않습니다. ID : " + id));
     }
 
     public List<ChatRoom> findAll() {

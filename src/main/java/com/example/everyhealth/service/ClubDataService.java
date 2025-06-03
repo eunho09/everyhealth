@@ -4,6 +4,7 @@ import com.example.everyhealth.domain.Club;
 import com.example.everyhealth.dto.ClubDto;
 import com.example.everyhealth.repository.ClubRepository;
 import com.example.everyhealth.repository.ClubSpecification;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -31,7 +32,7 @@ public class ClubDataService {
     }
 
     public Club findById(Long id) {
-        return clubRepository.findById(id).get();
+        return clubRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("클럽이 존재하지 않습니다. ID : " + id));
     }
 
     @Cacheable(value = "clubsAll")

@@ -3,6 +3,7 @@ package com.example.everyhealth.service;
 import com.example.everyhealth.aop.ClearTodayCache;
 import com.example.everyhealth.domain.TodayExercise;
 import com.example.everyhealth.repository.TodayExerciseRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class TodayExerciseDataService {
 
 
     public TodayExercise findById(Long id) {
-        return todayExerciseRepository.findById(id).get();
+        return todayExerciseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 오늘의 운동이 존재하지 않습니다. ID : " + id));
     }
 
     public List<TodayExercise> findAll() {

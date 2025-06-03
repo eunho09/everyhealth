@@ -6,6 +6,7 @@ import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.RoutineExerciseSequence;
 import com.example.everyhealth.dto.RoutineExerciseUpdateDto;
 import com.example.everyhealth.repository.RoutineExerciseRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Cache;
@@ -36,7 +37,7 @@ public class RoutineExerciseService {
     }
 
     public RoutineExercise findById(Long id) {
-        return routineExerciseRepository.findById(id).get();
+        return routineExerciseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 루틴운동이 존재하지 않습니다. ID : " + id));
     }
 
     public List<RoutineExercise> findAll() {
@@ -123,10 +124,6 @@ public class RoutineExerciseService {
     @ClearRoutineCache
     public void deleteByRoutineId(Long routineId) {
         routineExerciseRepository.deleteByRoutineId(routineId);
-    }
-
-    public List<RoutineExercise> fetchByRoutineIds(List<Long> routineIds) {
-        return routineExerciseRepository.fetchByRoutineIds(routineIds);
     }
 }
 

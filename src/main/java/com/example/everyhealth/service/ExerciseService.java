@@ -6,6 +6,7 @@ import com.example.everyhealth.domain.RepWeight;
 import com.example.everyhealth.dto.ExerciseDto;
 import com.example.everyhealth.dto.ExerciseResponseDto;
 import com.example.everyhealth.repository.ExerciseRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -34,7 +35,7 @@ public class ExerciseService {
     }
 
     public Exercise findById(Long id) {
-        return exerciseRepository.findById(id).get();
+        return exerciseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 운동이 존재하지 않습니다. ID : " + id));
     }
 
     public List<Exercise> findAll() {

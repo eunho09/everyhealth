@@ -3,12 +3,14 @@ package com.example.everyhealth.service;
 import com.example.everyhealth.domain.Comment;
 import com.example.everyhealth.dto.CommentDto;
 import com.example.everyhealth.repository.CommentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Entity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +31,7 @@ public class CommentService {
     }
 
     public Comment findById(Long id) {
-        return commentRepository.findById(id).get();
+        return commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 댓글이 존재하지 않습니다. ID : " + id));
     }
 
     public List<Comment> findAll() {

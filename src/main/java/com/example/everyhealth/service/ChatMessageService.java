@@ -12,11 +12,13 @@ import com.example.everyhealth.repository.ChatMessageRepository;
 import com.example.everyhealth.repository.ChatRoomRepository;
 import com.example.everyhealth.repository.ClubMemberRepository;
 import com.example.everyhealth.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +39,12 @@ public class ChatMessageService {
 
     @Transactional
     public ChatMessageSaveDto saveMessage(String message, Long chatRoomId, Long memberId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).get();
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new EntityNotFoundException("채팅방이 존재하지 않습니다. ID : " + chatRoomId));
         ClubMember clubMember = clubMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId);
+
+        if (clubMember == null) {
+            throw new AccessDeniedException("채팅방에 참여하지 않은 사용자입니다. 채팅방 ID : " + chatRoomId + ", 회원 ID : " + memberId);
+        }
 
         String cleanMessage = message.replace("\"", "");
 

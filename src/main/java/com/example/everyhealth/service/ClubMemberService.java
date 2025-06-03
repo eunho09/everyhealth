@@ -2,6 +2,7 @@ package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.ClubMember;
 import com.example.everyhealth.repository.ClubMemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class ClubMemberService {
     }
 
     public ClubMember findById(Long id) {
-        return clubMemberRepository.findById(id).get();
+        return clubMemberRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("클럽회원이 존재하지 않습니다. ID : " + id));
     }
 
     public List<ClubMember> findAll() {
@@ -40,10 +41,6 @@ public class ClubMemberService {
 
     public ClubMember findByMemberIdAndClubId(Long memberId, Long clubId) {
         return clubMemberRepository.findByMemberIdAndClubId(memberId, clubId);
-    }
-
-    public ClubMember findByMemberIdAndChatRoomId(Long memberId, Long chatRoomId) {
-        return clubMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId);
     }
 
     @Transactional
