@@ -32,7 +32,7 @@ public class RestFriendController {
     @GetMapping("/member/friend/request")
     @Operation(summary = "친구 요청 중인 목록")
     public ResponseEntity<List<FriendDto>> findByFriendIdAndStatus(@ExtractMemberId Long memberId) {
-        List<FriendDto> response = friendDataService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
+        List<FriendDto> response = friendBusinessService.findByFriendIdAndStatus(memberId, FriendShip.REQUEST);
 
         return ResponseEntity.ok(response);
     }
@@ -41,7 +41,7 @@ public class RestFriendController {
     @GetMapping("/member/friend")
     @Operation(summary = "나의 친구 목록")
     public ResponseEntity<List<FriendDto>> findMyFriend(@ExtractMemberId Long memberId) {
-        List<FriendDto> response = friendDataService.findMyFriend(memberId);
+        List<FriendDto> response = friendBusinessService.getFriendByMemberIdDtos(memberId);
 
         return ResponseEntity.ok(response);
     }
@@ -82,7 +82,7 @@ public class RestFriendController {
     @GetMapping("/friend/check/{friendId}")
     @Operation(summary = "친구상태 확인")
     public ResponseEntity<Boolean> checkAcceptFriendShip(@PathVariable Long friendId, @ExtractMemberId Long memberId) {
-        boolean b = friendDataService.checkAcceptFriendShip(friendId, memberId);
+        boolean b = friendBusinessService.checkAcceptFriendShip(friendId, memberId);
         return ResponseEntity.ok(b);
     }
 }

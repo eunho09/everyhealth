@@ -1,29 +1,20 @@
 package com.example.everyhealth.controller;
 
 import com.example.everyhealth.aop.ExtractMemberId;
-import com.example.everyhealth.domain.Member;
-import com.example.everyhealth.domain.Routine;
 import com.example.everyhealth.domain.RoutineExercise;
 import com.example.everyhealth.dto.*;
-import com.example.everyhealth.service.MemberService;
-import com.example.everyhealth.service.RepWeightService;
-import com.example.everyhealth.service.RoutineExerciseService;
-import com.example.everyhealth.service.RoutineService;
+import com.example.everyhealth.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,8 +25,8 @@ import java.util.stream.Collectors;
 @Tag(name = "루틴 관리")
 public class RestRoutineController {
 
-    private final RoutineService routineService;
-    private final MemberService memberService;
+    private final RoutineDataService routineDataService;
+    private final RoutineBusinessService routineBusinessService;
     private final RoutineExerciseService routineExerciseService;
     private final RepWeightService repWeightService;
 
@@ -45,17 +36,15 @@ public class RestRoutineController {
     @Operation(summary = "루틴 저장")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId,
                                        @RequestParam @NotBlank(message = "이름을 필수로 입력하세요") String name) {
-        Member findMember = memberService.findById(memberId);
-        Routine routine = new Routine(name, findMember);
-        routineService.save(routine);
+        String routineName = routineBusinessService.createRoutine(memberId, name);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(routine.getName() + "을 생성했습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(routineName + "을 생성했습니다.");
     }
 
     @PostMapping("/routineExercise")
     @Operation(summary = "루틴의 운동 추가")
     public ResponseEntity<String> addExercise(@RequestBody RoutineAddExerciseDto dto) {
-        routineService.addExercise(dto.getRoutineId(), dto.getExerciseInfoList());
+        routineBusinessService.addExercise(dto.getRoutineId(), dto.getExerciseInfoList());
 
         return ResponseEntity.ok("RoutineExercise created");
     }
@@ -64,7 +53,7 @@ public class RestRoutineController {
     @GetMapping("/member/routines")
     @Operation(summary = "나의 루틴 조회")
     public ResponseEntity<List<RoutineResponseDto>> memberRoutines(@ExtractMemberId Long memberId) {
-        List<RoutineResponseDto> routineResponseDtos = routineService.fetchRoutinesByMemberId(memberId);
+        List<RoutineResponseDto> routineResponseDtos = routineBusinessService.fetchRoutinesByMemberId(memberId);
 
         return ResponseEntity.ok(routineResponseDtos);
     }
@@ -73,29 +62,21 @@ public class RestRoutineController {
     @GetMapping("/routine/{routineId}")
     @Operation(summary = "루틴 조회")
     public ResponseEntity<List<RoutineExerciseResponseDto>> findOne(@PathVariable Long routineId) {
-
-        List<RoutineExercise> routineExerciseList = routineExerciseService.findAllByRoutineIdWithExerciseAndRepWeight(routineId);
-        List<RoutineExerciseResponseDto> responseList = routineExerciseList.stream()
-                .map(routineExercise -> new RoutineExerciseResponseDto(routineExercise))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseList);
+        List<RoutineExerciseResponseDto> routines = routineBusinessService.getRoutine(routineId);
+        return ResponseEntity.ok(routines);
     }
 
     @DeleteMapping("/routine/{id}")
     @Operation(summary = "루틴 삭제")
     public ResponseEntity<Void> deleteRoutine(@PathVariable Long id) {
-        repWeightService.deleteByRoutineId(id);
-        routineExerciseService.deleteByRoutineId(id);
-        routineService.deleteById(id);
+        routineBusinessService.deleteRoutine(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/routineExercise/{id}")
     @Operation(summary = "루틴의 운동 삭제")
     public ResponseEntity<Void> deleteRoutineExercise(@PathVariable Long id) {
-        repWeightService.deleteByRoutineExerciseId(id);
-        routineExerciseService.deleteById(id);
+        routineBusinessService.deleteRoutineExercise(id);
         return ResponseEntity.noContent().build();
     }
 

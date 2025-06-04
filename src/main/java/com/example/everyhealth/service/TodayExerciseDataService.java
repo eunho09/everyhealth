@@ -46,6 +46,10 @@ public class TodayExerciseDataService {
         return todayExerciseRepository.findByTodayId(todayId);
     }
 
+    public List<TodayExercise> fetchByTodayId(Long todayId) {
+        return todayExerciseRepository.fetchByTodayId(todayId);
+    }
+
     @Transactional
     @ClearTodayCache
     public void deleteById(Long id) {

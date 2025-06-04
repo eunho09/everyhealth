@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PostService {
+public class PostDataService {
 
     private final PostRepository postRepository;
 
@@ -36,13 +36,8 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    @Cacheable(value = "postByMember", key = "#memberId")
-    public List<PostDto> findByMemberId(Long memberId) {
-        List<Post> postList = postRepository.findByMemberId(memberId);
-
-        return postList.stream()
-                .map(post -> new PostDto(post))
-                .collect(Collectors.toList());
+    public List<Post> findByMemberId(Long memberId) {
+        return postRepository.findByMemberId(memberId);
     }
 
     public List<Post> findRecent(int limit) {

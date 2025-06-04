@@ -24,7 +24,7 @@ public class FileStore implements FileStorageService {
     }
 
     @Override
-    public String uploadFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file) {
         if (file.isEmpty()) {
             return null;
         }
@@ -36,7 +36,11 @@ public class FileStore implements FileStorageService {
         String originalFilename = file.getOriginalFilename();
         String uniqueFileName = generateUniqueFileName(originalFilename);
 
-        file.transferTo(new File(getFullName(uniqueFileName)));
+        try {
+            file.transferTo(new File(getFullName(uniqueFileName)));
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
         return uniqueFileName;
     }
 

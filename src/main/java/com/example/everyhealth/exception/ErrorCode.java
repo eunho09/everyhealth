@@ -15,7 +15,9 @@ public enum ErrorCode {
     FRIEND_NOT_REQUEST("400", "친구 요청이 오지 않았습니다."),
     FRIEND_NOT_ACCEPT("400", "친구 요청 상태가 아닙니다."),
 
-    MEMBER_NOT_FRIEND("403", "친구가 아니므로 접근할 수 없습니다.");
+    MEMBER_NOT_FRIEND("403", "친구가 아니므로 접근할 수 없습니다."),
+
+    EMPTY_MESSAGE_DATA("400", "입력한 메세지가 존재하지 않습니다.");
 
     private final String code;
     private final String message;

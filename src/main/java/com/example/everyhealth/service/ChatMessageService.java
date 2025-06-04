@@ -8,10 +8,13 @@ import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ChatMessageResponseDto;
 import com.example.everyhealth.dto.ChatMessageSaveDto;
 import com.example.everyhealth.dto.MemberChatResponseDto;
+import com.example.everyhealth.exception.EmptyDataException;
+import com.example.everyhealth.exception.ErrorCode;
 import com.example.everyhealth.repository.ChatMessageRepository;
 import com.example.everyhealth.repository.ChatRoomRepository;
 import com.example.everyhealth.repository.ClubMemberRepository;
 import com.example.everyhealth.repository.MemberRepository;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +47,10 @@ public class ChatMessageService {
 
         if (clubMember == null) {
             throw new AccessDeniedException("채팅방에 참여하지 않은 사용자입니다. 채팅방 ID : " + chatRoomId + ", 회원 ID : " + memberId);
+        }
+
+        if (StringUtils.isEmpty(message)) {
+            throw new EmptyDataException(ErrorCode.EMPTY_MESSAGE_DATA, message);
         }
 
         String cleanMessage = message.replace("\"", "");

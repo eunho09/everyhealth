@@ -12,7 +12,7 @@ public interface FileStorageService {
 
     ArrayList<String> ALLOW_EXT = new ArrayList<>(List.of("jpg", "jpeg", "png", "gif"));
 
-    String uploadFile(MultipartFile file) throws IOException;
+    String uploadFile(MultipartFile file);
 
     String generateUniqueFileName(String originalFilename);
 

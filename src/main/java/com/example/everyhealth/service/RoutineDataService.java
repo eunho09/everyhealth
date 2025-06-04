@@ -26,11 +26,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class RoutineService {
+public class RoutineDataService {
 
     private final RoutineRepository routineRepository;
-    private final ExerciseRepository exerciseRepository;
-    private final RoutineExerciseRepository routineExerciseRepository;
 
     @Transactional
     @CachePut(value = "routines" , key = "#routine.id")
@@ -48,46 +46,14 @@ public class RoutineService {
         return routineRepository.findAll();
     }
 
+    public List<Routine> fetchByMemberId(Long memberId) {
+        return routineRepository.fetchByMemberId(memberId);
+    }
+
     @Transactional
     @CacheEvict(value = "routines", key = "#routine.id")
     public void delete(Routine routine) {
         routineRepository.delete(routine);
-    }
-
-    @Transactional
-    @CachePut(value = "routines", key = "#routineId")
-    @CacheEvict(value = {"allRoutines", "routinesByMember"}, allEntries = true)
-    public RoutineDto addExercise(Long routineId, List<ExerciseInfo> exerciseInfoList) {
-        Routine routine = findById(routineId);
-        exerciseInfoList
-                .forEach(exercise -> {
-                    Exercise findExercise = exerciseRepository.fetchById(exercise.getExerciseId());
-                    RoutineExercise routineExercise = new RoutineExercise(findExercise, routine, exercise.getSequence());
-
-                    List<RepWeight> repWeightList = findExercise.getRepWeightList();
-                    repWeightList
-                            .forEach(rw -> new RepWeight(rw.getReps(), rw.getWeight(), routineExercise));
-                });
-
-        routineRepository.save(routine);
-
-        RoutineDto routineDto = new RoutineDto(routine);
-        return routineDto;
-    }
-
-    @Cacheable(value = "routinesByMember", key = "#memberId")
-    public List<RoutineResponseDto> fetchRoutinesByMemberId(Long memberId) {
-        List<Routine> routineList = routineRepository.fetchByMemberId(memberId);
-        List<RoutineExercise> routineExerciseList = routineExerciseRepository.fetchByRoutineIds(routineList.stream().map(r -> r.getId()).toList());
-
-        Map<Long, RoutineExercise> routineExerciseMap = routineExerciseList.stream()
-                .collect(Collectors.toMap(re -> re.getId(), dto -> dto));
-
-        List<RoutineResponseDto> responseDtoList = routineList.stream()
-                .map(r -> new RoutineResponseDto(r, routineExerciseMap))
-                .collect(Collectors.toList());
-
-        return responseDtoList;
     }
 
     @Transactional

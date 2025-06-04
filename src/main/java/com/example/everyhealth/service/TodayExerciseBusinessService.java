@@ -3,8 +3,6 @@ package com.example.everyhealth.service;
 import com.example.everyhealth.domain.Today;
 import com.example.everyhealth.domain.TodayExercise;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +15,7 @@ public class TodayExerciseBusinessService {
 
     private final TodayExerciseDataService todayExerciseDataService;
     private final RepWeightService repWeightService;
-    private final TodayService todayService;
+    private final TodayDataService todayDataService;
 
     @Transactional
     public String deleteTodayExercise(Long id) {
@@ -34,7 +32,7 @@ public class TodayExerciseBusinessService {
         if (today != null) {
             List<TodayExercise> todayExerciseList = todayExerciseDataService.findByTodayId(today.getId());
             if (todayExerciseList.isEmpty()) {
-                todayService.delete(today);
+                todayDataService.delete(today);
                 return "delete today and todayExercise";
             }
         }

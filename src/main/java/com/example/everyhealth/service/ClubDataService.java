@@ -35,13 +35,8 @@ public class ClubDataService {
         return clubRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("클럽이 존재하지 않습니다. ID : " + id));
     }
 
-    @Cacheable(value = "clubsAll")
-    public List<ClubDto> fetchAll() {
-        List<Club> clubList = clubRepository.fetchAll();
-
-        return clubList.stream()
-                .map(c -> new ClubDto(c))
-                .collect(Collectors.toList());
+    public List<Club> fetchAll() {
+        return clubRepository.fetchAll();
     }
 
     public List<Club> findAll(Specification<Club> spec) {
@@ -58,24 +53,6 @@ public class ClubDataService {
     public ClubDto findByChatRoomId(Long chatRoomId) {
         Club club = clubRepository.findByChatRoomId(chatRoomId);
         return new ClubDto(club);
-    }
-
-    public List<ClubDto> searchClubByMemberAndName(Long memberId, String name) {
-        List<Club> clubList = findAll(
-                Specification
-                        .where(ClubSpecification.joinMember(memberId))
-                        .and(ClubSpecification.nameContains(name))
-
-        );
-
-        return clubList.stream()
-                .map(c -> new ClubDto(c))
-                .collect(Collectors.toList());
-    }
-
-    public List<ClubDto> cacheSearchByMemberAndName(Long isMyClubs, String name, Long memberId) {
-        Long memberIdToUse = (isMyClubs == null || isMyClubs == 0) ? isMyClubs : memberId;
-        return searchClubByMemberAndName(memberIdToUse, name);
     }
 
     @Transactional

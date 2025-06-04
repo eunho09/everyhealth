@@ -6,10 +6,9 @@ import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.domain.Post;
 import com.example.everyhealth.dto.CommentDto;
 import com.example.everyhealth.dto.SaveComment;
-import com.example.everyhealth.security.JwtTokenGenerator;
 import com.example.everyhealth.service.CommentService;
 import com.example.everyhealth.service.MemberService;
-import com.example.everyhealth.service.PostService;
+import com.example.everyhealth.service.PostDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
 @Tag(name = "댓글 관리")
 public class RestCommentController {
 
-    private final PostService postService;
+    private final PostDataService postDataService;
     private final CommentService commentService;
     private final MemberService memberService;
 
@@ -47,7 +46,7 @@ public class RestCommentController {
             return ResponseEntity.badRequest().body(errors.toString());
         }
         Member member = memberService.findById(memberId);
-        Post post = postService.findById(dto.getPostId());
+        Post post = postDataService.findById(dto.getPostId());
         Comment comment = new Comment(dto.getText(), post, member);
         commentService.save(comment);
 

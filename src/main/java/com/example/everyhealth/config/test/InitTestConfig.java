@@ -17,10 +17,10 @@ import java.util.*;
 public class InitTestConfig {
 
     private final MemberService memberService;
-    private final ExerciseService exerciseService;
-    private final RoutineService routineService;
+    private final ExerciseDataService exerciseDataService;
+    private final RoutineDataService routineDataService;
     private final RoutineExerciseService routineExerciseService;
-    private final TodayService todayService;
+    private final TodayDataService todayDataService;
     private final TodayExerciseDataService todayExerciseDataService;
     private final ChatMessageService chatMessageService;
     private final ClubDataService clubDataService;
@@ -55,7 +55,7 @@ public class InitTestConfig {
             new RepWeight(i * 2 , i * 2, exercise);
             new RepWeight(i * 3, i * 3, exercise);
 
-            exerciseService.save(exercise);
+            exerciseDataService.save(exercise);
         }
     }
 

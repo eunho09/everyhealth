@@ -49,8 +49,12 @@ public class RoutineExerciseService {
         routineExerciseRepository.delete(routineExercise);
     }
 
-    public List<RoutineExercise> fetchRoutineExerciseByRoutineId(Long routineId) {
-        return routineExerciseRepository.fetchRoutineExerciseByRoutineId(routineId);
+    public List<RoutineExercise> fetchByRoutineIds(List<Long> ids) {
+        return routineExerciseRepository.fetchByRoutineIds(ids);
+    }
+
+    public List<RoutineExercise> findByRoutineId(Long id) {
+        return routineExerciseRepository.findByRoutineId(id);
     }
 
     @Transactional

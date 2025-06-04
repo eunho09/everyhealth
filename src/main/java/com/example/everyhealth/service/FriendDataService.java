@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class FriendDataService {
 
     private final FriendRepository friendRepository;
-    private final MemberRepository memberRepository;
 
     @Transactional
     @CacheEvict(value = {"friendShipCheck", "friendByAccept", "friendByMember"}, allEntries = true)
@@ -39,46 +38,19 @@ public class FriendDataService {
         return friendRepository.findAll();
     }
 
-
-    @Cacheable(value = "friendByAccept", key = "#friendMemberId")
-    public List<FriendDto> findByFriendIdAndStatus(Long friendMemberId, FriendShip status) {
-        List<Friend> requestFriendList = friendRepository.findByFriendIdAndStatus(friendMemberId, status);
-        return requestFriendList.stream()
-                .map(f -> new FriendDto(f.getId(),
-                        new MemberDto(f.getMember()),
-                        new MemberDto(f.getFriend())))
-                .collect(Collectors.toList());
+    public List<Friend> findByFriendIdAndStatus(Long friendId, FriendShip status) {
+        return friendRepository.findByFriendIdAndStatus(friendId, status);
     }
 
-
-
-    @Cacheable(value = "friendByMember", key = "#memberId")
-    public List<FriendDto> findMyFriend(Long memberId) {
-        List<Friend> friendList = friendRepository.findMyFriend(memberId);
-
-        return friendList.stream()
-                .map(f -> new FriendDto(f.getId(),
-                        new MemberDto(f.getMember()),
-                        new MemberDto(f.getFriend())))
-                .collect(Collectors.toList());
+    public List<Friend> findMyFriend(Long memberId) {
+        return friendRepository.findMyFriend(memberId);
     }
 
-    @Transactional
-    @CacheEvict(value = {"friendShipCheck", "friendByAccept", "friendByMember", "memberByFriend", "existsByIdAndFriendId"}, allEntries = true)
-    public Long selectRequest(Long memberId, Long friendMemberId, FriendShip friendShip) {
-        Friend friend = friendRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, FriendShip.REQUEST);
-        friend.setStatus(friendShip);
-
-        return friend.getId();
+    public Friend findByMemberIdAndFriendIdAndStatus(Long memberId, Long friendMemberId, FriendShip friendShip) {
+        return findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, friendShip);
     }
 
-    @Cacheable(value = "friendShipCheck", key = "#memberId")
-    public boolean checkAcceptFriendShip(Long friendId, Long memberId) {
-        Friend friend = friendRepository.checkAcceptFriendShip(friendId, memberId);
-        return friend != null;
-    }
-
-    public FriendShip chekFriendShip(Long memberId, Long friendId) {
+    public FriendShip checkFriendShip(Long memberId, Long friendId) {
         return friendRepository.checkFriendShip(memberId, friendId);
     }
 }

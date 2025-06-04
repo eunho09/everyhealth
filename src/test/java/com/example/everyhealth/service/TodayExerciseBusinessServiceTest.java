@@ -13,10 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.NoSuchElementException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -28,16 +25,19 @@ class TodayExerciseBusinessServiceTest {
     TodayExerciseBusinessService todayExerciseBusinessService;
 
     @Autowired
+    TodayBusinessService todayBusinessService;
+
+    @Autowired
     TodayExerciseDataService todayExerciseDataService;
 
     @Autowired
-    TodayService todayService;
+    TodayDataService todayDataService;
 
     @Autowired
     MemberService memberService;
 
     @Autowired
-    ExerciseService exerciseService;
+    ExerciseDataService exerciseDataService;
 
     @Autowired
     EntityManager em;
@@ -61,10 +61,10 @@ class TodayExerciseBusinessServiceTest {
     @Test
     @DisplayName("Today 안에 TodayExercise가 없다면 삭제")
     void deleteTodayExerciseCascadeToday() {
-        Long todayId = todayService.createToday(member, LocalDate.of(2025, 5, 30));
-        Today today = todayService.findById(todayId);
+        Long todayId = todayBusinessService.createToday(memberId, LocalDate.of(2025, 5, 30));
+        Today today = todayDataService.findById(todayId);
         Exercise exercise = new Exercise("푸쉬업", member, "", Classification.CHEST);
-        exerciseService.save(exercise);
+        exerciseDataService.save(exercise);
         RepWeight repWeight1 = new RepWeight(20, 0, exercise);
         RepWeight repWeight2 = new RepWeight(20, 0, exercise);
         RepWeight repWeight3 = new RepWeight(20, 0, exercise);
@@ -79,17 +79,17 @@ class TodayExerciseBusinessServiceTest {
         });
 
         Assertions.assertThrows(NoSuchElementException.class, () -> {
-            todayService.findById(today.getId());
+            todayDataService.findById(today.getId());
         });
     }
 
     @Test
     @DisplayName("TodayExercise 객체가 두 개 이상이라면 Today는 삭제X")
     void deleteTodayExercise() {
-        Long todayId = todayService.createToday(member, LocalDate.of(2025, 5, 30));
-        Today today = todayService.findById(todayId);
+        Long todayId = todayBusinessService.createToday(memberId, LocalDate.of(2025, 5, 30));
+        Today today = todayDataService.findById(todayId);
         Exercise exercise = new Exercise("푸쉬업", member, "", Classification.CHEST);
-        exerciseService.save(exercise);
+        exerciseDataService.save(exercise);
         RepWeight repWeight1 = new RepWeight(20, 0, exercise);
         RepWeight repWeight2 = new RepWeight(20, 0, exercise);
         RepWeight repWeight3 = new RepWeight(20, 0, exercise);
@@ -102,7 +102,7 @@ class TodayExerciseBusinessServiceTest {
         String result = todayExerciseBusinessService.deleteTodayExercise(todayExercise.getId());
 
         em.clear();
-        Today findToday = todayService.findById(today.getId());
+        Today findToday = todayDataService.findById(today.getId());
 
         Assertions.assertThrows(NoSuchElementException.class, () -> {
             todayExerciseDataService.findById(todayExercise.getId());

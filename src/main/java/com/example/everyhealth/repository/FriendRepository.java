@@ -18,12 +18,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     @Query("select f from Friend f join fetch f.friend join fetch f.member m where m.id=:memberId and f.status=com.example.everyhealth.domain.FriendShip.ACCEPT")
     List<Friend> findMyFriend(@Param("memberId") Long memberId);
 
-    @Query("select f from Friend f where f.member.id=:memberId and f.friend.id=:friendMemberId and f.status=:status")
-    Friend findByMemberIdAndFriendIdAndStatus(@Param("memberId") Long memberId, @Param("friendMemberId") Long friendMemberId, @Param("status") FriendShip status);
-
-    @Query("select f from Friend f where f.friend.id=:friendId and f.member.id=:memberId and f.status=com.example.everyhealth.domain.FriendShip.ACCEPT")
-    Friend checkAcceptFriendShip(@Param("friendId") Long friendId, @Param("memberId") Long memberId);
-
     @Query("select f.status from Friend f where f.member.id=:memberId and f.friend.id=:friendId")
     FriendShip checkFriendShip(@Param("memberId") Long memberId, @Param("friendId") Long friendId);
 }

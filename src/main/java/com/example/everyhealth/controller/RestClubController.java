@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -54,16 +55,7 @@ public class RestClubController {
     @PostMapping("/club/{id}/join")
     @Operation(summary = "클럽 참가")
     public ResponseEntity<Void> join(@ExtractMemberId Long memberId, @PathVariable Long id) {
-
-        boolean exists = clubMemberService.existsByMemberId(memberId);
-
-        if (!exists) {
-            Member member = memberService.findById(memberId);
-            Club club = clubDataService.findById(id);
-
-            ClubMember clubMember = new ClubMember(club, member, false, LocalDateTime.now());
-            clubMemberService.save(clubMember);
-        }
+        clubBusinessService.join(id, memberId);
 
         return ResponseEntity.ok().build();
     }
@@ -80,25 +72,14 @@ public class RestClubController {
     public ResponseEntity<List<ClubDto>> clubList(@RequestParam(required = false) String name,
                                                   @RequestParam(required = false) Long isMyClubs,
                                                   @ExtractMemberId Long memberId) {
-        if (name == null && isMyClubs == null) {
-            return ResponseEntity.ok(clubDataService.fetchAll());
-        } else {
-            return ResponseEntity.ok(clubDataService.cacheSearchByMemberAndName(isMyClubs, name, memberId));
-        }
+        List<ClubDto> clubOrSearch = clubBusinessService.getClubOrSearch(name, isMyClubs, memberId);
+        return ResponseEntity.ok(clubOrSearch);
     }
 
     @DeleteMapping("/club/{id}/leave")
     @Operation(summary = "클럽 떠나기")
     public ResponseEntity<Void> leaveClub(@PathVariable Long id, @ExtractMemberId Long memberId) {
-        ClubMember clubMember = clubMemberService.findByMemberIdAndClubId(memberId, id);
-
-        if (clubMember.isAdmin()){
-            clubMemberService.deleteByClubId(id);
-            clubDataService.deleteById(id);
-        }
-
-        clubMemberService.delete(clubMember);
-
+        clubBusinessService.leaveClub(id, memberId);
         return ResponseEntity.ok().build();
     }
 }

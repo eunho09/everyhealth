@@ -5,14 +5,7 @@ import com.example.everyhealth.domain.*;
 import com.example.everyhealth.dto.*;
 import com.example.everyhealth.exception.ErrorCode;
 import com.example.everyhealth.exception.TodayException;
-import com.example.everyhealth.repository.ExerciseRepository;
-import com.example.everyhealth.repository.RoutineExerciseRepository;
-import com.example.everyhealth.repository.TodayExerciseRepository;
-import com.example.everyhealth.repository.TodayRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,53 +17,60 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
-public class TodayService {
+public class TodayBusinessService {
 
-    private final TodayRepository todayRepository;
-    private final TodayExerciseRepository todayExerciseRepository;
-    private final RoutineExerciseRepository routineExerciseRepository;
-    private final ExerciseRepository exerciseRepository;
-
-    @Transactional
-    @ClearTodayCache
-    public Long save(Today today) {
-        todayRepository.save(today);
-        return today.getId();
-    }
+    private final MemberService memberService;
+    private final TodayDataService todayDataService;
+    private final TodayExerciseDataService todayExerciseDataService;
+    private final ExerciseDataService exerciseDataService;
+    private final RoutineExerciseService routineExerciseService;
 
     @Transactional
-    public Long createToday(Member member, LocalDate date) {
-        if (todayRepository.existsByMemberIdAndDate(member.getId(), date)){
+    public Long createToday(Long memberId, LocalDate date) {
+        Member member = memberService.findById(memberId);
+        if (todayDataService.existsByMemberIdAndDate(member.getId(), date)){
             throw new TodayException(ErrorCode.TODAY_DUPLICATE_BY_DATE, date);
         }
 
         Today today = new Today(date, member);
-        return save(today);
+        return todayDataService.save(today);
     }
 
-    public Today findById(Long id) {
-        return todayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 오늘이 존재하지 않습니다. ID : " + id));
-    }
+    public List<TodayDto> memberTodays(Long memberId) {
+        List<Today> todays = todayDataService.fetchMemberId(memberId);
+        List<TodayExercise> todayExercises = todayExerciseDataService.fetchByTodayIdIn(todays.stream().map(t -> t.getId()).toList());
 
-    public List<Today> findAll() {
-        return todayRepository.findAll();
-    }
+        Map<Long, TodayExercise> todayExerciseMap = todayExercises.stream()
+                .collect(Collectors.toMap(te -> te.getId(), dto -> dto));
 
-    public List<Today> fetchMemberId(Long memberId) {
-        return todayRepository.fetchByMemberId(memberId);
+        return todays.stream()
+                .map(t -> new TodayDto(t, todayExerciseMap))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     @ClearTodayCache
-    public void delete(Today today) {
-        todayRepository.delete(today);
+    public void updateCheckbox(boolean checked, Long todayId) {
+        Today today = todayDataService.findById(todayId);
+        if (checked){
+            today.setCheckBox(CheckBox.True);
+        } else{
+            today.setCheckBox(CheckBox.False);
+        }
+    }
+
+    @Cacheable(value = "todays", key = "#todayId")
+    public TodayDto fetchById(Long todayId){
+        Today today = todayDataService.findById(todayId);
+        List<TodayExercise> todayExerciseList = todayExerciseDataService.fetchByTodayId(todayId);
+
+        return new TodayDto(today, todayExerciseList);
     }
 
     @Transactional
     @ClearTodayCache
     public void addTodayExercise(List<TodayExerciseRequest> todayExerciseRequests, LocalDate date, Long memberId) {
-        Today today = todayRepository.fetchWithTodayExercises(date, memberId);
+        Today today = todayDataService.fetchWithTodayExercises(date, memberId);
 
         int baseSequence = today.getTodayExercises().stream()
                 .mapToInt(TodayExercise::getSequence)
@@ -79,7 +79,7 @@ public class TodayService {
 
         for (TodayExerciseRequest request : todayExerciseRequests) {
             if (request.getType().equals("exercise")) {
-                Exercise exercise = exerciseRepository.fetchById(request.getId());
+                Exercise exercise = exerciseDataService.fetchById(request.getId());
                 TodayExercise todayExercise = new TodayExercise(exercise, today, baseSequence++);
 
                 List<RepWeight> repWeightList = exercise.getRepWeightList();
@@ -90,7 +90,7 @@ public class TodayService {
             }
 
             if (request.getType().equals("routine")) {
-                List<RoutineExercise> routineExerciseList = routineExerciseRepository.findByRoutineId(request.getId());
+                List<RoutineExercise> routineExerciseList = routineExerciseService.findByRoutineId(request.getId());
                 for (RoutineExercise routineExercise : routineExerciseList) {
                     TodayExercise todayExercise = new TodayExercise(routineExercise.getExercise(), today, baseSequence++);
 
@@ -102,27 +102,13 @@ public class TodayService {
             }
         }
 
-        todayRepository.save(today);
-    }
-
-    @Cacheable(value = "todayByYearAndMonth", key = "{#year, #month, #memberId}")
-    public List<TodayDateDto> findByYearAndMonth(int year, int month, Long memberId) {
-        return todayRepository.findByYearAndMonth(year, month, memberId);
-    }
-
-
-    @Cacheable(value = "todayByLocalDate", key = "{#date, #memberId}")
-    public TodayDto fetchByLocalDate(LocalDate date, Long memberId) {
-        Today today = todayRepository.findByLocalDateAndMemberId(date, memberId);
-        List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(today.getId());
-
-        return new TodayDto(today, todayExerciseList);
+        todayDataService.save(today);
     }
 
     @Transactional
     @ClearTodayCache
     public void updateTodayExercise(List<UpdateTodayExerciseDto> updateDtoList, Long todayId) {
-        List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(todayId);
+        List<TodayExercise> todayExerciseList = todayExerciseDataService.fetchByTodayId(todayId);
 
         Map<Long, UpdateTodayExerciseDto> updateDtoMap = updateDtoList.stream()
                 .collect(Collectors.toMap(UpdateTodayExerciseDto::getId, dto -> dto));
@@ -162,7 +148,7 @@ public class TodayService {
     @Transactional
     @ClearTodayCache
     public void updateSequence(List<UpdateSeqTodayExercise> updateSeqTodayExerciseList, Long todayId) {
-        Today today = todayRepository.fetchByIdWithTodayExercises(todayId);
+        Today today = todayDataService.fetchByIdWithTodayExercises(todayId);
 
         List<TodayExercise> todayExercises = today.getTodayExercises();
 
@@ -180,26 +166,5 @@ public class TodayService {
         }
     }
 
-    @Transactional
-    @ClearTodayCache
-    public void updateCheckbox(boolean checked, Long todayId) {
-        Today today = todayRepository.findById(todayId).get();
-        if (checked){
-            today.setCheckBox(CheckBox.True);
-        } else{
-            today.setCheckBox(CheckBox.False);
-        }
-    }
 
-    @Cacheable(value = "todays", key = "#todayId")
-    public TodayDto fetchById(Long todayId){
-        Today today = todayRepository.findById(todayId).get();
-        List<TodayExercise> todayExerciseList = todayExerciseRepository.fetchByTodayId(todayId);
-
-        return new TodayDto(today, todayExerciseList);
-    }
-
-    public Boolean existsByMemberIdAndDate(Long memberId, LocalDate date) {
-        return todayRepository.existsByMemberIdAndDate(memberId, date);
-    }
 }
