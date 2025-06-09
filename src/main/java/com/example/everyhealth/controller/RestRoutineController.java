@@ -36,9 +36,9 @@ public class RestRoutineController {
     @Operation(summary = "루틴 저장")
     public ResponseEntity<String> save(@ExtractMemberId Long memberId,
                                        @RequestParam @NotBlank(message = "이름을 필수로 입력하세요") String name) {
-        String routineName = routineBusinessService.createRoutine(memberId, name);
+        routineBusinessService.createRoutine(memberId, name);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(routineName + "을 생성했습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("루틴을 생성했습니다.");
     }
 
     @PostMapping("/routineExercise")

@@ -28,12 +28,12 @@ public class RoutineBusinessService {
     private final ExerciseDataService exerciseDataService;
 
     @Transactional
-    public String createRoutine(Long memberId, String name) {
+    public Long createRoutine(Long memberId, String name) {
         Member findMember = memberService.findById(memberId);
         Routine routine = new Routine(name, findMember);
         routineDataService.save(routine);
 
-        return routine.getName();
+        return routine.getId();
     }
 
     public List<RoutineExerciseResponseDto> getRoutine(Long routineId) {

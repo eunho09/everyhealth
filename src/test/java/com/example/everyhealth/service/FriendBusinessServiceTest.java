@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
-@Transactional
 @TestPropertySource(locations = "file:C:/coding/spring/project/everyhealth/src/main/resources/.env-local")
 class FriendBusinessServiceTest {
 
@@ -51,10 +50,10 @@ class FriendBusinessServiceTest {
     @DisplayName("친구 요청")
     void sendRequest(){
         Long friendId = friendBusinessService.sendRequestFriend(memberId, member2Id);
-        Friend friend = friendDataService.findById(friendId);
+        Friend friend = friendDataService.fetchByIdWithMemberAndFriend(friendId);
 
-        org.assertj.core.api.Assertions.assertThat(friend.getMember()).isEqualTo(memberId);
-        org.assertj.core.api.Assertions.assertThat(friend.getFriend()).isEqualTo(member2Id);
+        org.assertj.core.api.Assertions.assertThat(friend.getMember().getId()).isEqualTo(memberId);
+        org.assertj.core.api.Assertions.assertThat(friend.getFriend().getId()).isEqualTo(member2Id);
         org.assertj.core.api.Assertions.assertThat(friend.getStatus()).isEqualTo(FriendShip.REQUEST);
     }
 

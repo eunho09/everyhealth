@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.plaf.SpinnerUI;
 import java.util.List;
 
 @Service
@@ -42,5 +43,11 @@ public class ChatRoomService {
 
     public List<ChatRoom> fetchByMemberId(Long memberId) {
         return chatRoomRepository.fetchByMemberId(memberId);
+    }
+
+    @Transactional
+    @CacheEvict(value = {"chatRooms"}, allEntries = true)
+    public void deleteByClubId(Long clubId) {
+        chatRoomRepository.deleteByClubId(clubId);
     }
 }

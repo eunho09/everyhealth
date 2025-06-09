@@ -22,7 +22,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p order by p.createAt desc")
     Page<Post> findRecent(PageRequest pageRequest);
 
-    @Query("select p from Post p where p.id >:postId order by p.createAt desc")
+    @Query("select p from Post p where p.id <:postId order by p.createAt desc")
     Page<Post> findByLtPostId(@Param("postId") Long postId, PageRequest pageRequest);
 
     @Query("select p from Post p where p.member.id=:friendId")

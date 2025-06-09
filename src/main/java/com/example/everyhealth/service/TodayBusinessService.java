@@ -118,17 +118,17 @@ public class TodayBusinessService {
 
             if (updateDtoMap.containsKey(todayExerciseId)) {
                 UpdateTodayExerciseDto updateTodayExerciseDto = updateDtoMap.get(todayExerciseId);
-                List<RepWeight> newRepWeightList = updateTodayExerciseDto.getRepWeightList();
+                List<RepWeightDto> newRepWeightList = updateTodayExerciseDto.getRepWeightList();
                 List<RepWeight> existsRepWeights = todayExercise.getRepWeightList();
 
                 Set<Long> newRepWeightIds = newRepWeightList.stream()
-                        .map(RepWeight::getId)
+                        .map(RepWeightDto::getId)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
 
                 existsRepWeights.removeIf(rw -> !newRepWeightIds.contains(rw.getId()));
 
-                for (RepWeight newRepWeight : newRepWeightList) {
+                for (RepWeightDto newRepWeight : newRepWeightList) {
                     if (newRepWeight.getId() == null) {
                         new RepWeight(newRepWeight.getReps(), newRepWeight.getWeight(), todayExercise);
                     } else {

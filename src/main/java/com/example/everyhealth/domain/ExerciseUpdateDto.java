@@ -1,5 +1,7 @@
 package com.example.everyhealth.domain;
 
+import com.example.everyhealth.dto.DtoConverter;
+import com.example.everyhealth.dto.RepWeightDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -19,16 +21,17 @@ public class ExerciseUpdateDto {
 
     @NotNull
     @NotEmpty
-    private List<RepWeight> repWeightList;
+    private List<RepWeightDto> repWeightList;
 
     @NotNull
     private Classification classification;
 
-    public ExerciseUpdateDto(Exercise exercise) {
-        this.id = exercise.getId();
-        this.name = exercise.getName();
-        this.memo = exercise.getMemo();
-        this.repWeightList = exercise.getRepWeightList();
-        this.classification = exercise.getClassification();
+
+    public void setRepWeightList(List<RepWeight> repWeightList) {
+        this.repWeightList= DtoConverter.convertRepWeights(repWeightList);
+    }
+
+    public void setRepWeightListDto(List<RepWeightDto> repWeightList) {
+        this.repWeightList = repWeightList;
     }
 }

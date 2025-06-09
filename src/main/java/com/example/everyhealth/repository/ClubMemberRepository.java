@@ -22,4 +22,8 @@ public interface ClubMemberRepository extends JpaRepository<ClubMember, Long> {
     @Modifying
     @Query("delete from ClubMember cm where cm.club.id=:clubId")
     void deleteByClubId(@Param("clubId") Long clubId);
+
+    @Modifying
+    @Query("delete from ClubMember cm where cm.club.id=:clubId and cm.member.id=:memberId")
+    void deleteByClubIdAndMemberId(@Param("clubId") Long clubId, @Param("memberId") Long memberId);
 }

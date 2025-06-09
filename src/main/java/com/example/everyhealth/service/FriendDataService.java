@@ -47,10 +47,14 @@ public class FriendDataService {
     }
 
     public Friend findByMemberIdAndFriendIdAndStatus(Long memberId, Long friendMemberId, FriendShip friendShip) {
-        return findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, friendShip);
+        return friendRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, friendShip);
     }
 
     public FriendShip checkFriendShip(Long memberId, Long friendId) {
         return friendRepository.checkFriendShip(memberId, friendId);
+    }
+
+    public Friend fetchByIdWithMemberAndFriend(Long friendId) {
+        return friendRepository.fetchByIdWithMemberAndFriend(friendId);
     }
 }

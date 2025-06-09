@@ -46,6 +46,10 @@ public class TodayDataService {
         return todayRepository.fetchByMemberId(memberId);
     }
 
+    public Today fetchByIdWithExercises(Long id) {
+        return todayRepository.fetchByIdWithExercises(id);
+    }
+
     @Transactional
     @ClearTodayCache
     public void delete(Today today) {

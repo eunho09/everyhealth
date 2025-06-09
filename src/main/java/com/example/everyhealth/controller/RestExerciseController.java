@@ -63,9 +63,9 @@ public class RestExerciseController {
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
-        String exerciseName = exerciseBusinessService.createExercise(memberId, dto);
+        Long id = exerciseBusinessService.createExercise(memberId, dto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(exerciseName + "을 저장했습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("운동을 저장했습니다.");
     }
 
     @PatchMapping("/exercise/{id}")

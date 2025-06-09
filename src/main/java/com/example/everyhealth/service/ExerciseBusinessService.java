@@ -30,7 +30,7 @@ public class ExerciseBusinessService {
 
 
     @Transactional
-    public String createExercise(Long memberId, ExerciseCreateDto dto) {
+    public Long createExercise(Long memberId, ExerciseCreateDto dto) {
         Member findMember = memberService.findById(memberId);
 
         Exercise exercise = new Exercise(dto.getName(),
@@ -43,7 +43,7 @@ public class ExerciseBusinessService {
 
         exerciseDataService.save(exercise);
 
-        return exercise.getName();
+        return exercise.getId();
     }
 
     @Transactional
@@ -61,7 +61,7 @@ public class ExerciseBusinessService {
             exercise.setClassification(dto.getClassification());
         }
         if (dto.getRepWeightList() != null) {
-            List<RepWeight> newRepWeights = dto.getRepWeightList();
+            List<RepWeightDto> newRepWeights = dto.getRepWeightList();
             List<RepWeight> existingRepWeights = exercise.getRepWeightList();
 
             Map<Long, RepWeight> existingRepWeightMap = existingRepWeights.stream()
@@ -70,7 +70,7 @@ public class ExerciseBusinessService {
 
             List<RepWeight> updatedRepWeights = new ArrayList<>();
 
-            for (RepWeight newRepWeight : newRepWeights) {
+            for (RepWeightDto newRepWeight : newRepWeights) {
                 if (newRepWeight.getId() == null) {
 
                     RepWeight repWeight = new RepWeight(newRepWeight.getReps(), newRepWeight.getWeight(), exercise);

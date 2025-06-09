@@ -22,4 +22,7 @@ public interface ClubRepository extends JpaRepository<Club, Long>, JpaSpecificat
 
     @Query("select c from Club c join fetch c.chatRoom")
     List<Club> fetchAll();
+
+    @Query("select c from Club c join fetch c.clubMemberList where c.id=:id")
+    Club fetchById(@Param("id") Long id);
 }

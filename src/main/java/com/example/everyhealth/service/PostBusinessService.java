@@ -22,12 +22,13 @@ public class PostBusinessService {
     private final PostDataService postDataService;
 
     @Transactional
-    public void createPost(Long memberId, MultipartFile file, String text) {
+    public Long createPost(Long memberId, MultipartFile file, String text) {
         Member member = memberService.findById(memberId);
         String uniqueFileName = fileStorageService.uploadFile(file);
         Post post = new Post(text, uniqueFileName, member);
 
         postDataService.save(post);
+        return post.getId();
     }
 
     public List<PostDto> getRecentPosts(int limit) {

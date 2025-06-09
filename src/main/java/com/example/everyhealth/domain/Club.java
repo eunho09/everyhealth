@@ -18,7 +18,7 @@ public class Club {
     private String location;
     private String schedule;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private ChatRoom chatRoom;
 
     private String highlight;

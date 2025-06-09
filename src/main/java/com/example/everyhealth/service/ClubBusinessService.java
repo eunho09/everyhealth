@@ -7,6 +7,7 @@ import com.example.everyhealth.domain.Member;
 import com.example.everyhealth.dto.ClubCreate;
 import com.example.everyhealth.dto.ClubDto;
 import com.example.everyhealth.repository.ClubSpecification;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,6 +29,7 @@ public class ClubBusinessService {
     private final MemberService memberService;
     private final ClubMemberService clubMemberService;
     private final ChatRoomService chatRoomService;
+    private final EntityManager em;
 
     @Transactional
     public Club createClub(Long memberId, ClubCreate clubCreate) {
@@ -48,7 +50,7 @@ public class ClubBusinessService {
     public void join(Long cludId, Long memberId) {
         boolean exists = clubMemberService.existsByMemberId(memberId);
 
-        if (!exists) {
+        if (exists) {
             throw new AccessDeniedException("이미 가입된 클럽입니다.");
         }
 
@@ -74,10 +76,18 @@ public class ClubBusinessService {
 
         if (clubMember.isAdmin()){
             clubMemberService.deleteByClubId(id);
+            chatRoomService.deleteByClubId(id);
             clubDataService.deleteById(id);
+
+            return;
         }
 
+        System.out.println("clubMember 영속 상태: " + em.contains(clubMember));
+        System.out.println("clubMember hashCode: " + clubMember.hashCode());
+
         clubMemberService.delete(clubMember);
+
+        System.out.println("delete 호출 후 영속 상태: " + em.contains(clubMember));
     }
 
 

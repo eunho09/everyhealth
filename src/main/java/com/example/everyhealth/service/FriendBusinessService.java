@@ -59,7 +59,7 @@ public class FriendBusinessService {
             throw new FriendException(ErrorCode.FRIEND_NOT_REQUEST);
         }
 
-        return selectRequest(memberId, friendMemberId, FriendShip.ACCEPT);
+        return selectRequest(memberId, friendMemberId, friendShip, FriendShip.ACCEPT);
     }
 
     @Transactional
@@ -71,7 +71,7 @@ public class FriendBusinessService {
             throw new FriendException(ErrorCode.FRIEND_NOT_ACCEPT);
         }
 
-        return selectRequest(memberId, friendMemberId, FriendShip.CANCEL);
+        return selectRequest(memberId, friendMemberId, friendShip, FriendShip.CANCEL);
     }
 
     private static void validateId(Long memberId, Long friendMemberId) {
@@ -109,9 +109,9 @@ public class FriendBusinessService {
 
     @Transactional
     @CacheEvict(value = {"friendShipCheck", "friendByAccept", "friendByMember", "memberByFriend", "existsByIdAndFriendId"}, allEntries = true)
-    public Long selectRequest(Long memberId, Long friendMemberId, FriendShip friendShip) {
-        Friend friend = friendDataService.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, friendShip);
-        friend.setStatus(friendShip);
+    public Long selectRequest(Long memberId, Long friendMemberId, FriendShip status, FriendShip updateStatus) {
+        Friend friend = friendDataService.findByMemberIdAndFriendIdAndStatus(memberId, friendMemberId, status);
+        friend.setStatus(updateStatus);
 
         return friend.getId();
     }

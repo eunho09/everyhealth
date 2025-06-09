@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: everyhealth
+
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/everyhealth_test?serverTimezone=UTC&characterEncoding=UTF-8
+    username: "root"
+    password: "0000"
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT}
+            client-secret: ${GOOGLE_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URL}
+            scope: # google API의 범위 값
+              - profile
+              - email
+
+  servlet:
+    multipart:
+      max-file-size: 10MB # 파일당 최대 크기
+      max-request-size: 10MB # 요청당 최대 크기
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+
+file:
+  dir: ${FILE_DIR}
+
+cors:
+  allow-url: "http://localhost:3000"
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expire-time: ${JWT_ACCESS_TOKEN_EXPIRE_TIME} # minutes
+  refresh-token-expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME} # days
+
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: strict
+
+  error:
+    include-stacktrace: never
+    include-message: always
+
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    enabled: true
+  packages-to-scan: com.example.everyhealth.controller
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json

@@ -35,6 +35,10 @@ public class ClubDataService {
         return clubRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("클럽이 존재하지 않습니다. ID : " + id));
     }
 
+    public Club fetchById(Long id) {
+        return clubRepository.fetchById(id);
+    }
+
     public List<Club> fetchAll() {
         return clubRepository.fetchAll();
     }

@@ -1,7 +1,9 @@
 package com.example.everyhealth.service;
 
 import com.example.everyhealth.domain.*;
+import com.example.everyhealth.dto.TodayDto;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +18,6 @@ import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 @SpringBootTest
-@Transactional
 @TestPropertySource(locations = "file:C:/coding/spring/project/everyhealth/src/main/resources/.env-local")
 @Slf4j
 class TodayExerciseBusinessServiceTest {
@@ -62,23 +63,28 @@ class TodayExerciseBusinessServiceTest {
     @DisplayName("Today 안에 TodayExercise가 없다면 삭제")
     void deleteTodayExerciseCascadeToday() {
         Long todayId = todayBusinessService.createToday(memberId, LocalDate.of(2025, 5, 30));
-        Today today = todayDataService.findById(todayId);
+        Today today = todayDataService.fetchByIdWithExercises(todayId);
+        log.info("todayId : {}", todayId);
+        log.info("today : {}", today);
+
         Exercise exercise = new Exercise("푸쉬업", member, "", Classification.CHEST);
         exerciseDataService.save(exercise);
         RepWeight repWeight1 = new RepWeight(20, 0, exercise);
         RepWeight repWeight2 = new RepWeight(20, 0, exercise);
         RepWeight repWeight3 = new RepWeight(20, 0, exercise);
 
+
         TodayExercise todayExercise = new TodayExercise(exercise, today, 1);
         todayExerciseDataService.save(todayExercise);
 
         todayExerciseBusinessService.deleteTodayExercise(todayExercise.getId());
+        em.clear();
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
             todayExerciseDataService.findById(todayExercise.getId());
         });
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
             todayDataService.findById(today.getId());
         });
     }
@@ -87,7 +93,7 @@ class TodayExerciseBusinessServiceTest {
     @DisplayName("TodayExercise 객체가 두 개 이상이라면 Today는 삭제X")
     void deleteTodayExercise() {
         Long todayId = todayBusinessService.createToday(memberId, LocalDate.of(2025, 5, 30));
-        Today today = todayDataService.findById(todayId);
+        Today today = todayDataService.fetchByIdWithExercises(todayId);
         Exercise exercise = new Exercise("푸쉬업", member, "", Classification.CHEST);
         exerciseDataService.save(exercise);
         RepWeight repWeight1 = new RepWeight(20, 0, exercise);
@@ -102,9 +108,9 @@ class TodayExerciseBusinessServiceTest {
         String result = todayExerciseBusinessService.deleteTodayExercise(todayExercise.getId());
 
         em.clear();
-        Today findToday = todayDataService.findById(today.getId());
+        Today findToday = todayDataService.fetchByIdWithExercises(today.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
             todayExerciseDataService.findById(todayExercise.getId());
         });
 

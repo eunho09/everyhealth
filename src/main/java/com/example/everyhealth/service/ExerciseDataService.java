@@ -19,7 +19,6 @@ public class ExerciseDataService {
     private final ExerciseRepository exerciseRepository;
 
     @Transactional
-    @CachePut(value = "exercises", key = "#exercise.id")
     @CacheEvict(value = {"exercisesByMember", "exerciseAll"}, allEntries = true)
     public Long save(Exercise exercise) {
         exerciseRepository.save(exercise);
