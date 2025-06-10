@@ -13,7 +13,7 @@ import java.net.MalformedURLException;
 import java.util.UUID;
 
 @Component
-@Profile("!Prod")
+@Profile("!prod")
 public class FileStore implements FileStorageService {
 
     @Value("${file.dir}")

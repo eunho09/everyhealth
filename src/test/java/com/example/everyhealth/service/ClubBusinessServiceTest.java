@@ -9,6 +9,7 @@ import com.example.everyhealth.dto.ClubDto;
 import com.example.everyhealth.repository.ClubMemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource(locations = "file:C:/coding/spring/project/everyhealth/src/main/resources/.env-local")
+@Slf4j
 class ClubBusinessServiceTest {
 
     @Autowired
