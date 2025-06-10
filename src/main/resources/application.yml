@@ -14,7 +14,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -58,6 +58,9 @@ jwt:
   refresh-token-expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME} # days
 
 server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
   servlet:
     session:
       cookie:
@@ -79,3 +82,9 @@ springdoc:
   packages-to-scan: com.example.everyhealth.controller
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
