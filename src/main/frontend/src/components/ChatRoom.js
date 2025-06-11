@@ -105,10 +105,18 @@ const ChatRoom = () => {
         }
     };
 
+    const getBaseUrl = () => {
+        if (process.env.REACT_APP_ENV === 'dev') {
+            return process.env.REACT_APP_API_BASEURL + "/chat";
+        }
+
+        return window.env?.REACT_APP_API_BASEURL + "/chat";
+    }
+
     // WebSocket 연결 및 메시지 구독
     useEffect(() => {
         const client = new Client({
-            webSocketFactory: () => new SockJS('http://localhost:8080/chat'),
+            webSocketFactory: () => new SockJS(getBaseUrl()),
             onConnect: () => {
                 console.log('Connected!');
                 setIsConnected(true);

@@ -45,6 +45,15 @@ const FriendProfile = ({friendId}) => {
         }
     };
 
+    const getImageUrl = (imageUrl) => {
+        if (process.env.REACT_APP_ENV === "dev"){
+            console.log(process.env.REACT_APP_IMAGE_URL);
+            return `${process.env.REACT_APP_IMAGE_URL}${imageUrl}`;
+        } else {
+            return `/${imageUrl}`;
+        }
+    }
+
     if (loading) {
         return null;
     }
@@ -103,7 +112,7 @@ const FriendProfile = ({friendId}) => {
                     <div className="posts-grid">
                         {posts.map(post => (
                             <div key={post.id} className="post-item">
-                                <img src={`/api/images/${post.imageUrl}`} alt={post.text} />
+                                <img src={getImageUrl(post.imageUrl)} alt={post.text} />
                                 <div className="post-overlay">
                                     <p className="post-text">{post.text}</p>
                                 </div>
