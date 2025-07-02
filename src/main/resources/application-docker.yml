@@ -8,14 +8,14 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://host.docker.internal:3306/everyhealth?serverTimezone=UTC&characterEncoding=UTF-8
-    username: "root"
+    url: jdbc:mysql://database:3306/everyhealth?serverTimezone=UTC&characterEncoding=UTF-8
+    username: "everyhealth_user"
     password: "0000"
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -39,7 +39,7 @@ spring:
 
   data:
     redis:
-      host: host.docker.internal
+      host: redis
       port: 6379
 
 logging:
