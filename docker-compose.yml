@@ -3,6 +3,7 @@ name: everyhealth
 services:
   backend:
     build: .
+    image: ghcr.io/eunho09/everyhealth/backend:latest
     ports:
       - "8080:8080"
     networks:
@@ -17,6 +18,7 @@ services:
 
   frontend:
     build: src/main/frontend/.
+    image: ghcr.io/eunho09/everyhealth/frontend:latest
     ports:
       - "80:80"
     networks:
