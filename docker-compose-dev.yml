@@ -3,13 +3,12 @@ name: everyhealth
 services:
   backend:
     build: .
-    image: ghcr.io/eunho09/everyhealth/backend:latest
     ports:
       - "8080:8080"
     networks:
       - "network"
-#    env_file:
-#      - src/main/resources/.env-docker
+    env_file:
+      - src/main/resources/.env-docker
     depends_on:
       database:
         condition: service_healthy
@@ -18,7 +17,6 @@ services:
 
   frontend:
     build: src/main/frontend/.
-    image: ghcr.io/eunho09/everyhealth/frontend:latest
     ports:
       - "80:80"
     networks:
