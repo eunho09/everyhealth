@@ -9,10 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.build-image.outputs.image }}
     steps:
       - uses: actions/checkout@v4
 
@@ -49,42 +47,35 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
-        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: everyhealth
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "Building and pushing: $IMAGE_URI"
+          
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+          
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      - name: Fill in the new image ID in the Amazon ECS task definition
+      - name: Replace image placeholder and render task definition
         id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: backend
-          image: ${{ needs.build.outputs.image }}
+        run: |
+          echo "Using image: ${{ env.IMAGE_URI }}"
+          
+          TEMP_TASK_DEF=$(echo '${{ secrets.TASK_DEFINITION }}' | \
+            sed "s|{{IMAGE_URI}}|${{ env.IMAGE_URI }}|g")
+
+          echo "$TEMP_TASK_DEF" > temp-task-def.json
+
+          echo "task-definition=temp-task-def.json" >> "$GITHUB_OUTPUT"
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: your-service-name
-          cluster: your-cluster-name
+          service: everyhealth-family-service-zhkbx0eg
+          cluster: everyhealth-cluster
           wait-for-service-stability: true
