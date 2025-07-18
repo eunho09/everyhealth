@@ -7,15 +7,22 @@ spring:
       on-profile: docker
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://database:3306/everyhealth?serverTimezone=UTC&characterEncoding=UTF-8
-    username: "everyhealth_user"
-    password: "0000"
+    write:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://database_write:3306/everyhealth?serverTimezone=UTC&characterEncoding=UTF-8
+      username: "everyhealth_user"
+      password: "0000"
+
+    read:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://database_read:3306/everyhealth?serverTimezone=UTC&characterEncoding=UTF-8
+      username: "everyhealth_user"
+      password: "0000"
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true

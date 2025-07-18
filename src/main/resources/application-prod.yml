@@ -7,10 +7,17 @@ spring:
       on-profile: prod
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    write:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: ${DATABASE_WRITE_URL}
+      username: ${DATABASE_WRITE_USERNAME}
+      password: ${DATABASE_WRITE_PASSWORD}
+
+    read:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: ${DATABASE_READ_URL}
+      username: ${DATABASE_READ_USERNAME}
+      password: ${DATABASE_READ_PASSWORD}
 
   jpa:
     show-sql: true

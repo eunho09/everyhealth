@@ -1,0 +1,158 @@
+name: everyhealth
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      - "network"
+    env_file:
+      - src/main/resources/.env-docker
+    depends_on:
+      database_write:
+        condition: service_healthy
+      replication-setup:
+        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+
+  frontend:
+    build: src/main/frontend/.
+    ports:
+      - "80:80"
+    networks:
+      - "network"
+
+  replication-setup:
+    image: mysql:8.0
+    networks:
+      - "network"
+    depends_on:
+      database_write:
+        condition: service_healthy
+      database_read:
+        condition: service_healthy
+    volumes:
+      - ./setUpReplication.sh:/setUpReplication.sh:ro
+    command: ["bash", "/setUpReplication.sh"]
+
+  database_write:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    networks:
+      - "network"
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: everyhealth
+      MYSQL_USER: everyhealth_user
+      MYSQL_PASSWORD: "0000"
+    command: >
+      --server-id=1 
+      --log-bin=mysql-bin 
+      --binlog-format=ROW
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234" ]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 60s
+    volumes:
+      - database_write_data:/var/lib/mysql
+
+  database_read:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    networks:
+      - "network"
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: everyhealth
+      MYSQL_USER: everyhealth_user
+      MYSQL_PASSWORD: "0000"
+    command: >
+      --server-id=2 
+      --read-only=1
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234" ]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 60s
+    volumes:
+      - database_read_data:/var/lib/mysql
+    depends_on:
+      - database_write
+
+#  redis:
+#    image: redis:7.2-alpine
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - "network"
+#    healthcheck:
+#      test: [ "CMD", "redis-cli", "ping" ]
+#      timeout: 20s
+#      retries: 5
+#      interval: 10s
+#    volumes:
+#      - redis_data:/data
+#
+#  prometheus:
+#    image: prom/prometheus
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - "network"
+#    volumes:
+#      - prometheus_data:/prometheus
+#      - ./src/main/resources/prometheus.yml:/etc/prometheus/prometheus.yml
+#    command:
+#      - '--storage.tsdb.path=/prometheus'
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#
+#  grafana:
+#    image: grafana/grafana
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - "network"
+#    volumes:
+#      - grafana_data:/var/lib/grafana
+#      - ./grafana/provisioning/:/etc/grafana/provisioning/
+#    depends_on:
+#      - prometheus
+#
+#  node_exporter:
+#    image: prom/node-exporter
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+#    command:
+#      - '--path.procfs=/host/proc'
+#      - '--path.rootfs=/rootfs'
+#      - '--path.sysfs=/host/sys'
+#      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+#    ports:
+#      - "9100:9100"
+#    networks:
+#      - "network"
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  database_write_data:
+    driver: local
+  database_read_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
