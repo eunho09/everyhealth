@@ -41,7 +41,7 @@ EveryHealth는 개인의 운동 기록 관리와 친구들과의 운동 경험 �
 ### Backend
 - **프레임워크**: Spring Boot 3.3.5
 - **언어**: Java 17
-- **데이터베이스**: MySQL 8.0
+- **데이터베이스**: MySQL 8.0 (master - slave 구조)
 - **캐싱**: Redis
 - **인증**: Spring Security + OAuth2 + JWT
 - **실시간 통신**: WebSocket + STOMP
@@ -67,4 +67,5 @@ EveryHealth는 개인의 운동 기록 관리와 친구들과의 운동 경험 �
 
 ## 아키텍처
 ![everyhealth_architecture](https://github.com/user-attachments/assets/f2c2017b-aa26-4ddf-8a72-6d6570434467)
-![everyhealth_aws_architecture](https://github.com/user-attachments/assets/89b28646-eafb-4e51-bce5-97b2a790bb3b)
+<img width="1210" height="1033" alt="image" src="https://github.com/user-attachments/assets/a97d4977-1c5a-408c-afd5-97d966f66c9d" />
+
